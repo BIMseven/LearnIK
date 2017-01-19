@@ -29,7 +29,7 @@ namespace MyUtility
         
     #region PRIVATE_FIELDS
     // Helps find duplicate/bad values in isBadValue()
-    private T previousValue;
+    protected T previousValue;
 	// Helper for isBadvalue, compared against UPDATES_PER_VALUE
 	private uint timesValueMatchedPrevious;
     #endregion

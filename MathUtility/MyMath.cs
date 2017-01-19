@@ -6,7 +6,11 @@ public class MyMath : MonoBehaviour {
 //-------------------------------------------------------------CONSTANTS AND FIELDS:
 	
 	public const float EPSILON = 0.0001f;
-	private const int X = 0, Y = 1, Z = 2;
+
+    // Euler's number
+    public const float E = 2.71828182845904523536f;
+
+    private const int X = 0, Y = 1, Z = 2;
 
 	public const float MAX_RAY_LENGTH = 1000.0f;
 
@@ -38,12 +42,7 @@ public class MyMath : MonoBehaviour {
 		return Mathf.Min( Difference( larger, max ) + Difference( smaller, min ),
 		                  Difference( a, b ) );
 	}
-
-//	public static Vector2 Intersection( float x1, float x2, float y1, float y2 )
-//	{
-//		//TODO
-//	}
-
+    
 	/// <summary>
 	/// Returns the point of intersection of given Rays if it exists.  Else, returns
 	/// Vector2.zero
@@ -107,6 +106,24 @@ public class MyMath : MonoBehaviour {
 		// Derivation: http://www.cmu.edu/biolphys/deserno/pdf/log_interpol.pdf
 		return Mathf.Pow( x1, f ) * Mathf.Pow( x2, 1 - f );
 	}
+
+    /// <summary>
+    /// Applies a Logistic function to given input x.  This is a Sigmoid function.
+    /// https://en.wikipedia.org/wiki/Logistic_function
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="maxValue"></param>
+    /// <param name="midpoint"></param>
+    /// <param name="steepness"></param>
+    /// <returns></returns>
+    public static float Logistic( float x, 
+                                  float maxValue, 
+                                  float midpoint, 
+                                  float steepness )
+    {
+        // L / ( 1 + e ^ -k(x-x0) )
+        return maxValue / ( 1 + Mathf.Pow( E, -steepness * ( x - midpoint ) ) );
+    }
 
 	/**
 	 * Maps given number, which is between oldMin and oldMax, to a value between 

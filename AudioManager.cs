@@ -9,7 +9,7 @@ namespace MyUtility
 //------------------------------------------------------------------------CONSTANTS:
 
         private const string LOG_TAG = "AudioManager";
-        private const bool VERBOSE = true;
+        public bool VERBOSE = false;
 
         private const float AMBIENT_SOUNDS_VOLUME = 0.5f;
 
@@ -66,9 +66,9 @@ namespace MyUtility
                     sound.play( location );
                 }
             }
-            else
-            {
-                Utility.Print( LOG_TAG, "Unable to find sound" );
+            else if( VERBOSE )
+            { 
+                Utility.Print( LOG_TAG, "Unable to find sound: " + soundName );
             }
         }
 

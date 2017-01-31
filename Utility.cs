@@ -193,6 +193,13 @@ namespace MyUtility
                 PlayerPrefs.SetInt( tag, 0 );
             }
         }
+ 
+        public static bool SignsAgree( float num, float otherNum )
+        {
+            return ( num >= 0  &&  otherNum >= 0 ) ||
+                   ( num < 0   &&  otherNum < 0 );
+        }
+
         // Returns a vector2 made from the x and z components of given vector
         public static Vector2 XZ( Vector3 vector )
         {

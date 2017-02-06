@@ -53,6 +53,15 @@ public class RemoteConnectionManager : Singleton<RemoteConnectionManager>
         {
             messageText.text = "Connected!";
         }
+        if( connection.dataReceiver == null )
+        {
+            print( "why noull?" );
+            return;
+        }
+        if( connection.dataReceiver.ReceivedHandshake )
+        {
+            messageText.text = "Received hadnshake!";
+        }
 	}
 
 //--------------------------------------------------------------------------METHODS:

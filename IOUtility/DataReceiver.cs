@@ -33,28 +33,25 @@ public class DataReceiver
 	protected MemoryStream data = new MemoryStream();
 	protected byte[] buffer = new byte[4096];
 
+    public bool ReceivedHandshake;
+
 //---------------------------------------------------------------------CONSTRUCTORS:
 
 //--------------------------------------------------------------------------METHODS:
 
     public void AppendData( Stream stream, int available )
     {
-        Profiler.BeginSample( "AppendData" );
-
         data.Position = data.Length;
         Utils.CopyToStream( stream, data, buffer, available );
-
-        Profiler.EndSample();
     }
 
     //TODO will be abstract
     public void ProcessMessage( Stream stream )
     {
-        Profiler.BeginSample( "ProcessMessage" );
-
         BinaryReader reader = new BinaryReader( data );
         byte msg = reader.ReadByte();
         uint size = reader.ReadUInt32();
+        Debug.Log( "ProcessMessage" );
         if( Enum.IsDefined( typeof( EditorMessage ), (EditorMessage)msg ) )
         {
             switch( (EditorMessage)msg )
@@ -72,8 +69,6 @@ public class DataReceiver
             //Console.WriteLine("Unknown message: " + msg);
             reader.ReadBytes( (int)size );
         }
-
-        Profiler.EndSample();
     }
 
     public void ReceiveMessages()
@@ -101,10 +96,16 @@ public class DataReceiver
     public void HandleHello( BinaryReader reader )
     {
         string magic = reader.ReadCustomString();
-        if( magic != "UnityRemote" )
+        Debug.Log( "HANDLING HELLO! This should say Howdy: " + magic );
+        if( magic != "Howdy" )
+        {
             throw new ApplicationException( "Handshake failed" );
-        else
-            Utility.Print( LOG_TAG, "SUCCESSFUL HANDSHAKE!" );
+        }
+        else if( VERBOSE )
+        {
+            Utility.Print( LOG_TAG, "Received handshake" );
+        }
+        ReceivedHandshake = true; //TODO tmep
 
         uint version = reader.ReadUInt32();
         if( version != 0 )
@@ -121,7 +122,7 @@ public class DataReceiver
         long oldPosition = stream.Position;
         bool result = true;
 
-        // TODO why 5?
+        // 1 byte for header, 4 bytes for length of packet?
         if( stream.Length - stream.Position < 5 )     result = false;
 
         if( result )

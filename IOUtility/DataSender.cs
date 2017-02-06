@@ -14,13 +14,13 @@ public class DataSender
 //---------------------------------------------------------------------------FIELDS:
 
     protected PacketWriter writer;
-    protected Stream stream;
+    public MemoryStream Stream { get; private set; }
     
 //---------------------------------------------------------------------CONSTRUCTORS:
 
-    public DataSender( Stream stream )
+    public DataSender( MemoryStream stream )
     {
-        this.stream = stream;
+        Stream = stream;
         writer = new PacketWriter();
     }    
 
@@ -31,7 +31,7 @@ public class DataSender
         writer.BeginMessage( RemoteMessages.Hello );
         writer.Write( "UnityRemote" );
         writer.Write( (uint)0 );
-        writer.EndMessage( stream );
+        writer.EndMessage( Stream );
     }
 
     public void SendMessages()

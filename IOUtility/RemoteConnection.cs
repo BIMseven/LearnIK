@@ -61,7 +61,7 @@ public class RemoteConnection : MonoBehaviour
     private TcpClient client;
 
     private DataSender dataSender;
-    private DataReceiver dataReceiver;
+    public DataReceiver dataReceiver;
 
     private bool isServer;
 
@@ -105,7 +105,6 @@ public class RemoteConnection : MonoBehaviour
         {
             Debug.LogError( "EX: " + exception );
         }
-        
     }
 
 //--------------------------------------------------------------------------METHODS:
@@ -247,10 +246,14 @@ public class RemoteConnection : MonoBehaviour
             if( bytesRead > 0 )
             {
                 print( "read bytes@!" );
-                // There might be more data, so store the data received so far.  
-                state.sb.Append( Encoding.ASCII.GetString( state.buffer, 0, bytesRead ) );
 
-                print( state.sb.ToString() );
+                // There might be more data, so store the data received so far.  
+                //state.sb.Append( Encoding.ASCII.GetString( state.buffer, 0, bytesRead ) );
+                //print( state.sb.ToString() );
+
+                // TODO can we just do a blocking write to the receiver stream?
+                dataReceiver.AppendData( new MemoryStream( state.buffer ), bytesRead );
+
                 // Get the rest of the data.  
                 socket.BeginReceive( state.buffer, 
                                      0, 
@@ -259,12 +262,12 @@ public class RemoteConnection : MonoBehaviour
                                      new AsyncCallback( receiveCallback ), 
                                      state );
             }
-            else if( state.sb.Length > 1 )
-            {
-                print( "RESPONSE: " + state.sb.ToString() );
-                // Signal that all bytes have been received.  
-                //receiveDone.Set();
-            }
+            //else if( state.sb.Length > 1 )
+            //{
+            //    print( "RESPONSE: " + state.sb.ToString() );
+            //    // Signal that all bytes have been received.  
+            //    //receiveDone.Set();
+            //}
             else
             {
                 print( "received NOTHIGN! " );
@@ -278,7 +281,7 @@ public class RemoteConnection : MonoBehaviour
 
     private void receiveMessages()
     {
-        //dataReceiver.ReceiveMessages();
+        dataReceiver.ReceiveMessages();
     }
 
     private void send( Socket socket, String data )
@@ -324,12 +327,19 @@ public class RemoteConnection : MonoBehaviour
 
     private void sendMessages()
     {
-        //dataSender.SendMessages();
+        
     }
 
     public void sayHello()
     {
-        send( Socket, "Hello!" );        
+        //send( Socket, "Hello!" );
+
+        dataSender.SendHello();
+        MemoryStream dataStream = dataSender.Stream;
+        if( dataStream.CanRead )
+        {
+            send( Socket, dataSender.Stream.ToArray() );
+        }
     }
 
     public void receiveHello()

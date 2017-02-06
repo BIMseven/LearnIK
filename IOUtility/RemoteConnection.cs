@@ -45,7 +45,13 @@ public class RemoteConnection : MonoBehaviour
     public int Port = 38300;		
     public Socket Socket { get; private set; }
     
-    private bool connected;
+    public bool IsConnected
+    {
+        get
+        {
+            return Socket != null && Socket.Connected;
+        }
+    }
 
     private MemoryStream readStream;
     private MemoryStream writeStream;
@@ -53,16 +59,11 @@ public class RemoteConnection : MonoBehaviour
     private byte[] copyBuffer;
 
     private TcpClient client;
-    
 
-    public Button ConnectToServerButton;
-    public Button StartServerButton;
-    public Button SendMessageButton;
-    public Button ReceiveMessageButton;
+    private DataSender dataSender;
+    private DataReceiver dataReceiver;
 
-    public Text messageText;
-
-    private bool isClient;
+    private bool isServer;
 
     public GameObject ThingToPassOverNetwork;
 
@@ -79,51 +80,51 @@ public class RemoteConnection : MonoBehaviour
 
         copyBuffer = new byte[STREAM_BUFFER_SIZE];
 
-        connected = false;
-
-
-        //byte[] byteData = Encoding.ASCII.GetBytes( "blarg" );
-        //print( "bloog? " + System.Text.Encoding.Default.GetString( byteData )  );
-
-    }
-
-	void Start()
-    {
-        ConnectToServerButton.onClick.AddListener( delegate { Socket = createConnectingSocket( IP, Port ); } );
-
-        StartServerButton.onClick.AddListener( delegate { Socket = createListeningSocket( Port ); 
-                                                          messageText.text = "Listening for connections"; } );
-
-        SendMessageButton.onClick.AddListener( delegate { sayHello(); } );
-
-        ReceiveMessageButton.onClick.AddListener( delegate { receiveHello(); } );
-
-     
+        dataSender = new DataSender( writeStream );
+        dataReceiver = new DataReceiver();
     }
 		
 	void Update()
-	{
-        if( Socket != null )
+    {
+        // Listen for connections (If ListenForConnections() was called)
+        if( isServer  &&  ! IsConnected )
         {
-            if( ! isClient  && ! connected )
+            // TODO BeginAcceptIncoming
+            if( ( client = acceptIncoming( Socket ) ) != null )
             {
-                if( ( client = acceptIncoming( Socket ) ) != null )
-                {
-                    Socket = client.Client;
-                    messageText.text = "Connected: " + Socket.Connected;
-                    connected = true;
-                }
-            }
-            else if( isClient  &&  Socket.Connected  &&  ! connected )
-            {
-                messageText.text = "Connected!";
-                connected = true;
+                Socket = client.Client;                
             }
         }
-	}
+        if( ! IsConnected )   return;
+        try
+        {
+            sendMessages();
+            receiveMessages();
+        }
+        catch( Exception exception )
+        {
+            Debug.LogError( "EX: " + exception );
+        }
+        
+    }
 
 //--------------------------------------------------------------------------METHODS:
 
+    /// <summary>
+    /// Connect to a server
+    /// </summary>
+    public void ConnectToServer()
+    {
+        Socket = createConnectingSocket( IP, Port );
+    }
+
+    /// <summary>
+    /// Listen for connections from client (this will be a server)
+    /// </summary>
+    public void ListenForConnections()
+    {
+        Socket = createListeningSocket( Port );
+    }
 
 //--------------------------------------------------------------------------HELPERS:
 
@@ -154,11 +155,11 @@ public class RemoteConnection : MonoBehaviour
     // Creates streaming TCP socket trying to connect to given ipAddress
     private Socket createConnectingSocket( string ipAddress, int port )
     {
-        isClient = true;
+        isServer = false;
 
         IPEndPoint endPoint = new IPEndPoint( IPAddress.Parse( ipAddress ), port );
 
-        AsyncCallback callback = delegate { onConnect(); };
+        AsyncCallback callback = delegate { onConnected(); };
 
         Socket socket = new Socket( endPoint.Address.AddressFamily,
                                     SocketType.Stream,
@@ -175,7 +176,7 @@ public class RemoteConnection : MonoBehaviour
     // Creaates streaming TCP socket listening for connections
     private Socket createListeningSocket( int port )
     {
-        isClient = false;
+        isServer = true;
         if( VERBOSE )
         {
             Utility.Print( LOG_TAG, "Creating socket on port " + port );
@@ -201,10 +202,10 @@ public class RemoteConnection : MonoBehaviour
         return socket;
     }
     
-    private void onConnect()
+    private void onConnected()
     {
         print( "Socket connected: " + Socket.Connected );
-        connected = true;
+        //TODO handshake
     }
     
     // Receive stuff being send through socket
@@ -275,6 +276,11 @@ public class RemoteConnection : MonoBehaviour
         }
     }
 
+    private void receiveMessages()
+    {
+        //dataReceiver.ReceiveMessages();
+    }
+
     private void send( Socket socket, String data )
     {
         // Convert the string data to byte data using ASCII encoding.  
@@ -283,9 +289,8 @@ public class RemoteConnection : MonoBehaviour
 
     private void send( Socket socket, byte[] byteData )
     {
-
-        if( !socket.Connected ) messageText.text = "NOT CONNECTED";
-        else
+        if( socket.Connected )
+        {
             // Begin sending the data to the remote device.  
             socket.BeginSend( byteData,
                               0,
@@ -293,7 +298,7 @@ public class RemoteConnection : MonoBehaviour
                               0,
                               new AsyncCallback( sendCallback ),
                               socket );
-        messageText.text = "Sending!";
+        }
     }
 
     private void sendCallback( IAsyncResult ar )
@@ -317,12 +322,17 @@ public class RemoteConnection : MonoBehaviour
         }
     }
 
-    private void sayHello()
+    private void sendMessages()
+    {
+        //dataSender.SendMessages();
+    }
+
+    public void sayHello()
     {
         send( Socket, "Hello!" );        
     }
 
-    private void receiveHello()
+    public void receiveHello()
     {
         receive( Socket );
     }

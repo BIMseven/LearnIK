@@ -7,8 +7,9 @@ public enum RemoteMessages : byte
     Invalid = 0,
 
     Hello = 1,
-    Options = 2,
-    SerializableObject = 3,
+    String = 2,
+    Options = 3,
+    SerializableObject = 4,
 
     Reserved = 255,
 }

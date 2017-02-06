@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Profiling;
-
+using MyUtility;
 
 public enum EditorMessage
 {
@@ -30,8 +30,8 @@ public class DataReceiver
     
 //---------------------------------------------------------------------------FIELDS:
 
-	MemoryStream data = new MemoryStream();
-	byte[] buffer = new byte[4096];
+	protected MemoryStream data = new MemoryStream();
+	protected byte[] buffer = new byte[4096];
 
 //---------------------------------------------------------------------CONSTRUCTORS:
 
@@ -47,6 +47,7 @@ public class DataReceiver
         Profiler.EndSample();
     }
 
+    //TODO will be abstract
     public void ProcessMessage( Stream stream )
     {
         Profiler.BeginSample( "ProcessMessage" );
@@ -59,11 +60,11 @@ public class DataReceiver
             switch( (EditorMessage)msg )
             {
                 case EditorMessage.Hello: HandleHello( reader ); break;
-                case EditorMessage.ScreenStream: HandleScreenStream( reader ); break;
-                case EditorMessage.GyroSettings: HandleGyroSettings( reader ); break;
-                case EditorMessage.ScreenOrientation: HandleScreenOrientation( reader ); break;
-                case EditorMessage.WebCamStartStream: HandleWebCamStartStream( reader ); break;
-                case EditorMessage.WebCamStopStream: HandleWebCamStopStream( reader ); break;
+                //case EditorMessage.ScreenStream: HandleScreenStream( reader ); break;
+                //case EditorMessage.GyroSettings: HandleGyroSettings( reader ); break;
+                //case EditorMessage.ScreenOrientation: HandleScreenOrientation( reader ); break;
+                //case EditorMessage.WebCamStartStream: HandleWebCamStartStream( reader ); break;
+                //case EditorMessage.WebCamStopStream: HandleWebCamStopStream( reader ); break;
             }
         }
         else
@@ -75,14 +76,15 @@ public class DataReceiver
         Profiler.EndSample();
     }
 
-    public void ProcessMessages()
+    public void ReceiveMessages()
     {
-        Profiler.BeginSample( "ProcessMessages" );
-
         data.Position = 0;
 
         while( hasFullMessage( data ) )
+        {
+            Utility.Print( LOG_TAG, "FULL MESSAGE!" );
             ProcessMessage( data );
+        }
 
         // Copy leftover bytes
         long left = data.Length - data.Position;
@@ -90,71 +92,27 @@ public class DataReceiver
         Array.Copy( buffer, data.Position, buffer, 0, left );
         data.Position = 0;
         data.SetLength( left );
-
-        Profiler.EndSample();
     }
 
-
+    /// <summary>
+    /// Handles handshake
+    /// </summary>
+    /// <param name="reader"></param>
     public void HandleHello( BinaryReader reader )
     {
         string magic = reader.ReadCustomString();
         if( magic != "UnityRemote" )
             throw new ApplicationException( "Handshake failed" );
+        else
+            Utility.Print( LOG_TAG, "SUCCESSFUL HANDSHAKE!" );
 
         uint version = reader.ReadUInt32();
         if( version != 0 )
+        {
             throw new ApplicationException( "Unsupported protocol version: " + version );
+        }
     }
-
-
-    public void HandleScreenStream( BinaryReader reader )
-    {
-        int width = reader.ReadInt32();
-        int height = reader.ReadInt32();
-        int size = reader.ReadInt32();
-
-        byte[] image = new byte[size];
-        reader.Read( image, 0, size );
-        screen.UpdateScreen( image, width, height );
-    }
-
-
-    public void HandleGyroSettings( BinaryReader reader )
-    {
-        Input.gyro.enabled = ( reader.ReadInt32() != 0 );
-        float updateInterval = reader.ReadSingle();
-        if( updateInterval != 0.0f && updateInterval != Input.gyro.updateInterval )
-            Input.gyro.updateInterval = updateInterval;
-    }
-
-
-    public void HandleScreenOrientation( BinaryReader reader )
-    {
-        Screen.orientation = (ScreenOrientation)reader.ReadInt32();
-        Screen.autorotateToPortrait = reader.ReadInt32() != 0;
-        Screen.autorotateToPortraitUpsideDown = reader.ReadInt32() != 0;
-        Screen.autorotateToLandscapeLeft = reader.ReadInt32() != 0;
-        Screen.autorotateToLandscapeRight = reader.ReadInt32() != 0;
-    }
-
-
-    public void HandleWebCamStartStream( BinaryReader reader )
-    {
-        string device = reader.ReadCustomString();
-        int width = reader.ReadInt32();
-        int height = reader.ReadInt32();
-        int fps = reader.ReadInt32();
-        webCamStreamer.StartStream( device, width, height, fps );
-    }
-
-
-    public void HandleWebCamStopStream( BinaryReader reader )
-    {
-        string device = reader.ReadCustomString();
-        webCamStreamer.StopStream( device );
-    }
-
-
+        
 //--------------------------------------------------------------------------HELPERS:
 
     private static bool hasFullMessage( Stream stream )

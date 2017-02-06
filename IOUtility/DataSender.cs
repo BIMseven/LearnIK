@@ -18,23 +18,33 @@ public class DataSender
     
 //---------------------------------------------------------------------CONSTRUCTORS:
 
+    public DataSender()
+    {
+
+    }
+
     public DataSender( MemoryStream stream )
     {
-        Stream = stream;
-        writer = new PacketWriter();
+        Init( stream );
     }    
 
 //--------------------------------------------------------------------------METHODS:
 
+    public void Init( MemoryStream stream )
+    {
+        Stream = stream;
+        writer = new PacketWriter();
+    }
+
     public void SendHello()
     {
         writer.BeginMessage( RemoteMessages.Hello );
-        writer.Write( "UnityRemote" );
+        writer.Write( "Howdy" );
         writer.Write( (uint)0 );
         writer.EndMessage( Stream );
     }
 
-    public void SendMessages()
+    public virtual void SendMessages()
     {
         //TODO;
         Debug.Log( "TODO! SendMessages!" );

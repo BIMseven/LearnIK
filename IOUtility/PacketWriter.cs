@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using MyUtility;
 using SDebug = System.Diagnostics.Debug;
 
 /// <summary>
@@ -55,7 +56,7 @@ public class PacketWriter
 
         // Write the message
         packet.Position = 0;
-        Utils.CopyToStream( packet, stream, buffer, (int)packet.Length );
+        IOUtility.CopyToStream( packet, stream, buffer, (int)packet.Length );
 
         message = RemoteMessages.Invalid;
     }

@@ -3,6 +3,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Profiling;
 using MyUtility;
+using System.Text;
 
 public enum EditorMessage
 {
@@ -32,9 +33,7 @@ public class DataReceiver
 
 	protected MemoryStream data = new MemoryStream();
 	protected byte[] buffer = new byte[4096];
-
-    public bool ReceivedHandshake;
-
+    
 //---------------------------------------------------------------------CONSTRUCTORS:
 
 //--------------------------------------------------------------------------METHODS:
@@ -42,36 +41,37 @@ public class DataReceiver
     public void AppendData( Stream stream, int available )
     {
         data.Position = data.Length;
-        Utils.CopyToStream( stream, data, buffer, available );
+        IOUtility.CopyToStream( stream, data, buffer, available );
     }
-
+    
     //TODO will be abstract
-    public void ProcessMessage( Stream stream )
+    public virtual void ProcessMessage( Stream stream )
     {
-        BinaryReader reader = new BinaryReader( data );
-        byte msg = reader.ReadByte();
-        uint size = reader.ReadUInt32();
-        Debug.Log( "ProcessMessage" );
-        if( Enum.IsDefined( typeof( EditorMessage ), (EditorMessage)msg ) )
-        {
-            switch( (EditorMessage)msg )
-            {
-                case EditorMessage.Hello: HandleHello( reader ); break;
-                //case EditorMessage.ScreenStream: HandleScreenStream( reader ); break;
-                //case EditorMessage.GyroSettings: HandleGyroSettings( reader ); break;
-                //case EditorMessage.ScreenOrientation: HandleScreenOrientation( reader ); break;
-                //case EditorMessage.WebCamStartStream: HandleWebCamStartStream( reader ); break;
-                //case EditorMessage.WebCamStopStream: HandleWebCamStopStream( reader ); break;
-            }
-        }
-        else
-        {
-            //Console.WriteLine("Unknown message: " + msg);
-            reader.ReadBytes( (int)size );
-        }
+        Debug.Log( " doing the stupid thing!" );
+        //BinaryReader reader = new BinaryReader( data );
+        //byte msg = reader.ReadByte();
+        //uint size = reader.ReadUInt32();
+        //Debug.Log( "ProcessMessage" );
+        //if( Enum.IsDefined( typeof( EditorMessage ), (EditorMessage)msg ) )
+        //{
+        //    switch( (EditorMessage)msg )
+        //    {
+        //        case EditorMessage.Hello: HandleHello( reader ); break;
+        //        //case EditorMessage.ScreenStream: HandleScreenStream( reader ); break;
+        //        //case EditorMessage.GyroSettings: HandleGyroSettings( reader ); break;
+        //        //case EditorMessage.ScreenOrientation: HandleScreenOrientation( reader ); break;
+        //        //case EditorMessage.WebCamStartStream: HandleWebCamStartStream( reader ); break;
+        //        //case EditorMessage.WebCamStopStream: HandleWebCamStopStream( reader ); break;
+        //    }
+        //}
+        //else
+        //{
+        //    //Console.WriteLine("Unknown message: " + msg);
+        //    reader.ReadBytes( (int)size );
+        //}
     }
 
-    public void ReceiveMessages()
+    public void ProcessMessages()
     {
         data.Position = 0;
 
@@ -95,8 +95,8 @@ public class DataReceiver
     /// <param name="reader"></param>
     public void HandleHello( BinaryReader reader )
     {
-        string magic = reader.ReadCustomString();
-        Debug.Log( "HANDLING HELLO! This should say Howdy: " + magic );
+        string magic = readCustomString( reader );
+         
         if( magic != "Howdy" )
         {
             throw new ApplicationException( "Handshake failed" );
@@ -105,7 +105,6 @@ public class DataReceiver
         {
             Utility.Print( LOG_TAG, "Received handshake" );
         }
-        ReceivedHandshake = true; //TODO tmep
 
         uint version = reader.ReadUInt32();
         if( version != 0 )
@@ -137,5 +136,10 @@ public class DataReceiver
         return result;
     }
 
-
+    protected static string readCustomString( BinaryReader reader )
+    {
+        int length = (int)reader.ReadUInt32();
+        byte[] bytes = reader.ReadBytes( length );
+        return Encoding.UTF8.GetString( bytes );
+    }
 }

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Text;
 
 namespace MyUtility
 {
-    public class IOUtility
+    public static class IOUtility
     {
         /// <summary>
         /// Copies bytesInSource bytes from source to destination
@@ -29,5 +30,7 @@ namespace MyUtility
         }
     }
 
+
+    
 }
 

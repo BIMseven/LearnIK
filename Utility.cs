@@ -30,6 +30,7 @@ namespace MyUtility
             return ObjColliderIsInside( collider, rayLength ) != null;
         }
 
+
         /// <summary>
         /// Enables or disables the renderers in this game object and all children
         /// </summary>

@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using SDebug = System.Diagnostics.Debug;
 
-public class DataSender
+public abstract class DataSender
 {
 //------------------------------------------------------------------------CONSTANTS:
 
@@ -44,11 +44,7 @@ public class DataSender
         writer.EndMessage( Stream );
     }
 
-    public virtual void SendMessages()
-    {
-        //TODO;
-        Debug.Log( "TODO! SendMessages!" );
-    }
+    public abstract void SendMessages();
 
     //public void SendOptions()
     //{

@@ -8,7 +8,8 @@ public enum RemoteMessages : byte
 
     Hello = 1,
     String = 2,
-    Options = 3,
+    Joints = 3,
+   
     SerializableObject = 4,
 
     Reserved = 255,

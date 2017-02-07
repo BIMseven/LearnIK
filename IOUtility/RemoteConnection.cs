@@ -69,11 +69,6 @@ public class RemoteConnection : MonoBehaviour
 
 //---------------------------------------------------------------------MONO METHODS:
 
-    void Awake()
-    {
-
-    }
-		
 	void Update()
     {
         // Listen for connections (If ListenForConnections() was called)
@@ -82,14 +77,15 @@ public class RemoteConnection : MonoBehaviour
             // TODO BeginAcceptIncoming
             if( ( client = acceptIncoming( Socket ) ) != null )
             {
-                Socket = client.Client;                
+                Socket = client.Client;
+                receive( Socket );
             }
         }
         if( ! IsConnected )   return;
         try
         {
-            sendMessages();
-            receiveMessages();
+            if( ! isServer )   sendMessages();
+            else               receiveMessages();
         }
         catch( Exception exception )
         {
@@ -239,7 +235,6 @@ public class RemoteConnection : MonoBehaviour
 
     private void receiveCallback( IAsyncResult ar )
     {
-        print( "Received callback!" );
         try
         {
             // Retrieve the state object and the client socket   
@@ -252,12 +247,7 @@ public class RemoteConnection : MonoBehaviour
 
             if( bytesRead > 0 )
             {
-                print( "read bytes@!" );
-
-                // There might be more data, so store the data received so far.  
-                //state.sb.Append( Encoding.ASCII.GetString( state.buffer, 0, bytesRead ) );
-                //print( state.sb.ToString() );
-
+                //print( "read " + bytesRead + " bytes" );
                 // TODO can we just do a blocking write to the receiver stream?
                 dataReceiver.AppendData( new MemoryStream( state.buffer ), bytesRead );
                 
@@ -315,29 +305,29 @@ public class RemoteConnection : MonoBehaviour
             // Retrieve the socket from the state object.  
             Socket client = (Socket)ar.AsyncState;
 
-            print( "Finishing sending" );
             // Complete sending the data to the remote device.  
             int bytesSent = client.EndSend( ar );
-            //messageText.text = "Finished sending!";
-            // Signal that all bytes have been sent.  
-            //sendDone.Set();  
         }
         catch( Exception e )
         {
-            //messageText.text = "Failed to send :(";
-            Console.WriteLine( e.ToString() );
+            Debug.LogError( e.ToString() );
         }
     }
 
     private void sendMessages()
     {
-        
+        //dataSender.SendMessages();
+        dataSender.SendHello();
+
+        MemoryStream dataStream = dataSender.Stream;
+        if( dataStream.CanRead )
+        {
+            send( Socket, dataSender.Stream.ToArray() );
+        }
     }
 
     public void sayHello()
     {
-        //send( Socket, "Hello!" );
-        
         dataSender.SendHello();
         MemoryStream dataStream = dataSender.Stream;
         if( dataStream.CanRead )

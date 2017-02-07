@@ -5,24 +5,7 @@ using UnityEngine.Profiling;
 using MyUtility;
 using System.Text;
 
-public enum EditorMessage
-{
-	Invalid = 0,
-
-	Hello = 1,
-	GyroSettings = 2,
-	ScreenOrientation = 3,
-
-	ScreenStream = 10,
-
-	WebCamStartStream = 20,
-	WebCamStopStream = 21,
-
-	Reserved = 255,
-};
-
-
-public class DataReceiver
+public abstract class DataReceiver
 {
 //------------------------------------------------------------------------CONSTANTS:
 
@@ -43,41 +26,19 @@ public class DataReceiver
         data.Position = data.Length;
         IOUtility.CopyToStream( stream, data, buffer, available );
     }
-    
+
     //TODO will be abstract
-    public virtual void ProcessMessage( Stream stream )
-    {
-        Debug.Log( " doing the stupid thing!" );
-        //BinaryReader reader = new BinaryReader( data );
-        //byte msg = reader.ReadByte();
-        //uint size = reader.ReadUInt32();
-        //Debug.Log( "ProcessMessage" );
-        //if( Enum.IsDefined( typeof( EditorMessage ), (EditorMessage)msg ) )
-        //{
-        //    switch( (EditorMessage)msg )
-        //    {
-        //        case EditorMessage.Hello: HandleHello( reader ); break;
-        //        //case EditorMessage.ScreenStream: HandleScreenStream( reader ); break;
-        //        //case EditorMessage.GyroSettings: HandleGyroSettings( reader ); break;
-        //        //case EditorMessage.ScreenOrientation: HandleScreenOrientation( reader ); break;
-        //        //case EditorMessage.WebCamStartStream: HandleWebCamStartStream( reader ); break;
-        //        //case EditorMessage.WebCamStopStream: HandleWebCamStopStream( reader ); break;
-        //    }
-        //}
-        //else
-        //{
-        //    //Console.WriteLine("Unknown message: " + msg);
-        //    reader.ReadBytes( (int)size );
-        //}
-    }
+    public abstract void ProcessMessage( Stream stream );
 
     public void ProcessMessages()
     {
         data.Position = 0;
 
+        MonoBehaviour.print( "ProcessMessages" );
         while( hasFullMessage( data ) )
         {
-            Utility.Print( LOG_TAG, "FULL MESSAGE!" );
+
+            MonoBehaviour.print( "Full message!" );
             ProcessMessage( data );
         }
 
@@ -95,6 +56,7 @@ public class DataReceiver
     /// <param name="reader"></param>
     public void HandleHello( BinaryReader reader )
     {
+        MonoBehaviour.print( "HANDSHAKING!!!!!!" );
         string magic = readCustomString( reader );
          
         if( magic != "Howdy" )

@@ -23,7 +23,7 @@ namespace MyUtility
 
         public bool PlayOnAwake;
 
-        public WebCamTexture WebCamTexture { get; private set; }
+        private WebCamTexture webCamTexture;
 
     //---------------------------------------------------------------------MONO METHODS:
 
@@ -38,9 +38,10 @@ namespace MyUtility
                 MyUtility.Utility.PrintError( LOG_TAG,
                                               "Cannot find RawImage for WebCamera" );
             }
-            WebCamTexture = new WebCamTexture();
-            RawImage.texture = WebCamTexture;
-            RawImage.material.mainTexture = WebCamTexture;
+            webCamTexture = new WebCamTexture();
+            RawImage.texture = webCamTexture;
+            RawImage.material.mainTexture = webCamTexture;
+            
             print( "Device: " + SystemInfo.deviceName );
             WebCamDevice[] devices = WebCamTexture.devices;
             print( "" + devices.Length + " devices: " );
@@ -48,8 +49,7 @@ namespace MyUtility
             {
                 print( "name: " + device.name );
             }
-
-            //print( "Device: " + SystemInfo.deviceName )
+            
 
             if( PlayOnAwake ) Play();
         }
@@ -58,7 +58,7 @@ namespace MyUtility
 
         public void Play()
         {
-            WebCamTexture.Play();
+            webCamTexture.Play();
         }
 
     //--------------------------------------------------------------------------HELPERS:

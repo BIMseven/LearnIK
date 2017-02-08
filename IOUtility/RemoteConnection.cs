@@ -318,6 +318,7 @@ public class RemoteConnection : MonoBehaviour
 
     private void sendMessages()
     {
+        // Write messages to stream
         dataSender.SendMessages();
         //dataSender.SendHello();
 
@@ -326,16 +327,20 @@ public class RemoteConnection : MonoBehaviour
         {
             send( Socket, dataSender.Stream.ToArray() );
         }
+        dataSender.Stream.Flush();
+        dataSender.Stream.Position = 0;
     }
 
     public void sayHello()
     {
-        dataSender.SendHello();
-        MemoryStream dataStream = dataSender.Stream;
-        if( dataStream.CanRead )
-        { 
-            send( Socket, dataSender.Stream.ToArray() );
-        }
+        print( "saying hello" );
+        sendMessages();
+        //dataSender.SendHello();
+        //MemoryStream dataStream = dataSender.Stream;
+        //if( dataStream.CanRead )
+        //{ 
+        //    send( Socket, dataSender.Stream.ToArray() );
+        //}
     }
 
     public void receiveHello()

@@ -46,7 +46,7 @@ public class PacketWriter
     {
         SDebug.Assert( message != RemoteMessages.Invalid );
 
-        // Write message header
+        // Write message header (one byte for type of message, four bytes for size)
         stream.WriteByte( (byte)message );
         uint len = (uint)packet.Length;
         stream.WriteByte( (byte)( len & 0xFF ) );

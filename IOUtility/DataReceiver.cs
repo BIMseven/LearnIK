@@ -30,15 +30,14 @@ public abstract class DataReceiver
     //TODO will be abstract
     public abstract void ProcessMessage( Stream stream );
 
-    public void ProcessMessages()
+    public void ProcessMessages()       
     {
         data.Position = 0;
 
-        MonoBehaviour.print( "ProcessMessages" );
+        //MonoBehaviour.print( "ProcessMessages" );
         while( hasFullMessage( data ) )
         {
-
-            MonoBehaviour.print( "Full message!" );
+            //MonoBehaviour.print( "Full message!" );
             ProcessMessage( data );
         }
 
@@ -81,7 +80,9 @@ public abstract class DataReceiver
     {
         BinaryReader reader = new BinaryReader( stream );
         long oldPosition = stream.Position;
+
         bool result = true;
+        //bool headerAndSizePresent = stream.Length - stream.Position >= 5;
 
         // 1 byte for header, 4 bytes for length of packet?
         if( stream.Length - stream.Position < 5 )     result = false;

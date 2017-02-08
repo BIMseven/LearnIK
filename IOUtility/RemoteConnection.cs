@@ -63,7 +63,9 @@ public class RemoteConnection : MonoBehaviour
     private DataSender dataSender;
     private DataReceiver dataReceiver;
 
-    private bool isServer;
+    protected bool isServer;
+
+    public bool IsListening, IsSending;
 
     public GameObject ThingToPassOverNetwork;
 
@@ -84,8 +86,8 @@ public class RemoteConnection : MonoBehaviour
         if( ! IsConnected )   return;
         try
         {
-            if( ! isServer )   sendMessages();
-            else               receiveMessages();
+            if( IsSending)     sendMessages();
+            if( IsListening )  receiveMessages();
         }
         catch( Exception exception )
         {
@@ -316,8 +318,8 @@ public class RemoteConnection : MonoBehaviour
 
     private void sendMessages()
     {
-        //dataSender.SendMessages();
-        dataSender.SendHello();
+        dataSender.SendMessages();
+        //dataSender.SendHello();
 
         MemoryStream dataStream = dataSender.Stream;
         if( dataStream.CanRead )

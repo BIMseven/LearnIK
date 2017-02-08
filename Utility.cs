@@ -157,7 +157,7 @@ namespace MyUtility
         /// <param name="message"></param>
         public static void Print( string tag, string message )
         {
-            Debug.Log( tag + " --- " + message );
+            MonoBehaviour.print( tag + " --- " + message );
         }
 
         /// <summary>

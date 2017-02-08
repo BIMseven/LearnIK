@@ -40,34 +40,33 @@ public class RemoteConnection : MonoBehaviour
 
 //---------------------------------------------------------------------------FIELDS:
 	
-    //public bool IsClient;
-    public string IP = "127.0.0.1";
-    public int Port = 38300;		
     public Socket Socket { get; private set; }
     
     public bool IsConnected
     {
         get
         {
-            return Socket != null && Socket.Connected;
+            return Socket != null  &&  Socket.Connected;
         }
     }
+
+    public bool IsListening, IsSending;
 
     private MemoryStream readStream;
     private MemoryStream writeStream;
     private byte[] readBuffer;
-    private byte[] copyBuffer;
+    //private byte[] copyBuffer;
 
     private TcpClient client;
+
+    private string ip;
+    private int port;
 
     private DataSender dataSender;
     private DataReceiver dataReceiver;
 
     protected bool isServer;
 
-    public bool IsListening, IsSending;
-
-    public GameObject ThingToPassOverNetwork;
 
 //---------------------------------------------------------------------MONO METHODS:
 
@@ -83,7 +82,9 @@ public class RemoteConnection : MonoBehaviour
                 receive( Socket );
             }
         }
+
         if( ! IsConnected )   return;
+
         try
         {
             if( IsSending)     sendMessages();
@@ -100,9 +101,11 @@ public class RemoteConnection : MonoBehaviour
     /// <summary>
     /// Connect to a server
     /// </summary>
-    public void ConnectToServer()
+    public void ConnectToServer( string ip, int port )
     {
-        Socket = createConnectingSocket( IP, Port );
+        this.ip = ip;
+        this.port = port;
+        Socket = createConnectingSocket( ip, port );
     }
 
     public void Init( DataSender sender, DataReceiver receiver )
@@ -113,9 +116,7 @@ public class RemoteConnection : MonoBehaviour
         readStream.SetLength( 0 );
 
         writeStream = new MemoryStream( STREAM_BUFFER_SIZE );
-
-        copyBuffer = new byte[STREAM_BUFFER_SIZE];
-
+        
         dataSender = sender;
         dataReceiver = receiver;
 
@@ -125,9 +126,10 @@ public class RemoteConnection : MonoBehaviour
     /// <summary>
     /// Listen for connections from client (this will be a server)
     /// </summary>
-    public void ListenForConnections()
+    public void ListenForConnections( int port )
     {
-        Socket = createListeningSocket( Port );
+        this.port = port;
+        Socket = createListeningSocket( port );
     }
 
 //--------------------------------------------------------------------------HELPERS:
@@ -140,7 +142,6 @@ public class RemoteConnection : MonoBehaviour
         {
             Socket tcpSocket = listeningSocket.Accept();
             tcpSocket.Blocking = true;
-            print( "accepted incoming!!!!" ); //TODO temp
             return new TcpClient { Client = tcpSocket };
         }
         catch( SocketException ex )
@@ -180,11 +181,10 @@ public class RemoteConnection : MonoBehaviour
     // Creaates streaming TCP socket listening for connections
     private Socket createListeningSocket( int port )
     {
+        if( VERBOSE )   Utility.Print( LOG_TAG, "Listening on port " + port );
+        
         isServer = true;
-        if( VERBOSE )
-        {
-            Utility.Print( LOG_TAG, "Creating socket on port " + port );
-        }
+
         Socket socket = new Socket( AddressFamily.InterNetwork,
                                     SocketType.Stream,
                                     ProtocolType.Tcp );
@@ -199,19 +199,19 @@ public class RemoteConnection : MonoBehaviour
 
         socket.Blocking = false;
         socket.Bind( endPoint );
-
-        // Listen for incoming connection attempts
-        socket.Listen( BACKLOG ); //TODO asynchronous?
+        socket.Listen( BACKLOG );
 
         return socket;
     }
     
     private void onConnected()
     {
-        print( "Socket connected: " + Socket.Connected );
-        //TODO handshake
+        if( VERBOSE )
+        {
+            Utility.Print( LOG_TAG, "Socket Connected" );
+        }
     }
-    
+
     // Receive stuff being send through socket
     private void receive( Socket socket )
     {
@@ -263,7 +263,7 @@ public class RemoteConnection : MonoBehaviour
             }
             else
             {
-                print( "received NOTHIGN! " );
+                print( "received nothing! " );
             }
         }
         catch( Exception e )
@@ -320,8 +320,8 @@ public class RemoteConnection : MonoBehaviour
     {
         // Write messages to stream
         dataSender.SendMessages();
-        //dataSender.SendHello();
 
+        // Send contents of stream to socket
         MemoryStream dataStream = dataSender.Stream;
         if( dataStream.CanRead )
         {
@@ -329,22 +329,5 @@ public class RemoteConnection : MonoBehaviour
         }
         dataSender.Stream.Flush();
         dataSender.Stream.Position = 0;
-    }
-
-    public void sayHello()
-    {
-        print( "saying hello" );
-        sendMessages();
-        //dataSender.SendHello();
-        //MemoryStream dataStream = dataSender.Stream;
-        //if( dataStream.CanRead )
-        //{ 
-        //    send( Socket, dataSender.Stream.ToArray() );
-        //}
-    }
-
-    public void receiveHello()
-    {
-        receive( Socket );
-    }
+    }    
 }

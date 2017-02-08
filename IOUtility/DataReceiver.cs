@@ -26,21 +26,17 @@ public abstract class DataReceiver
         data.Position = data.Length;
         IOUtility.CopyToStream( stream, data, buffer, available );
     }
-
-    //TODO will be abstract
+    
     public abstract void ProcessMessage( Stream stream );
 
     public void ProcessMessages()       
     {
         data.Position = 0;
-
-        //MonoBehaviour.print( "ProcessMessages" );
+        // Process all full messages
         while( hasFullMessage( data ) )
         {
-            //MonoBehaviour.print( "Full message!" );
             ProcessMessage( data );
         }
-
         // Copy leftover bytes
         long left = data.Length - data.Position;
         byte[] buffer = data.GetBuffer();
@@ -55,7 +51,6 @@ public abstract class DataReceiver
     /// <param name="reader"></param>
     public void HandleHello( BinaryReader reader )
     {
-        MonoBehaviour.print( "HANDSHAKING!!!!!!" );
         string magic = readCustomString( reader );
          
         if( magic != "Howdy" )
@@ -66,7 +61,6 @@ public abstract class DataReceiver
         {
             Utility.Print( LOG_TAG, "Received handshake" );
         }
-
         uint version = reader.ReadUInt32();
         if( version != 0 )
         {
@@ -78,25 +72,27 @@ public abstract class DataReceiver
 
     private static bool hasFullMessage( Stream stream )
     {
+        bool hasFullMessage;
         BinaryReader reader = new BinaryReader( stream );
         long oldPosition = stream.Position;
 
-        bool result = true;
-        //bool headerAndSizePresent = stream.Length - stream.Position >= 5;
-
-        // 1 byte for header, 4 bytes for length of packet?
-        if( stream.Length - stream.Position < 5 )     result = false;
-
-        if( result )
+        // One byte for header, four bytes for message size
+        bool headerAndSizePresent = stream.Length - stream.Position >= 5;
+        
+        // If header and message size present, compare message size to stream length
+        if( headerAndSizePresent )
         {
             reader.ReadByte();
             uint size = reader.ReadUInt32();
-            if( stream.Length - stream.Position < size )
-                result = false;
+            hasFullMessage = stream.Length - stream.Position >= size;                
         }
-
+        else
+        {
+            hasFullMessage = false;
+        }
+        // Return stream to previous position
         stream.Position = oldPosition;
-        return result;
+        return hasFullMessage;
     }
 
     protected static string readCustomString( BinaryReader reader )

@@ -30,6 +30,7 @@ namespace MyUtility
             return ObjColliderIsInside( collider, rayLength ) != null;
         }
 
+
         /// <summary>
         /// Enables or disables the renderers in this game object and all children
         /// </summary>
@@ -156,7 +157,7 @@ namespace MyUtility
         /// <param name="message"></param>
         public static void Print( string tag, string message )
         {
-            Debug.Log( tag + " --- " + message );
+            MonoBehaviour.print( tag + " --- " + message );
         }
 
         /// <summary>

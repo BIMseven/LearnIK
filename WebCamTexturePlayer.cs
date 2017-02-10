@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using MyUtility;
 
 /// <summary>
-/// Streams web cam onto RawImage
+/// Streams web cam onto RawImage.
 /// </summary>
 
 namespace MyUtility
@@ -21,9 +21,14 @@ namespace MyUtility
 
         public RawImage RawImage;
 
-        public bool PlayOnAwake;
+        public bool PlayOnAwake = true;
 
-        private WebCamTexture webCamTexture;
+        // If RawImage is setting a Material attached to a plane, we can scale it to 
+        // fill the camera's view frustum
+        public bool ScalePlaneToFillScreen;
+        public Camera ActiveCamera;
+        
+        public WebCamTexture WebCamTexture { get; private set; }
 
     //---------------------------------------------------------------------MONO METHODS:
 
@@ -35,33 +40,45 @@ namespace MyUtility
             }
             if( RawImage == null )
             {
-                MyUtility.Utility.PrintError( LOG_TAG,
-                                              "Cannot find RawImage for WebCamera" );
+                Utility.PrintError( LOG_TAG, "Cannot find RawImage for WebCamera" );
             }
-            webCamTexture = new WebCamTexture();
-            RawImage.texture = webCamTexture;
-            RawImage.material.mainTexture = webCamTexture;
-            
-            print( "Device: " + SystemInfo.deviceName );
-            WebCamDevice[] devices = WebCamTexture.devices;
-            print( "" + devices.Length + " devices: " );
-            foreach( WebCamDevice device in devices )
-            {
-                print( "name: " + device.name );
-            }
-            
+            WebCamTexture = new WebCamTexture();
+            RawImage.texture = WebCamTexture;
+            RawImage.material.mainTexture = WebCamTexture;
 
-            if( PlayOnAwake ) Play();
+            if( PlayOnAwake )  Play();
+
+            if( ScalePlaneToFillScreen )   scalePlane();
         }
 
     //--------------------------------------------------------------------------METHODS:
 
         public void Play()
         {
-            webCamTexture.Play();
+            WebCamTexture.Play();
         }
 
     //--------------------------------------------------------------------------HELPERS:
+    
+        // Assumes landscape plane
+        private void scalePlane()
+        {
+            //RectTransform rect = GetComponent<RectTransform>();
+            Transform rect = transform;
+            Vector3 toCamera = ActiveCamera.transform.position - rect.position;
+            float distance = toCamera.magnitude;
+            float frustumHeight = 2.0f * distance * Mathf.Tan( ActiveCamera.fieldOfView * 
+                                                               0.5f * Mathf.Deg2Rad );
+            float frustumWidth = frustumHeight * ( 1.0f / ActiveCamera.aspect );
 
+            Utility.Print( LOG_TAG, "SETTING HEIGHT AND WIDTH!" );
+            Utility.Print( LOG_TAG, "Width: " + frustumWidth );
+            Utility.Print( LOG_TAG, "Height: " + frustumHeight );
+
+            // Planes are by default 10m x 10m
+            rect.localScale = new Vector3( frustumHeight / 10.0f,
+                                           1,
+                                           frustumWidth / 10.0f );
+        }
     }
 }

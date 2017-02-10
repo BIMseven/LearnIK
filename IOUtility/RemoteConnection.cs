@@ -88,7 +88,6 @@ public class RemoteConnection : MonoBehaviour
         try
         {
             if( IsSending)     sendMessages();
-            if( IsListening )  receiveMessages();
         }
         catch( Exception exception )
         {
@@ -249,10 +248,11 @@ public class RemoteConnection : MonoBehaviour
 
             if( bytesRead > 0 )
             {
-                //print( "read " + bytesRead + " bytes" );
-                // TODO can we just do a blocking write to the receiver stream?
                 dataReceiver.AppendData( new MemoryStream( state.buffer ), bytesRead );
-                
+
+                // We may have received a full message
+                dataReceiver.ProcessMessages();
+
                 // Get the rest of the data.  
                 socket.BeginReceive( state.buffer, 
                                      0, 
@@ -271,15 +271,7 @@ public class RemoteConnection : MonoBehaviour
             Console.WriteLine( e.ToString() );
         }
     }
-
-    private void receiveMessages()
-    {
-        if( dataReceiver != null )
-        {
-            dataReceiver.ProcessMessages();
-        }
-    }
-
+    
     private void send( Socket socket, String data )
     {
         // Convert the string data to byte data using ASCII encoding.  

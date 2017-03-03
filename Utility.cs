@@ -88,6 +88,47 @@ namespace MyUtility
             return Enum.GetValues( typeof( T ) ).Cast<T>();
         }
 
+        /// <summary>
+        /// Returns the middle extent of bounding box of given gameObject
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <returns></returns>
+        public static float GetMidExtent( GameObject gameObject )
+        {
+            Vector3 extents = GetBounds( gameObject ).extents;
+            if( extents.x > extents.y && extents.x < extents.z )
+            {
+                return extents.x;
+            }
+            if( extents.x < extents.y && extents.x > extents.z )
+            {
+                return extents.x;
+            }
+            if( extents.y > extents.x && extents.y < extents.z )
+            {
+                return extents.y;
+            }
+            if( extents.y < extents.x && extents.y > extents.z )
+            {
+                return extents.y;
+            }
+            return extents.z;
+        }
+
+        /// <summary>
+        /// Returns the smallest extent of bounding box of given gameObject
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <returns></returns>
+        public static float GetMinExtent( GameObject gameObject )
+        {
+            Bounds bounds = GetBounds( gameObject );
+            float minExtent = bounds.extents.x;
+            minExtent = Mathf.Min( minExtent, bounds.extents.y );
+            minExtent = Mathf.Min( minExtent, bounds.extents.z );
+            return minExtent;
+        }
+
         // Warning: Assumes you have the key saved
         public static bool GetPlayerPrefBool( string tag )
         {

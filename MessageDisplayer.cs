@@ -89,17 +89,7 @@ public class MessageDisplayer : Singleton<MessageDisplayer>
 	{
 		queuedMessages.Add( message );
 	}
-
-//	public void message( string text )
-//	{
-//		message( new Message( text, defaultFont,  float.MaxValue ) );
-//	}
-//
-//	public void message( string text, float secondsToDisplay )
-//	{
-//		message( new Message( text, defaultFont, DEFAULT_DISPLAY_TIME ) );
-//	}
-
+    
 //--------------------------------------------------------------------------HELPERS:
 
 	private void fullscreenAndCenter( Text text )

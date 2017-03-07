@@ -35,13 +35,24 @@ public class Toaster : MonoBehaviour
 //--------------------------------------------------------------------------METHODS:
 
     /// <summary>
-    /// Creates a 3D text with given message at this Toaster's position.  This 
-    /// text will persist until DestoryDisplayedText is called
+    /// Creates a 3D text with given message at this Toaster's position with this
+    /// Toaster's rotation.  This text will persist until DestoryDisplayedText is
+    /// called
     /// </summary>
     /// <param name="message"></param>
     public void CreateText( string message )
     {
-        CreateText( message, transform.position );
+        CreateText( message, transform.position, transform.rotation );
+    }
+
+    /// <summary>
+    /// Creates a 3D text with given message at this Toaster's position.  This 
+    /// text will persist until DestoryDisplayedText is called
+    /// </summary>
+    /// <param name="message"></param>
+    public void CreateText( string message, Vector3 location )
+    {
+        CreateText( message, location, transform.rotation );
     }
 
     /// <summary>
@@ -50,12 +61,14 @@ public class Toaster : MonoBehaviour
     /// </summary>
     /// <param name="message"></param>
     /// <param name="location"></param>
-    public void CreateText( string message, Vector3 location )
+    public void CreateText( string message, Vector3 location, Quaternion rotation )
     {
+        DestroyDisplayedText();
         toastDisplayed = GameObject.Instantiate( TextPrefab );
 
         toastDisplayed.transform.localScale = Vector3.one * ToastSize * METERS_TO_SCALE;
         toastDisplayed.transform.position = location;
+        toastDisplayed.transform.rotation = rotation;
         toastDisplayed.GetComponent<TextMesh>().text = message;
     }
 
@@ -78,9 +91,12 @@ public class Toaster : MonoBehaviour
     /// <param name="message"></param>
     /// <param name="duration"></param>
     /// <param name="location"></param>
-    public void MakeToast( string message, float duration, Vector3 location )
+    public void MakeToast( string message, 
+                           float duration, 
+                           Vector3 location,
+                           Quaternion rotation )
     {
-        CreateText( message, location );
+        CreateText( message, location, rotation );
 
         checkToDestroyToast = true;
         timeDisplayed = Time.timeSinceLevelLoad;
@@ -95,7 +111,7 @@ public class Toaster : MonoBehaviour
     /// <param name="duration"></param>
     public void MakeToast( string message, float duration = DEFAULT_DISPLAY_TIME )
     {
-        MakeToast( message, duration, transform.position );
+        MakeToast( message, duration, transform.position, transform.rotation );
     }
     
 

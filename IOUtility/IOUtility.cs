@@ -9,6 +9,33 @@ namespace MyUtility
     public static class IOUtility
     {
         /// <summary>
+        /// Appends the given text to the file at given path if it exists.  If the
+        /// file does not exist, it will be created first
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="text"></param>
+        public static void AppendToFile( string path, string text )
+        {
+            // This text is added only once to the file.
+            if( ! File.Exists( path ) )
+            {
+                // Create a file to write to.  Use "using" becuase we're accessing
+                // unmanaged resources with a managed, IDisposable object
+                using( StreamWriter writer = File.CreateText( path ) )
+                {
+                    writer.Write( text );
+                }
+            }
+            else
+            {
+                using( StreamWriter writer = File.AppendText( path ) )
+                {
+                    writer.Write( text );
+                }
+            }
+        }
+
+        /// <summary>
         /// Copies bytesInSource bytes from source to destination
         /// </summary>
         /// <param name="source"></param>

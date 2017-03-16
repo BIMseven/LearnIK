@@ -30,6 +30,32 @@ namespace MyUtility
             return ObjColliderIsInside( collider, rayLength ) != null;
         }
 
+        public static Bounds CombineBounds( Bounds[] allBounds )
+        {
+            Bounds bounds = new Bounds( Vector3.zero, Vector3.zero );
+
+            float maxX = float.MinValue;
+            float maxY = float.MinValue;
+            float maxZ = float.MinValue;
+
+            float minX = float.MaxValue;
+            float minY = float.MaxValue;
+            float minZ = float.MaxValue;
+
+            foreach( Bounds objBounds in allBounds )
+            {
+                maxX = Mathf.Max( maxX, objBounds.max.x );
+                maxY = Mathf.Max( maxY, objBounds.max.y );
+                maxZ = Mathf.Max( maxZ, objBounds.max.z );
+
+                minX = Mathf.Min( minX, objBounds.min.x );
+                minY = Mathf.Min( minY, objBounds.min.y );
+                minZ = Mathf.Min( minZ, objBounds.min.z );
+            }
+            bounds.SetMinMax( new Vector3( minX, minY, minZ ),
+                              new Vector3( maxX, maxY, maxZ ) );
+            return bounds;
+        }
 
         /// <summary>
         /// Enables or disables the renderers in this game object and all children
@@ -56,28 +82,25 @@ namespace MyUtility
         }
 
         /// <summary>
-        /// Returns the bounds of given GameObject and its children
+        /// Returns the bounds of given GameObject and its children's Renderers
         /// </summary>    
         public static Bounds GetBounds( GameObject gameObject )
         {
             Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+            Bounds[] allBounds = renderers.Select( x => x.bounds ).ToArray();
+            return CombineBounds( allBounds );
+        }
 
-            Bounds bounds = new Bounds( gameObject.transform.position, Vector3.zero );
-
-            foreach( Renderer renderer in renderers )
-            {
-                float maxX = Mathf.Max( renderer.bounds.max.x, bounds.max.x );
-                float maxY = Mathf.Max( renderer.bounds.max.y, bounds.max.y );
-                float maxZ = Mathf.Max( renderer.bounds.max.z, bounds.max.z );
-
-                float minX = Mathf.Min( renderer.bounds.min.x, bounds.min.x );
-                float minY = Mathf.Min( renderer.bounds.min.y, bounds.min.y );
-                float minZ = Mathf.Min( renderer.bounds.min.z, bounds.min.z );
-
-                bounds.SetMinMax( new Vector3( minX, minY, minZ ),
-                                  new Vector3( maxX, maxY, maxZ ) );
-            }
-            return bounds;
+        /// <summary>
+        /// Returns the bounds of a given GameObject and it's children's Colliders
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <returns></returns>
+        public static Bounds GetBoundsFromColliders( GameObject gameObject )
+        {
+            Collider[] colliders = gameObject.GetComponentsInChildren<Collider>();
+            Bounds[] allBounds = colliders.Select( x => x.bounds ).ToArray();
+            return CombineBounds( allBounds );
         }
 
         /// <summary>
@@ -281,5 +304,7 @@ namespace MyUtility
 
         return hitColliders;
     }
-}
+
+        
+    }
 }

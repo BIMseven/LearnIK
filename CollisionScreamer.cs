@@ -7,7 +7,6 @@ public class CollisionScreamer : MonoBehaviour
 //------------------------------------------------------------------------CONSTANTS:
 
 	private const string LOG_TAG = "CollisionScreamer";
-	private const bool VERBOSE = true;
 
 //---------------------------------------------------------------------------FIELDS:
 	
@@ -22,6 +21,16 @@ public class CollisionScreamer : MonoBehaviour
 	void OnTriggerEnter( Collider collider )
 	{
 		Utility.Print( LOG_TAG, "trigger with " + collider.gameObject.tag );
+	}
+    
+	void OnCollisionExit( Collision collision )
+	{
+		Utility.Print( LOG_TAG, "exit collision with " + collision.gameObject.tag );
+	}
+
+	void OnTriggerExit( Collider collider )
+	{
+		Utility.Print( LOG_TAG, "exit trigger with " + collider.gameObject.tag );
 	}
 
 //--------------------------------------------------------------------------METHODS:

@@ -225,6 +225,12 @@ public class MyMath : MonoBehaviour {
         return RandomVectorInRange( bounds.min, bounds.max );
     }
 
+    public static Vector2 RandomVectorInRange( Vector2 min, Vector2 max )
+    {
+        return new Vector2( UnityEngine.Random.Range( min.x, max.x ),
+                            UnityEngine.Random.Range( min.y, max.y ) );
+    }
+
     public static Vector3 RandomVectorInRange( Vector3 min, Vector3 max )
     {
         return new Vector3( UnityEngine.Random.Range( min.x, max.x ),

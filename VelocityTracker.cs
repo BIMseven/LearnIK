@@ -11,11 +11,14 @@ public class VelocityTracker : MonoBehaviour
 	public bool VERBOSE = false;
     
     // 0 is conservative, 1 is confident in position
-    [Range( 0, 1f )]
-    private const float SMOOTHING_WEIGHT = 0.2f;
+    
+    private const float DEFAULT_SMOOTHING_WEIGHT = 0.2f;
 
 //---------------------------------------------------------------------------FIELDS:
 	
+    [Range( 0, 1f )]
+    public float SmoothingWeight = DEFAULT_SMOOTHING_WEIGHT;
+
     public Vector3 RawVelocity
     {
         get
@@ -38,7 +41,7 @@ public class VelocityTracker : MonoBehaviour
 
 	void Start() 
 	{
-        velocitySmoother = new VelocityFilter( SMOOTHING_WEIGHT );
+        velocitySmoother = new VelocityFilter( SmoothingWeight );
     }
 		
 	void FixedUpdate()

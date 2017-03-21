@@ -26,16 +26,13 @@ public class VelocityFilter
 
     public Vector3 RawVelocity { get; private set; }
     public Vector3 SmoothedVelocity { get; private set; }
-
-    // Position if SmoothedVelocity were applied instead of given velocity
-    public Vector3 SmoothedPosition { get; private set; }
-
+        
     // 0 puts more weight towards smoothed value, 1 puts more weight/trust into 
     // the raw value
     [Range( 0, 1.0f )]
     public float SmoothingWeight;
 
-    private Vector3 previousPosition;
+    public Vector3 PreviousPosition;
 
     // Helper for Update, compared against TRANSFORM_UPDATES_PER_VELOCITY_UPDATES
     private uint timesPositionEqualedPreviousPosition;
@@ -67,17 +64,15 @@ public class VelocityFilter
             return;
         }
         // Get a raw reading of velocity
-        RawVelocity = ( position - previousPosition ) / deltaT;
+        RawVelocity = ( position - PreviousPosition ) / deltaT;
         // Set the current velocity to be a combination of raw reading and the 
         // smoothed reading from previous frame.
         SmoothedVelocity = Vector3.Lerp( SmoothedVelocity, 
                                          RawVelocity, 
                                          SmoothingWeight );
-
-        SmoothedPosition = previousPosition + SmoothedVelocity;
-        
+                    
 		// We will need this for the next update
-		previousPosition = position;	
+		PreviousPosition = position;	
 	}
 
 //--------------------------------------------------------------------------HELPERS:
@@ -87,7 +82,7 @@ public class VelocityFilter
         // Sometimes user feeds the same position.  We need to count how many times
         // position was equal to previousPosition because we might actually be 
         // stopped, but we don't want a bum value to affect our speed if it isn't
-        if( position == previousPosition &&
+        if( position == PreviousPosition &&
             ++timesPositionEqualedPreviousPosition < TRANSFORM_UPDATES_PER_VELOCITY_UPDATES )
         {
             return true;

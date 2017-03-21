@@ -57,6 +57,16 @@ namespace MyUtility
         }
 
         /// <summary>
+        /// Returns true if the given file exists 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static bool Exists( string path )
+        {
+            return File.Exists( path );
+        }
+
+        /// <summary>
         /// Returns the FileInfo of all files in given directory with given extension
         /// </summary>
         /// <param name="localPath">Path of directory, such as 'Assets/Resources/Blarg'</param>

@@ -28,7 +28,7 @@ namespace MyUtility
 
 //---------------------------------------------------------------------MONO METHODS:
 
-        void Awake()
+        void Start()
         {
             mySounds = new Dictionary<string, Sound>();
 
@@ -55,13 +55,22 @@ namespace MyUtility
 
 //--------------------------------------------------------------------------METHODS:
 
+        /// <summary>
+        /// Plays the sound with the given name at the main camera's location
+        /// </summary>
+        /// <param name="soundName"></param>
+        public void PlaySound( string soundName )
+        {
+            PlaySound( soundName, Camera.main.transform.position );
+        }
+
         // Plays the sound with the given name if it isn't already playing
         public void PlaySound( string soundName, Vector3 location )
         {
             Sound sound;
             if( mySounds.TryGetValue( soundName, out sound ) )
             {
-                if( !sound.isPlaying() )
+                if( ! sound.isPlaying() )
                 {
                     sound.play( location );
                 }

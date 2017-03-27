@@ -9,13 +9,13 @@ using System.Runtime.CompilerServices;
 
 namespace MyUtility
 {
-    public class Utility : MonoBehaviour
+    public static class Utility
     {
-    //------------------------------------------------------------------------CONSTANTS:
+//------------------------------------------------------------------------CONSTANTS:
 
         public static int TAG_SPACE = 20;
 
-    //--------------------------------------------------------------------------METHODS:
+//--------------------------------------------------------------------------METHODS:
 
         /// <summary>
         /// Returns true if given collider is inside any other objects with colliders
@@ -112,11 +112,25 @@ namespace MyUtility
         }
 
         /// <summary>
+        /// Returns the largest extent of bounding box of given gameObject
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <returns></returns>
+        public static float GetMaxExtent( this GameObject gameObject )
+        {
+            Bounds bounds = GetBounds( gameObject );
+            float maxExtent = bounds.extents.x;
+            maxExtent = Mathf.Max( maxExtent, bounds.extents.y );
+            maxExtent = Mathf.Max( maxExtent, bounds.extents.z );
+            return maxExtent;
+        }
+
+        /// <summary>
         /// Returns the middle extent of bounding box of given gameObject
         /// </summary>
         /// <param name="gameObject"></param>
         /// <returns></returns>
-        public static float GetMidExtent( GameObject gameObject )
+        public static float GetMidExtent( this GameObject gameObject )
         {
             Vector3 extents = GetBounds( gameObject ).extents;
             if( extents.x > extents.y && extents.x < extents.z )
@@ -143,7 +157,7 @@ namespace MyUtility
         /// </summary>
         /// <param name="gameObject"></param>
         /// <returns></returns>
-        public static float GetMinExtent( GameObject gameObject )
+        public static float GetMinExtent( this GameObject gameObject )
         {
             Bounds bounds = GetBounds( gameObject );
             float minExtent = bounds.extents.x;
@@ -258,7 +272,20 @@ namespace MyUtility
                 PlayerPrefs.SetInt( tag, 0 );
             }
         }
- 
+
+        public static void Shuffle<T>( this IList<T> list )
+        {
+            int listLength = list.Count;
+
+            for( int i = 0; i < listLength; i++ )
+            {
+                int indexToSwapWith = UnityEngine.Random.Range( 0, listLength );
+                T value = list[indexToSwapWith];
+                list[indexToSwapWith] = list[i];
+                list[i] = value;
+            }
+        }
+
         public static bool SignsAgree( float num, float otherNum )
         {
             return ( num >= 0  &&  otherNum >= 0 ) ||
@@ -271,7 +298,7 @@ namespace MyUtility
             return new Vector2( vector.x, vector.z );
         }
 
-    //--------------------------------------------------------------------------HELPERS:
+//--------------------------------------------------------------------------HELPERS:
 
         /// <summary>
         /// Returns the last two things hit by ray.  

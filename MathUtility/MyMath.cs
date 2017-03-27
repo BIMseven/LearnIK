@@ -1,21 +1,21 @@
 using UnityEngine;
 using System.Collections;
 
-public class MyMath : MonoBehaviour {
-	
+public static class MyMath
+{	
 //-------------------------------------------------------------CONSTANTS AND FIELDS:
 	
-	public const float EPSILON = 0.0001f;
+	public static float EPSILON = 0.0001f;
 
     // Euler's number
-    public const float E = 2.71828182845904523536f;
+    public static float E = 2.71828182845904523536f;
 
-    private const int X = 0, Y = 1, Z = 2;
+    private static int X = 0, Y = 1, Z = 2;
 
-	public const float MAX_RAY_LENGTH = 1000.0f;
+	private static float MAX_RAY_LENGTH = 1000.0f;
 
 	// For Intersection( Ray a, Ray b )
-	private const float MAX_INTERSECTION_DISTANCE = 100;
+	private static float MAX_INTERSECTION_DISTANCE = 100;
 	
 //--------------------------------------------------------------------------METHODS:
 
@@ -96,6 +96,26 @@ public class MyMath : MonoBehaviour {
 		}		
 		return iota;
 	}
+    
+    /// <summary>
+    /// Returns true if given number is Even
+    /// </summary>
+    /// <param name="num"></param>
+    /// <returns></returns>
+    public static bool IsEven( this int num )
+    {
+        return num % 2 == 0;
+    }
+
+    /// <summary>
+    /// Returns true if given number is Odd
+    /// </summary>
+    /// <param name="num"></param>
+    /// <returns></returns>
+    public static bool IsOdd( this int num )
+    {
+        return num % 2 == 1;
+    }
 
 	/**
 	 * Logarithmically interpolates between x1 and x2 for given f (float between
@@ -218,7 +238,7 @@ public class MyMath : MonoBehaviour {
 	{
 		return targetSpace.InverseTransformPoint( PositionWS( thing ) );
 	}
-
+    
     // Generate a random point within the given Bounds
     public static Vector3 RandomPointInBounds( Bounds bounds )
     {

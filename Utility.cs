@@ -229,6 +229,16 @@ namespace MyUtility
         }
 
         /// <summary>
+        /// Prints given message with the caller's string used as a tag
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="message"></param>
+        public static void TPrint( this string tag, string message )
+        {
+            Print( tag, message );
+        }
+
+        /// <summary>
         /// Prints given message preceded by given tag
         /// </summary>
         /// <param name="tag"></param>
@@ -286,10 +296,26 @@ namespace MyUtility
             }
         }
 
+        /// <summary>
+        /// Returns true if given numbers are both positive or are both negative
+        /// </summary>
+        /// <param name="num"></param>
+        /// <param name="otherNum"></param>
+        /// <returns></returns>
         public static bool SignsAgree( float num, float otherNum )
         {
             return ( num >= 0  &&  otherNum >= 0 ) ||
                    ( num < 0   &&  otherNum < 0 );
+        }
+
+        /// <summary>
+        /// Returns the given text with quotes around it
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static string WithQuotes( this string text )
+        {
+            return "\"" + text + "\"";
         }
 
         // Returns a vector2 made from the x and z components of given vector

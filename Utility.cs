@@ -174,6 +174,35 @@ namespace MyUtility
         }
 
         /// <summary>
+        /// Returns true if given text is only letters (a-z or A-Z)
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static bool IsAllLetters( this string text )
+        {
+            foreach( char character in text )
+            {
+                if( ! character.IsLetter() )
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Returns true if given character is a letter (a-z or A-Z)
+        /// </summary>
+        /// <param name="character"></param>
+        /// <returns></returns>
+        public static bool IsLetter( this char character )
+        {
+            int ascii = (int)character;
+            return ( ascii >= 65  &&  ascii <= 90 )  ||     // Is uppercase letter
+                   ( ascii >= 97  &&  ascii <= 122 );       // Is lowercase letter
+        }
+
+        /// <summary>
         /// Returns the GameObject of the object the collider is inside if the collider
         /// is inside an object
         /// in the scene.

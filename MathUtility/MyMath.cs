@@ -19,6 +19,11 @@ public static class MyMath
 	
 //--------------------------------------------------------------------------METHODS:
 
+    /// <summary>
+    /// Returns the average of given list
+    /// </summary>
+    /// <param name="numbers"></param>
+    /// <returns></returns>
 	public static float Average( float[] numbers )
 	{
 		float sum = 0.0f;
@@ -29,15 +34,30 @@ public static class MyMath
 		return sum / numbers.Length;
 	}
 
+    /// <summary>
+    /// Returns the absolute difference between given numbers
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
 	public static float Difference( float a, float b )
 	{
 		return Mathf.Abs( Mathf.Abs( a ) - Mathf.Abs( b ) );
 	}
 
-	// TODO: optimize
-	public static float DifferenceOfWrapped( float a, float b, float min, float max )
-	{
-		float larger = Mathf.Max( a, b );
+    /// <summary>
+    /// Returns the absolute difference between given numbers a and b, which wrap
+    /// around min and max.  For example, if a = 3 and b = 354 and we're talking
+    /// about an euler angle (wrap at min = 0 and max = 360), the result will be 9
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>    
+    public static float DifferenceOfWrapped( float a, float b, float min, float max )
+    {// TODO: optimize
+        float larger = Mathf.Max( a, b );
 		float smaller = Mathf.Min( a, b );
 		return Mathf.Min( Difference( larger, max ) + Difference( smaller, min ),
 		                  Difference( a, b ) );
@@ -258,6 +278,25 @@ public static class MyMath
                             UnityEngine.Random.Range( min.z, max.z ) );
     }
 
+    /// <summary>
+    /// Returns the position of this point when rotated around given pivot
+    /// </summary>
+    /// <param name="point"></param>
+    /// <param name="pivot"></param>
+    /// <param name="rotation"></param>
+    /// <returns></returns>
+    public static Vector3 RotateAroundPivot( this Vector3 point, 
+                                             Vector3 pivot, 
+                                             Quaternion rotation )
+    {
+        // Get direction relative to pivot
+        Vector3 direction = point - pivot;
+        // Apply rotation to direction
+        direction = rotation * direction;
+
+        return point + direction;
+    }
+
     public static Vector3 RoundComponents( Vector3 vector )
 	{
 		return new Vector3( Mathf.Round( vector.x ),
@@ -281,10 +320,7 @@ public static class MyMath
 		return roundedVector;
 	}
 
-	/*
-	 * 
-	 */
-	public static int ToInt( float num )
+	public static int ToInt( this float num )
 	{
 		return (int)( num + EPSILON );
 	}

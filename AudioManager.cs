@@ -12,6 +12,7 @@ namespace MyUtility
         public bool VERBOSE = false;
 
         private const float AMBIENT_SOUNDS_VOLUME = 0.5f;
+        private const float DEFAULT_SOUNDS_VOLUME = 1.0f;
 
 //---------------------------------------------------------------------------FIELDS:
 
@@ -34,6 +35,20 @@ namespace MyUtility
 
             if( Clips != null )
             {
+                if( ClipNames == null  ||  ClipNames.Length == 0 )
+                {
+                    for( int i = 0; i < Clips.Length; i++ )
+                    {
+                        ClipNames[i] = Clips[i].name;
+                    }
+                }
+                if( ClipVolumes == null  || ClipVolumes.Length == 0 )
+                {
+                    for( int i = 0; i < Clips.Length; i++ )
+                    {
+                        ClipVolumes[i] = DEFAULT_SOUNDS_VOLUME;
+                    }
+                }
                 for( int i = 0; i < Clips.Length; i++ )
                 {
                     mySounds.Add( ClipNames[i],
@@ -61,7 +76,10 @@ namespace MyUtility
         /// <param name="soundName"></param>
         public void PlaySound( string soundName )
         {
-            PlaySound( soundName, Camera.main.transform.position );
+            if( Camera.main != null )
+            {
+                PlaySound( soundName, Camera.main.transform.position );
+            }
         }
 
         // Plays the sound with the given name if it isn't already playing
@@ -70,7 +88,7 @@ namespace MyUtility
             Sound sound;
             if( mySounds.TryGetValue( soundName, out sound ) )
             {
-                if( ! sound.isPlaying() )
+                if( sound != null  &&  ! sound.isPlaying() )
                 {
                     sound.play( location );
                 }

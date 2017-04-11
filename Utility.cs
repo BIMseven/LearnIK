@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,6 +57,26 @@ namespace MyUtility
             return bounds;
         }
 
+
+
+        /// <summary>
+        /// Scales this transform and none of its children
+        /// </summary>
+        /// <param name="and"></param>
+        /// <param name="of"></param>
+        /// <param name="children"></param>
+        /// <returns></returns>        
+        public static void DetatchAndScale( this Transform transform, Vector3 scale )
+        {
+            Transform[] children = transform.GetChildren();
+            transform.DetachChildren();
+            transform.localScale = scale;
+            foreach( Transform child in children )
+            {
+                child.parent = transform;
+            }
+        }
+
         /// <summary>
         /// Enables or disables the renderers in this game object and all children
         /// </summary>
@@ -101,6 +121,22 @@ namespace MyUtility
             Collider[] colliders = gameObject.GetComponentsInChildren<Collider>();
             Bounds[] allBounds = colliders.Select( x => x.bounds ).ToArray();
             return CombineBounds( allBounds );
+        }
+
+        /// <summary>
+        /// Returns an array of the children of this transform
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <returns></returns>
+        public static Transform[] GetChildren( this Transform transform )
+        {
+            Transform[] children = new Transform[transform.childCount];
+            int i = 0;
+            foreach( Transform T in transform )
+            {
+                children[i++] = T;
+            }
+            return children;
         }
 
         /// <summary>

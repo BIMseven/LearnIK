@@ -16,7 +16,7 @@ public static class MyMath
 
 	// For Intersection( Ray a, Ray b )
 	private static float MAX_INTERSECTION_DISTANCE = 100;
-	
+    
 //--------------------------------------------------------------------------METHODS:
 
     /// <summary>
@@ -258,7 +258,47 @@ public static class MyMath
 	{
 		return targetSpace.InverseTransformPoint( PositionWS( thing ) );
 	}
-    
+
+    /// <summary>
+    /// Returns the largest positive result from quadratic forumla when applied
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <param name="c"></param>
+    /// <returns></returns>
+    public static float QuadraticForumulaLargest( float a, float b, float c )
+    {
+        float answerOne = quadFormHelper( a, b, c, true );
+        float answerTwo = quadFormHelper( a, b, c, false );        
+        if( float.IsNaN( answerOne ) ) return float.NaN;
+
+        if( answerOne > 0  &&  answerTwo > 0 )
+        {
+            return Mathf.Max( answerOne, answerTwo );
+        }
+        if( answerOne > 0 ) return answerOne;
+        return answerTwo;
+    }
+
+    /// <summary>
+    /// Solves the quadratic formula with given inputs and writes the two possible
+    /// solutions to quadratic equation in solutionOne and solutionTwo
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <param name="c"></param>
+    /// <param name="solutionOne"></param>
+    /// <param name="solutionTwo"></param>
+    public static void QuadraticForumula( float a, 
+                                          float b, 
+                                          float c,
+                                          out float solutionOne, 
+                                          out float solutionTwo )
+    {
+        solutionOne = quadFormHelper( a, b, c, true );
+        solutionTwo = quadFormHelper( a, b, c, false );
+    }
+
     // Generate a random point within the given Bounds
     public static Vector3 RandomPointInBounds( Bounds bounds )
     {
@@ -346,4 +386,16 @@ public static class MyMath
         return new Vector2( vector.x, vector.z );
     }
 
+
+//--------------------------------------------------------------------------HELPERS:
+
+    static float quadFormHelper( float a, float b, float c, bool pos )
+    {
+        float preRoot = b * b - 4 * a * c;
+        if( preRoot < 0 )  return float.NaN;
+
+        float sign = pos ? 1.0f : -1.0f;
+        
+        return ( sign * Mathf.Sqrt( preRoot ) - b ) / ( 2.0f * a );
+    }
 }

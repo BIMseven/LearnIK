@@ -107,6 +107,11 @@ namespace MyUtility
         public static Bounds GetBounds( GameObject gameObject )
         {
             Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+
+            if( renderers.Length == 0 )
+            {
+                return GetBoundsFromColliders( gameObject );
+            }
             Bounds[] allBounds = renderers.Select( x => x.bounds ).ToArray();
             return CombineBounds( allBounds );
         }

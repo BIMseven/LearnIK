@@ -20,6 +20,20 @@ public static class MyMath
 //--------------------------------------------------------------------------METHODS:
 
     /// <summary>
+    /// Returns true if any of the given numbers are NaNs
+    /// </summary>
+    /// <param name="numbers"></param>
+    /// <returns></returns>
+    public static bool AnyNaNs( params float[] numbers )
+    {
+        for( int i = 0; i < numbers.Length; i++ )
+        {
+            if( float.IsNaN( numbers[i] ) )   return true;
+        }
+        return false;
+    }
+
+    /// <summary>
     /// Returns the average of given list
     /// </summary>
     /// <param name="numbers"></param>
@@ -260,7 +274,7 @@ public static class MyMath
 	}
 
     /// <summary>
-    /// Returns the largest positive result from quadratic forumla when applied
+    /// Returns the largest result from quadratic forumla when applied
     /// </summary>
     /// <param name="a"></param>
     /// <param name="b"></param>
@@ -272,12 +286,7 @@ public static class MyMath
         float answerTwo = quadFormHelper( a, b, c, false );        
         if( float.IsNaN( answerOne ) ) return float.NaN;
 
-        if( answerOne > 0  &&  answerTwo > 0 )
-        {
-            return Mathf.Max( answerOne, answerTwo );
-        }
-        if( answerOne > 0 ) return answerOne;
-        return answerTwo;
+        return Mathf.Max( answerOne, answerTwo );
     }
 
     /// <summary>

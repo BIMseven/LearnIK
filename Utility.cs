@@ -340,7 +340,61 @@ namespace MyUtility
                                 UnityEngine.Random.Range( min.y, max.y ),
                                 UnityEngine.Random.Range( min.z, max.z ) );
         }
-        
+
+        public static void SetEulerX( this Transform transform, float x )
+        {
+            Vector3 rot = transform.eulerAngles;
+            transform.eulerAngles = new Vector3( x, rot.y, rot.z );
+        }
+
+        public static void SetEulerY( this Transform transform, float y )
+        {
+            Vector3 rot = transform.eulerAngles;
+            transform.eulerAngles = new Vector3( rot.x, y, rot.z );
+        }
+
+        public static void SetEulerZ( this Transform transform, float z )
+        {
+            Vector3 rot = transform.eulerAngles;
+            transform.eulerAngles = new Vector3( rot.x, rot.y, z );
+        }
+
+        public static void SetLocalEulerX( this Transform transform, float x )
+        {
+            Vector3 rot = transform.localEulerAngles;
+            transform.localEulerAngles = new Vector3( x, rot.y, rot.z );
+        }
+
+        public static void SetLocalEulerY( this Transform transform, float y )
+        {
+            Vector3 rot = transform.localEulerAngles;
+            transform.localEulerAngles = new Vector3( rot.x, y, rot.z );
+        }
+
+        public static void SetLocalEulerZ( this Transform transform, float z )
+        {
+            Vector3 rot = transform.localEulerAngles;
+            transform.localEulerAngles = new Vector3( rot.x, rot.y, z );
+        }
+
+        public static void SetLocalPosX ( this Transform transform, float x )
+        {
+            Vector3 pos = transform.localPosition;
+            transform.localPosition = new Vector3( x, pos.y, pos.z );
+        }
+
+        public static void SetLocalPosY( this Transform transform, float y )
+        {
+            Vector3 pos = transform.localPosition;
+            transform.localPosition = new Vector3( pos.x, y, pos.z );
+        }
+
+        public static void SetLocalPosZ( this Transform transform, float z )
+        {
+            Vector3 pos = transform.localPosition;
+            transform.localPosition = new Vector3( pos.x, pos.y, z );
+        }
+
         public static void SetPlayerPref( string tag, bool isTrue )
         {
             if( isTrue )
@@ -351,6 +405,24 @@ namespace MyUtility
             {
                 PlayerPrefs.SetInt( tag, 0 );
             }
+        }
+
+        public static void SetPosX( this Transform transform, float x )
+        {
+            Vector3 pos = transform.position;
+            transform.position = new Vector3( x, pos.y, pos.z );
+        }
+
+        public static void SetPosY( this Transform transform, float y )
+        {
+            Vector3 pos = transform.position;
+            transform.position = new Vector3( pos.x, y, pos.z );
+        }
+
+        public static void SetPosZ( this Transform transform, float z )
+        {
+            Vector3 pos = transform.position;
+            transform.position = new Vector3( pos.x, pos.y, z );
         }
 
         public static void Shuffle<T>( this IList<T> list )
@@ -389,7 +461,7 @@ namespace MyUtility
         }
 
         // Returns a vector2 made from the x and z components of given vector
-        public static Vector2 XZ( Vector3 vector )
+        public static Vector2 XZ( this Vector3 vector )
         {
             return new Vector2( vector.x, vector.z );
         }
@@ -405,8 +477,8 @@ namespace MyUtility
         /// <param name="rayLength"></param>
         /// <returns></returns>
         private static Collider[] lastTwoHitsFromDirection( Vector3 colliderPos,
-                                                        Vector3 rayDirection,
-                                                        float rayLength )
+                                                            Vector3 rayDirection,
+                                                            float rayLength )
     {
         Vector3 rayOrigin = colliderPos + rayDirection * rayLength;
         RaycastHit[] hits = Physics.RaycastAll( rayOrigin, -rayDirection, rayLength );

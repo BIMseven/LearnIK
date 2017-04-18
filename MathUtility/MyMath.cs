@@ -117,7 +117,13 @@ public static class MyMath
 		return ( aPos.y * bDir.x + bDir.y * bPos.x - 
 				 bPos.y * bDir.x - bDir.y * aPos.x )  /  denom;				  
 	}
-	/*
+	
+    public static Quaternion Inverse( this Quaternion quat )
+    {
+        return Quaternion.Inverse( quat );
+    }
+    
+    /*
 	 * Returns an array of consecutive integers from 0 up to length
 	 */
 	public static int[] Iota( int length ) 
@@ -150,6 +156,7 @@ public static class MyMath
     {
         return num % 2 == 1;
     }
+
 
 	/**
 	 * Logarithmically interpolates between x1 and x2 for given f (float between

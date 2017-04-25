@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MyUtility;
 
 public class StretchyThing : MonoBehaviour
 {
@@ -21,6 +22,12 @@ public class StretchyThing : MonoBehaviour
 	void Start() 
 	{
         unscaledLength = findUnscaledLength();
+        print( "Collider: " + GetComponentInChildren<Collider>() );
+        print( "unscaled Length: " + unscaledLength );
+        if( float.IsNaN( unscaledLength )  ||  unscaledLength == 0 )
+        {
+            Debug.LogError( "Unable to fin unscaled length for " + name );
+        }
     }
 		
 	void Update()
@@ -47,6 +54,10 @@ public class StretchyThing : MonoBehaviour
         float desiredScale = desiredLength / unscaledLength;
         Vector3 scale = transform.localScale;
         scale.z = desiredScale;
+        if( float.IsNaN( scale.z ) || float.IsInfinity( scale.z ) )
+        {
+            scale = Vector3.zero;
+        }
         transform.localScale = scale;
     }
 
@@ -60,42 +71,54 @@ public class StretchyThing : MonoBehaviour
 	
     private float findUnscaledLength()
     {
-        Vector3 startingScale = transform.localScale;
-        Quaternion startingRot = transform.rotation;
-        transform.rotation = Quaternion.identity;
-        transform.localScale = Vector3.one;
+        Bounds bounds = transform.UnscaledBounds();
+        if( ! float.IsNaN( bounds.extents.z )       ||
+            ! float.IsInfinity( bounds.extents.z )  ||
+            bounds.extents.z == 0 )
+        {
+            return 1;
+        }
+        return bounds.extents.z * 2;
 
-        Renderer renderer = GetComponentInChildren<Renderer>();
-        Bounds bounds = new Bounds();
-        if( renderer != null )
-        {
-            bounds = renderer.bounds;
-        }
-        else
-        {
-            Collider collider = GetComponentInChildren<Collider>();
-            if( collider == null )
-            {
-                Debug.LogError( "No Renderer or Collider attached to object!" );
-                transform.rotation = startingRot;
-                transform.localScale = startingScale;
-                return 1;
-            }
-            else
-            {
-                bounds = collider.bounds;
-            }
-        }
-        float unscaledLength = bounds.extents.z * 2;
-        transform.rotation = startingRot;
-        transform.localScale = startingScale;
-        return unscaledLength;
+
+        //Vector3 startingScale = transform.localScale;
+        //Quaternion startingRot = transform.rotation;
+        //transform.rotation = Quaternion.identity;
+        //transform.localScale = Vector3.one;
+
+        //Collider collider = GetComponentInChildren<Collider>();
+        //Bounds bounds = new Bounds();
+        //if( collider != null )
+        //{
+        //    bounds = collider.bounds;
+        //}
+        //else
+        //{
+        //    Renderer renderer = GetComponentInChildren<Renderer>();
+        //    if( renderer == null )
+        //    {
+        //        Debug.LogError( "No Renderer or Collider attached to object!" );
+        //        transform.rotation = startingRot;
+        //        transform.localScale = startingScale;
+        //        return 1;
+        //    }
+        //    else
+        //    {
+        //        bounds = renderer.bounds;
+        //    }
+        //}
+        //float unscaledLength = bounds.extents.z * 2;
+        //transform.rotation = startingRot;
+        //transform.localScale = startingScale;
+        //return unscaledLength;
     }
 
     private void lookAtTarget( Vector3 targetPosition )
     {
         Vector3 relativePos = targetPosition - transform.position;
-        Quaternion rotation = Quaternion.LookRotation( relativePos );
-        transform.rotation = rotation;
+        if( relativePos.magnitude > 0 )
+        {
+            transform.rotation = Quaternion.LookRotation( relativePos ); 
+        }
     }
 }

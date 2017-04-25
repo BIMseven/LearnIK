@@ -77,17 +77,30 @@ namespace MyUtility
             }
         }
 
+        public static void EnableCollidersInChildren( this GameObject obj, bool enable )
+        {
+            if( obj == null )  return;            
+
+            Collider thisRenderer = obj.GetComponent<Collider>();
+            if( thisRenderer != null )
+            {
+                thisRenderer.enabled = enable;
+            }
+            Collider[] components = obj.GetComponentsInChildren<Collider>();
+            foreach( Collider collider in components )
+            {
+                collider.enabled = enable;
+            }
+        }
+
         /// <summary>
         /// Enables or disables the renderers in this game object and all children
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="enable"></param>
-        public static void EnableRenderersInChildren( GameObject obj, bool enable )
+        public static void EnableRenderersInChildren( this GameObject obj, bool enable )
         {
-            if( obj == null )
-            {
-                return;
-            }
+            if( obj == null )   return;            
 
             Renderer thisRenderer = obj.GetComponent<Renderer>();
             if( thisRenderer != null )
@@ -104,7 +117,7 @@ namespace MyUtility
         /// <summary>
         /// Returns the bounds of given GameObject and its children's Renderers
         /// </summary>    
-        public static Bounds GetBounds( GameObject gameObject )
+        public static Bounds GetBounds( this GameObject gameObject )
         {
             Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
 
@@ -309,6 +322,22 @@ namespace MyUtility
         }
 
         /// <summary>
+        /// Removes and returns the last item added to given list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static T Pop<T>( this List<T> list )
+        {
+            if( list.Count == 0 )    return default( T );
+
+            T item = list[list.Count - 1];
+            list.RemoveAt( list.Count - 1 );
+
+            return item;
+        }
+
+        /// <summary>
         /// Prints given message preceded by given tag
         /// </summary>
         /// <param name="tag"></param>
@@ -425,6 +454,24 @@ namespace MyUtility
             transform.position = new Vector3( pos.x, pos.y, z );
         }
 
+        public static void SetScaleX( this Transform transform, float x )
+        {
+            Vector3 scale = transform.localScale;
+            transform.localScale = new Vector3( x, scale.y, scale.z );
+        }
+
+        public static void SetScaleY( this Transform transform, float y )
+        {
+            Vector3 scale = transform.localScale;
+            transform.localScale = new Vector3( scale.x, y, scale.z );
+        }
+
+        public static void SetScaleZ( this Transform transform, float z )
+        {
+            Vector3 scale = transform.localScale;
+            transform.localScale = new Vector3( scale.x, scale.y, z );
+        }
+
         public static void Shuffle<T>( this IList<T> list )
         {
             int listLength = list.Count;
@@ -448,6 +495,44 @@ namespace MyUtility
         {
             return ( num >= 0  &&  otherNum >= 0 ) ||
                    ( num < 0   &&  otherNum < 0 );
+        }
+
+        /// <summary>
+        /// Returns the unrotated, unscaled bounds of given transform
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <returns></returns>
+        public static Bounds UnscaledBounds( this Transform transform )
+        {
+            Vector3 startingScale = transform.localScale;
+            Quaternion startingRot = transform.rotation;
+            transform.rotation = Quaternion.identity;
+            transform.localScale = Vector3.one;
+
+            Collider collider = transform.GetComponentInChildren<Collider>();
+            Bounds bounds = new Bounds();
+            if( collider != null )
+            {
+                bounds = collider.bounds;
+            }
+            else
+            {
+                Renderer renderer = transform.GetComponentInChildren<Renderer>();
+                if( renderer == null )
+                {
+                    Debug.LogError( "No Renderer or Collider attached to object!" );
+                    transform.rotation = startingRot;
+                    transform.localScale = startingScale;
+                    return new Bounds();
+                }
+                else
+                {
+                    bounds = renderer.bounds;
+                }
+            }
+            transform.rotation = startingRot;
+            transform.localScale = startingScale;
+            return bounds;
         }
 
         /// <summary>
@@ -499,7 +584,6 @@ namespace MyUtility
 
         return hitColliders;
     }
-
         
     }
 }

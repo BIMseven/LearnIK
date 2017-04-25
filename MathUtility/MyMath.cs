@@ -360,7 +360,7 @@ public static class MyMath
 		                    Mathf.Round( vector.z ) );
 	}
 
-	public static Vector3 RoundDirection( Vector3 vector )
+	public static Vector3 RoundDirection( this Vector3 vector )
 	{
 		int axis = MostSignificantAxis( vector );
 		Vector3 roundedVector = Vector3.zero;

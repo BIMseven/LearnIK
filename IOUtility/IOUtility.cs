@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Text;
+using System;
 
 namespace MyUtility
 {
@@ -135,6 +136,27 @@ namespace MyUtility
         public static string NameNoExtension( this FileInfo file )
         {
             return file.Name.Remove( file.Name.IndexOf( '.' ) );
+        }
+
+        /// <summary>
+        /// Returns the contents of given file as a string
+        /// </summary>
+        /// <param name="filepath"></param>
+        /// <returns></returns>
+        public static string ReadEntireFile( string filepath )
+        {
+            try
+            {
+                using( var reader = new StreamReader( filepath ) )
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+            catch( Exception e )
+            {
+                Debug.Log( "Unable to read from file! " + e );
+            }
+            return "";
         }
     }    
 }

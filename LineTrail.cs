@@ -57,16 +57,21 @@ public class LineTrail : MonoBehaviour
 	{
         oldSegments = new List<StretchyThing>();
 	}
-		
-//--------------------------------------------------------------------------METHODS:
+
+    //--------------------------------------------------------------------------METHODS:
 
     public void AddSegment( Vector3 from, Vector3 to )
+    {
+        AddSegment( from, to, Vector3.one );
+    }
+
+    public void AddSegment( Vector3 from, Vector3 to, Vector3 scale )
     {
         if( lastAddedSegment != null )
         {
             oldSegments.Add( lastAddedSegment );
         }
-        lastAddedSegment = createNewLineSegement();
+        lastAddedSegment = createNewLineSegement( scale );
         lastAddedSegment.Stretch( from, to );
         lastAddedSegment.transform.parent = transform;
     }
@@ -112,13 +117,7 @@ public class LineTrail : MonoBehaviour
         }
         return false;
     }
-
-    public void Init( Vector3 from, Vector3 to )
-    {
-        lastAddedSegment = createNewLineSegement();
-        lastAddedSegment.Stretch( from, to );
-    }
-
+    
     public void RemoveLastAddedSegment()
     { 
         if( lastAddedSegment != null )
@@ -135,9 +134,10 @@ public class LineTrail : MonoBehaviour
 
 //--------------------------------------------------------------------------HELPERS:
 
-    private StretchyThing createNewLineSegement()
+    private StretchyThing createNewLineSegement( Vector3 scale )
     {
         GameObject newLine = Instantiate( LinePrefab );
+        newLine.transform.localScale = scale;
         StretchyThing newLineStretchyThing = newLine.GetComponent<StretchyThing>();
         if( newLineStretchyThing != null )
         {

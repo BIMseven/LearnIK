@@ -58,25 +58,6 @@ namespace MyUtility
         }
 
 
-
-        /// <summary>
-        /// Scales this transform and none of its children
-        /// </summary>
-        /// <param name="and"></param>
-        /// <param name="of"></param>
-        /// <param name="children"></param>
-        /// <returns></returns>        
-        public static void DetatchAndScale( this Transform transform, Vector3 scale )
-        {
-            Transform[] children = transform.GetChildren();
-            transform.DetachChildren();
-            transform.localScale = scale;
-            foreach( Transform child in children )
-            {
-                child.parent = transform;
-            }
-        }
-
         public static void EnableCollidersInChildren( this GameObject obj, bool enable )
         {
             if( obj == null )  return;            
@@ -91,6 +72,12 @@ namespace MyUtility
             {
                 collider.enabled = enable;
             }
+        }
+
+
+        public static Vector3 ForwardRelativeToRoot( this Transform transform )
+        {
+            return transform.root.InverseTransformDirection( transform.forward );
         }
 
         /// <summary>
@@ -120,7 +107,7 @@ namespace MyUtility
         public static Bounds GetBounds( this GameObject gameObject )
         {
             Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
-
+            Debug.Log( "renderesr; " + renderers );
             if( renderers.Length == 0 )
             {
                 return GetBoundsFromColliders( gameObject );
@@ -139,22 +126,6 @@ namespace MyUtility
             Collider[] colliders = gameObject.GetComponentsInChildren<Collider>();
             Bounds[] allBounds = colliders.Select( x => x.bounds ).ToArray();
             return CombineBounds( allBounds );
-        }
-
-        /// <summary>
-        /// Returns an array of the children of this transform
-        /// </summary>
-        /// <param name="transform"></param>
-        /// <returns></returns>
-        public static Transform[] GetChildren( this Transform transform )
-        {
-            Transform[] children = new Transform[transform.childCount];
-            int i = 0;
-            foreach( Transform T in transform )
-            {
-                children[i++] = T;
-            }
-            return children;
         }
 
         /// <summary>
@@ -370,60 +341,6 @@ namespace MyUtility
                                 UnityEngine.Random.Range( min.z, max.z ) );
         }
 
-        public static void SetEulerX( this Transform transform, float x )
-        {
-            Vector3 rot = transform.eulerAngles;
-            transform.eulerAngles = new Vector3( x, rot.y, rot.z );
-        }
-
-        public static void SetEulerY( this Transform transform, float y )
-        {
-            Vector3 rot = transform.eulerAngles;
-            transform.eulerAngles = new Vector3( rot.x, y, rot.z );
-        }
-
-        public static void SetEulerZ( this Transform transform, float z )
-        {
-            Vector3 rot = transform.eulerAngles;
-            transform.eulerAngles = new Vector3( rot.x, rot.y, z );
-        }
-
-        public static void SetLocalEulerX( this Transform transform, float x )
-        {
-            Vector3 rot = transform.localEulerAngles;
-            transform.localEulerAngles = new Vector3( x, rot.y, rot.z );
-        }
-
-        public static void SetLocalEulerY( this Transform transform, float y )
-        {
-            Vector3 rot = transform.localEulerAngles;
-            transform.localEulerAngles = new Vector3( rot.x, y, rot.z );
-        }
-
-        public static void SetLocalEulerZ( this Transform transform, float z )
-        {
-            Vector3 rot = transform.localEulerAngles;
-            transform.localEulerAngles = new Vector3( rot.x, rot.y, z );
-        }
-
-        public static void SetLocalPosX ( this Transform transform, float x )
-        {
-            Vector3 pos = transform.localPosition;
-            transform.localPosition = new Vector3( x, pos.y, pos.z );
-        }
-
-        public static void SetLocalPosY( this Transform transform, float y )
-        {
-            Vector3 pos = transform.localPosition;
-            transform.localPosition = new Vector3( pos.x, y, pos.z );
-        }
-
-        public static void SetLocalPosZ( this Transform transform, float z )
-        {
-            Vector3 pos = transform.localPosition;
-            transform.localPosition = new Vector3( pos.x, pos.y, z );
-        }
-
         public static void SetPlayerPref( string tag, bool isTrue )
         {
             if( isTrue )
@@ -434,42 +351,6 @@ namespace MyUtility
             {
                 PlayerPrefs.SetInt( tag, 0 );
             }
-        }
-
-        public static void SetPosX( this Transform transform, float x )
-        {
-            Vector3 pos = transform.position;
-            transform.position = new Vector3( x, pos.y, pos.z );
-        }
-
-        public static void SetPosY( this Transform transform, float y )
-        {
-            Vector3 pos = transform.position;
-            transform.position = new Vector3( pos.x, y, pos.z );
-        }
-
-        public static void SetPosZ( this Transform transform, float z )
-        {
-            Vector3 pos = transform.position;
-            transform.position = new Vector3( pos.x, pos.y, z );
-        }
-
-        public static void SetScaleX( this Transform transform, float x )
-        {
-            Vector3 scale = transform.localScale;
-            transform.localScale = new Vector3( x, scale.y, scale.z );
-        }
-
-        public static void SetScaleY( this Transform transform, float y )
-        {
-            Vector3 scale = transform.localScale;
-            transform.localScale = new Vector3( scale.x, y, scale.z );
-        }
-
-        public static void SetScaleZ( this Transform transform, float z )
-        {
-            Vector3 scale = transform.localScale;
-            transform.localScale = new Vector3( scale.x, scale.y, z );
         }
 
         public static void Shuffle<T>( this IList<T> list )
@@ -497,42 +378,9 @@ namespace MyUtility
                    ( num < 0   &&  otherNum < 0 );
         }
 
-        /// <summary>
-        /// Returns the unrotated, unscaled bounds of given transform
-        /// </summary>
-        /// <param name="transform"></param>
-        /// <returns></returns>
-        public static Bounds UnscaledBounds( this Transform transform )
+        public static string Truncate( this string str, int maxLength )
         {
-            Vector3 startingScale = transform.localScale;
-            Quaternion startingRot = transform.rotation;
-            transform.rotation = Quaternion.identity;
-            transform.localScale = Vector3.one;
-
-            Collider collider = transform.GetComponentInChildren<Collider>();
-            Bounds bounds = new Bounds();
-            if( collider != null )
-            {
-                bounds = collider.bounds;
-            }
-            else
-            {
-                Renderer renderer = transform.GetComponentInChildren<Renderer>();
-                if( renderer == null )
-                {
-                    Debug.LogError( "No Renderer or Collider attached to object!" );
-                    transform.rotation = startingRot;
-                    transform.localScale = startingScale;
-                    return new Bounds();
-                }
-                else
-                {
-                    bounds = renderer.bounds;
-                }
-            }
-            transform.rotation = startingRot;
-            transform.localScale = startingScale;
-            return bounds;
+            return str.Substring( 0, Mathf.Min( str.Length, maxLength ) );
         }
 
         /// <summary>

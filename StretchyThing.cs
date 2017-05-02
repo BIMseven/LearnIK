@@ -22,12 +22,6 @@ public class StretchyThing : MonoBehaviour
 	void Start() 
 	{
         unscaledLength = findUnscaledLength();
-        print( "Collider: " + GetComponentInChildren<Collider>() );
-        print( "unscaled Length: " + unscaledLength );
-        if( float.IsNaN( unscaledLength )  ||  unscaledLength == 0 )
-        {
-            Debug.LogError( "Unable to fin unscaled length for " + name );
-        }
     }
 		
 	void Update()
@@ -71,46 +65,15 @@ public class StretchyThing : MonoBehaviour
 	
     private float findUnscaledLength()
     {
-        Bounds bounds = transform.UnscaledBounds();
-        if( ! float.IsNaN( bounds.extents.z )       ||
-            ! float.IsInfinity( bounds.extents.z )  ||
-            bounds.extents.z == 0 )
+        Bounds unscaledBounds = transform.UnscaledBounds();
+        if( float.IsNaN( unscaledBounds.extents.z ) ||
+            float.IsInfinity( unscaledBounds.extents.z ) ||
+            unscaledBounds.extents.z == 0 )
         {
+            LOG_TAG.TPrint( "Unable to find unscaled length for " + name );
             return 1;
         }
-        return bounds.extents.z * 2;
-
-
-        //Vector3 startingScale = transform.localScale;
-        //Quaternion startingRot = transform.rotation;
-        //transform.rotation = Quaternion.identity;
-        //transform.localScale = Vector3.one;
-
-        //Collider collider = GetComponentInChildren<Collider>();
-        //Bounds bounds = new Bounds();
-        //if( collider != null )
-        //{
-        //    bounds = collider.bounds;
-        //}
-        //else
-        //{
-        //    Renderer renderer = GetComponentInChildren<Renderer>();
-        //    if( renderer == null )
-        //    {
-        //        Debug.LogError( "No Renderer or Collider attached to object!" );
-        //        transform.rotation = startingRot;
-        //        transform.localScale = startingScale;
-        //        return 1;
-        //    }
-        //    else
-        //    {
-        //        bounds = renderer.bounds;
-        //    }
-        //}
-        //float unscaledLength = bounds.extents.z * 2;
-        //transform.rotation = startingRot;
-        //transform.localScale = startingScale;
-        //return unscaledLength;
+        return unscaledBounds.extents.z * 2;
     }
 
     private void lookAtTarget( Vector3 targetPosition )

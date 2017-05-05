@@ -57,6 +57,15 @@ namespace MyUtility
             return bounds;
         }
 
+        public static Rect CombineRects( Rect a, Rect b )
+        {
+            Rect enclosingRect = new Rect();
+            enclosingRect.xMax = Mathf.Max( a.xMax, b.xMax );
+            enclosingRect.xMin = Mathf.Min( a.xMin, b.xMin );
+            enclosingRect.yMax = Mathf.Max( a.yMax, b.yMax );
+            enclosingRect.yMin = Mathf.Min( a.yMin, b.yMin );
+            return enclosingRect;
+        }
 
         public static void EnableCollidersInChildren( this GameObject obj, bool enable )
         {
@@ -74,6 +83,19 @@ namespace MyUtility
             }
         }
 
+        public static Rect FrustumAtDistance( this Camera camera, float distance )
+        {
+            float angle =  camera.fieldOfView * 0.5f * Mathf.Deg2Rad;
+            float height = 2.0f * distance * Mathf.Tan( angle );
+            float fov = 2.0f * Mathf.Atan( height * 0.5f / distance ) * Mathf.Rad2Deg;
+
+            Rect frustum = new Rect();
+            frustum.width = height * camera.aspect;
+            frustum.height = frustum.width / camera.aspect;
+            frustum.center = camera.transform.position +
+                             camera.transform.forward * distance;
+            return frustum;
+        }
 
         public static Vector3 ForwardRelativeToRoot( this Transform transform )
         {

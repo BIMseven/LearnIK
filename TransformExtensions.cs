@@ -165,11 +165,34 @@ namespace MyUtility
             return bounds;
         }
 
-        //public static Bounds UnscaledBounds( this Transform transform )
-        //{
-        //    //TOOD
-        //    return new Bounds();
-        //}
+        public static Bounds BoundsUnscaled( this Transform transform )
+        {
+            Vector3 startingScale = transform.localScale;
+            transform.localScale = Vector3.one;
+
+            Collider collider = transform.GetComponentInChildren<Collider>();
+            Bounds bounds = new Bounds();
+            if( collider != null && collider.bounds.extents.magnitude > 0 )
+            {
+                bounds = collider.bounds;
+            }
+            else
+            {
+                Renderer renderer = transform.GetComponentInChildren<Renderer>();
+                if( renderer == null )
+                {
+                    Debug.LogError( "No Renderer or Collider attached to object!" );
+                    transform.localScale = startingScale;
+                    return new Bounds();
+                }
+                else
+                {
+                    bounds = renderer.bounds;
+                }
+            }
+            transform.localScale = startingScale;
+            return bounds;
+        }
 
         /// <summary>
         /// Returns the unrotated, unscaled bounds of given transform

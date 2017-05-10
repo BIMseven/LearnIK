@@ -129,7 +129,6 @@ namespace MyUtility
         public static Bounds GetBounds( this GameObject gameObject )
         {
             Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
-            Debug.Log( "renderesr; " + renderers );
             if( renderers.Length == 0 )
             {
                 return GetBoundsFromColliders( gameObject );
@@ -350,10 +349,51 @@ namespace MyUtility
             Debug.LogError( tag + " --- " + message );
         }
 
+        /// <summary>
+        /// Pulls numToPull random elements from given list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static T[] PullRandom<T>( this List<T> list, int numToPull )
+        {
+            T[] randomElements = new T[numToPull];
+            int[] randomIndices = RandomUniqueIndices( list.Count, numToPull );
+            for( int i = 0; i < numToPull; i++ )
+            {
+                int index = randomIndices[i];
+                randomElements[i] = list[index];
+            }
+            return randomElements;
+        }
+
+        /// <summary>
+        /// Pulls numToPull random elements from given set
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static T[] PullRandom<T>( this HashSet<T> set, int numToPull )
+        {
+            return PullRandom<T>( new List<T>( set ), numToPull );
+        }
+
         // Generate a random point within the given Bounds
         public static Vector3 RandomPointInBounds( Bounds bounds )
         {
             return RandomVectorInRange( bounds.min, bounds.max );
+        }
+
+        public static int[] RandomUniqueIndices( int listSize, int numIndices )
+        {
+            List<int> indices = new List<int>();
+            for( int i = 0; i < listSize; i++ )
+            {
+                indices.Add( i );
+            }
+            indices.Shuffle<int>();
+
+            return indices.GetRange( 0, numIndices ).ToArray();
         }
 
         public static Vector3 RandomVectorInRange( Vector3 min, Vector3 max )

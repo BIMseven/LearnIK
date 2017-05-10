@@ -65,7 +65,7 @@ public class StretchyThing : MonoBehaviour
 	
     private float findUnscaledLength()
     {
-        Bounds unscaledBounds = transform.UnscaledBounds();
+        Bounds unscaledBounds = transform.UnscaledAndUnrotatedBounds();
         if( float.IsNaN( unscaledBounds.extents.z ) ||
             float.IsInfinity( unscaledBounds.extents.z ) ||
             unscaledBounds.extents.z == 0 )

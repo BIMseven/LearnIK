@@ -136,12 +136,47 @@ namespace MyUtility
             transform.localScale = new Vector3( scale.x, scale.y, z );
         }
         
+        public static Bounds UnrotatedBounds( this Transform transform )
+        {
+            Quaternion startingRot = transform.rotation;
+            transform.rotation = Quaternion.identity;
+
+            Collider collider = transform.GetComponentInChildren<Collider>();
+            Bounds bounds = new Bounds();
+            if( collider != null && collider.bounds.extents.magnitude > 0 )
+            {
+                bounds = collider.bounds;
+            }
+            else
+            {
+                Renderer renderer = transform.GetComponentInChildren<Renderer>();
+                if( renderer == null )
+                {
+                    Debug.LogError( "No Renderer or Collider attached to object!" );
+                    transform.rotation = startingRot;
+                    return new Bounds();
+                }
+                else
+                {
+                    bounds = renderer.bounds;
+                }
+            }
+            transform.rotation = startingRot;
+            return bounds;
+        }
+
+        //public static Bounds UnscaledBounds( this Transform transform )
+        //{
+        //    //TOOD
+        //    return new Bounds();
+        //}
+
         /// <summary>
         /// Returns the unrotated, unscaled bounds of given transform
         /// </summary>
         /// <param name="transform"></param>
         /// <returns></returns>
-        public static Bounds UnscaledBounds( this Transform transform )
+        public static Bounds UnscaledAndUnrotatedBounds( this Transform transform )
         {
             Quaternion startingRot = transform.rotation;
             transform.rotation = Quaternion.identity;

@@ -15,19 +15,28 @@ public class FillScreen : MonoBehaviour
 
 //---------------------------------------------------------------------------FIELDS:
 
-	public bool FillParentOnStart = false;
+    public bool FillOnAwake = false;
+	public bool FillOnStart = false;
 
     private float unscaledWidth, unscaledHeight;
 
 //---------------------------------------------------------------------MONO METHODS:
 
-	void Start()
-	{
-        Bounds unscaledBounds = transform.UnscaledBounds();
+    void Awake()
+    {
+        Bounds unscaledBounds = transform.UnscaledAndUnrotatedBounds();
         unscaledWidth = unscaledBounds.extents.x * 2;
         unscaledHeight = unscaledBounds.extents.z * 2;
 
-        if( FillParentOnStart )
+        if( FillOnAwake )
+        {
+            FillScreenOfParentCamera();
+        }
+    }
+
+	void Start()
+	{
+        if( FillOnStart )
 		{
             FillScreenOfParentCamera();
         }
@@ -79,7 +88,16 @@ public class FillScreen : MonoBehaviour
     
     public void FillScreenOfParentCamera()
     {
-        FillScreenOfCamera( GetComponentInParent<Camera>() );
+        Camera camera = GetComponentInParent<Camera>();
+        if( camera == null )
+        {
+            if( VERBOSE )
+            {
+                LOG_TAG.TPrint( "Unable to find camera in parent, looking in scene" );
+            }
+            camera = FindObjectOfType<Camera>();
+        }
+        FillScreenOfCamera( camera );
     }
 
 //--------------------------------------------------------------------------HELPERS:

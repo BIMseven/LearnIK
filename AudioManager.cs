@@ -88,9 +88,9 @@ namespace MyUtility
             Sound sound;
             if( mySounds.TryGetValue( soundName, out sound ) )
             {
-                if( sound != null  &&  ! sound.isPlaying() )
+                if( sound != null  &&  ! sound.IsPlaying )
                 {
-                    sound.play( location );
+                    sound.Play( location );
                 }
             }
             else if( VERBOSE )
@@ -114,6 +114,22 @@ namespace MyUtility
             else
             {
                 Utility.Print( LOG_TAG, "Unable to find track" );
+            }
+        }
+
+        public void StopSound( string soundName )
+        {
+            Sound sound;
+            if( mySounds.TryGetValue( soundName, out sound ) )
+            {
+                if( sound != null && sound.IsPlaying )
+                {
+                    sound.Stop();
+                }
+            }
+            else if( VERBOSE )
+            {
+                Utility.Print( LOG_TAG, "Unable to find sound: " + soundName );
             }
         }
 

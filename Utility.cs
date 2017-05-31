@@ -220,6 +220,18 @@ namespace MyUtility
         }
 
         /// <summary>
+        /// Returns horizontal field of view in degrees
+        /// </summary>
+        /// <param name="cam"></param>
+        /// <returns></returns>
+        public static float HorizontalFOV( this Camera cam )
+        {
+            float radAngle = cam.fieldOfView * Mathf.Deg2Rad;
+            double hFOV = 2 * Math.Atan( Mathf.Tan( radAngle / 2 ) * cam.aspect );
+            return (float)( Mathf.Rad2Deg * hFOV );
+        }
+
+        /// <summary>
         /// Returns true if given text is only letters (a-z or A-Z)
         /// </summary>
         /// <param name="text"></param>

@@ -76,9 +76,13 @@ namespace MyUtility
         /// <param name="soundName"></param>
         public void PlaySound( string soundName )
         {
-            if( Camera.main != null )
+            if( Camera.current != null )
             {
-                PlaySound( soundName, Camera.main.transform.position );
+                PlaySound( soundName, Camera.current.transform.position );
+            }
+            else
+            {
+                PlaySound( soundName, Vector3.zero );
             }
         }
 
@@ -91,6 +95,11 @@ namespace MyUtility
                 if( sound != null  &&  ! sound.IsPlaying )
                 {
                     sound.Play( location );
+                }
+                else
+                {
+                    print( "sound: " + sound );
+                    print( "is playing: " + sound.IsPlaying );
                 }
             }
             else if( VERBOSE )

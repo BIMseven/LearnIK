@@ -53,12 +53,12 @@ public class LineTrail : MonoBehaviour
     		
 //---------------------------------------------------------------------MONO METHODS:
 
-	void Start() 
-	{
-        oldSegments = new List<StretchyThing>();
-	}
-
-    //--------------------------------------------------------------------------METHODS:
+    void Awake()
+    {
+        Clear();
+    }
+    
+//--------------------------------------------------------------------------METHODS:
 
     public void AddSegment( Vector3 from, Vector3 to )
     {
@@ -67,6 +67,7 @@ public class LineTrail : MonoBehaviour
 
     public void AddSegment( Vector3 from, Vector3 to, Vector3 scale )
     {
+        // lastAddedSegment is now old and will be replaced with new segment
         if( lastAddedSegment != null )
         {
             oldSegments.Add( lastAddedSegment );
@@ -74,6 +75,12 @@ public class LineTrail : MonoBehaviour
         lastAddedSegment = createNewLineSegement( scale );
         lastAddedSegment.Stretch( from, to );
         lastAddedSegment.transform.parent = transform;
+    }
+
+    public void Clear()
+    {
+        oldSegments = new List<StretchyThing>();
+        lastAddedSegment = null;
     }
 
     public void EnableCollidersInOldSegmentsOnly()
@@ -129,7 +136,10 @@ public class LineTrail : MonoBehaviour
 
     public void UpdateLastAddedSegmentEndPoint( Vector3 newEndPoint )
     {
-        lastAddedSegment.UpdateTarget( newEndPoint );
+        if( lastAddedSegment != null )
+        {
+            lastAddedSegment.UpdateTarget( newEndPoint );
+        }
     }
 
 //--------------------------------------------------------------------------HELPERS:

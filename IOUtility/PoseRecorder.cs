@@ -118,6 +118,7 @@ public class PoseRecorder : MonoBehaviour
     {
         get
         {
+            ensureInitialized();
             if( poses != null )   return poses.Length;
             return 0;
         }
@@ -128,16 +129,17 @@ public class PoseRecorder : MonoBehaviour
 
     private Pose[] poses;
 
-    private bool isTransitioning;
+    public bool IsTransitioning { get; private set; }
     private Pose previousPose, nextPose;
     private float transitionStart, transitionFinish;
+    private bool isInitialized;
     #endregion
 
 //---------------------------------------------------------------------MONO METHODS:
 
     void FixedUpdate()
     {
-        if( ! isTransitioning )   return;
+        if( ! IsTransitioning )   return;
 
         float t = ( Time.realtimeSinceStartup - transitionStart ) /
                   ( transitionFinish - transitionStart );
@@ -145,7 +147,7 @@ public class PoseRecorder : MonoBehaviour
         if( t >= 1 )
         {
             matchPose( nextPose );
-            isTransitioning = false;
+            IsTransitioning = false;
             return;
         }
 
@@ -154,10 +156,8 @@ public class PoseRecorder : MonoBehaviour
     }
 
 	void Start() 
-	{               
-        filepath = Application.dataPath + "/" + FileName;    
-
-        if( LoadPosesOnStart )   LoadPoses();
+	{
+        ensureInitialized();
     }
 		
 	void Update()
@@ -190,6 +190,10 @@ public class PoseRecorder : MonoBehaviour
     public int LoadPoses( string filepath )
     {
         this.filepath = filepath;
+        if( filepath == "" )
+        {
+            Debug.LogError( "No filepath for recorded poses" );
+        }
         return LoadPoses();
     }
 
@@ -261,6 +265,17 @@ public class PoseRecorder : MonoBehaviour
         return pose;
     }
 
+    protected void ensureInitialized()
+    {
+        if( isInitialized )   return;
+        isInitialized = true;
+
+        filepath = Application.dataPath + "/" + FileName;
+
+        if( LoadPosesOnStart ) LoadPoses();
+
+    }
+
     protected void matchPose( Pose pose )
     {
         int jointNum = 0;
@@ -285,6 +300,6 @@ public class PoseRecorder : MonoBehaviour
         nextPose = pose;
         transitionStart = Time.realtimeSinceStartup;
         transitionFinish = transitionStart + transitionTime;
-        isTransitioning = true;
+        IsTransitioning = true;
     }
 }

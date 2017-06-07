@@ -16,6 +16,8 @@ public class AxisDrawer : MonoBehaviour
 
 	void OnDrawGizmos()
     {
+        if( ! enabled )   return;
+
         // Draw X Axis
         Gizmos.color = Color.red;
         Gizmos.DrawLine( transform.position, transform.right * AXIS_LINE_LENGTH );

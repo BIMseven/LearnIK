@@ -70,11 +70,4 @@ public class Sound
 
 //--------------------------------------------------------------------------HELPERS:
 	
-    void DestroyObject()
-    {
-        if( tempAudioSource != null )
-        {
-            GameObject.Destroy( tempAudioSource );
-        }
-    }
 }

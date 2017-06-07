@@ -37,6 +37,7 @@ namespace MyUtility
             {
                 if( ClipNames == null  ||  ClipNames.Length == 0 )
                 {
+                    ClipNames = new string[Clips.Length];
                     for( int i = 0; i < Clips.Length; i++ )
                     {
                         ClipNames[i] = Clips[i].name;
@@ -44,6 +45,7 @@ namespace MyUtility
                 }
                 if( ClipVolumes == null  || ClipVolumes.Length == 0 )
                 {
+                    ClipVolumes = new float[Clips.Length];
                     for( int i = 0; i < Clips.Length; i++ )
                     {
                         ClipVolumes[i] = DEFAULT_SOUNDS_VOLUME;

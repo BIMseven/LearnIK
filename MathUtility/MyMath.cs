@@ -352,6 +352,20 @@ public static class MyMath
 
         return point + direction;
     }
+    
+    public static int Round( this double num )
+    {
+        double decimalComp = num - (int)num;
+        if( decimalComp >= 0.5f ) return (int)num + 1;
+        return (int)num;
+    }
+
+    public static int Round( this float num )
+    {
+        float decimalComp = num - (int)num;
+        if( decimalComp >= 0.5f )   return (int)num + 1;
+        return (int)num;
+    }
 
     public static Vector3 RoundComponents( Vector3 vector )
 	{
@@ -375,7 +389,7 @@ public static class MyMath
 		}
 		return roundedVector;
 	}
-
+   
 	public static int ToInt( this float num )
 	{
 		return (int)( num + EPSILON );

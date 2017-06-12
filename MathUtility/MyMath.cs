@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public static class MyMath
 {	
@@ -123,10 +124,12 @@ public static class MyMath
         return Quaternion.Inverse( quat );
     }
     
-    /*
-	 * Returns an array of consecutive integers from 0 up to length
-	 */
-	public static int[] Iota( int length ) 
+    /// <summary>
+    /// Returns an array of consecutive integers from start to start + length
+    /// </summary>
+    /// <param name="length"></param>
+    /// <returns></returns>
+	public static int[] Iota( int length, int start = 0 ) 
 	{
 		int[] iota = new int[length];
 		
@@ -315,6 +318,24 @@ public static class MyMath
         solutionTwo = quadFormHelper( a, b, c, false );
     }
 
+    public static int[] RandomDistinctInts( int min, int max, int numInts )
+    {
+        if( max < min || numInts > max - min )
+        {
+            Debug.Log( "Unable to generate " + numInts + " ints within range " +
+                       max + " - " + min );
+            return null;
+        }
+        List<int> possibleInts = new List<int>();
+        for( int i = min; i < max; i++ )
+        {
+            possibleInts.Add( i );
+        }
+        possibleInts.Shuffle<int>();
+        
+        return possibleInts.GetRange( 0, numInts ).ToArray();
+    }
+
     // Generate a random point within the given Bounds
     public static Vector3 RandomPointInBounds( Bounds bounds )
     {
@@ -390,6 +411,17 @@ public static class MyMath
 		return roundedVector;
 	}
    
+    public static void Shuffle<T>( this IList<T> list )
+    {
+        for( int i = 0; i < list.Count; i++ )
+        {
+            int swapIndex = Random.Range( 0, list.Count - 1 );
+            var temp = list[i];
+            list[i] = list[swapIndex];
+            list[swapIndex] = temp;
+        }
+    }
+
 	public static int ToInt( this float num )
 	{
 		return (int)( num + EPSILON );

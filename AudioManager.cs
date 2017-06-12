@@ -92,7 +92,8 @@ namespace MyUtility
         public void PlaySound( string soundName, Vector3 location )
         {
             Sound sound;
-            if( mySounds.TryGetValue( soundName, out sound ) )
+            if( mySounds != null  &&
+                mySounds.TryGetValue( soundName, out sound ) )
             {
                 if( sound != null  &&  ! sound.IsPlaying )
                 {
@@ -131,7 +132,8 @@ namespace MyUtility
         public void StopSound( string soundName )
         {
             Sound sound;
-            if( mySounds.TryGetValue( soundName, out sound ) )
+            if( mySounds != null  &&
+                mySounds.TryGetValue( soundName, out sound ) )
             {
                 if( sound != null && sound.IsPlaying )
                 {

@@ -6,7 +6,7 @@ using UnityEngine;
 using MyUtility;
 //using Pose = System.Collections.Generic.List<Tuple<UnityEngine.Vector3, UnityEngine.Quaternion>>;
     
-public class PoseRecorder : MonoBehaviour
+public class PoseManager : MonoBehaviour
 {
     protected class Pose
     {
@@ -104,7 +104,7 @@ public class PoseRecorder : MonoBehaviour
 
 //------------------------------------------------------------------------CONSTANTS:
 
-    private const string LOG_TAG = "PoseRecorder";
+    private const string LOG_TAG = "PoseManager";
 	public bool VERBOSE = false;
 
 //---------------------------------------------------------------------------FIELDS:
@@ -123,13 +123,11 @@ public class PoseRecorder : MonoBehaviour
             return 0;
         }
     }
+    public bool IsTransitioning { get; private set; }
 
     #region HelperFields
     private string filepath;
-
     private Pose[] poses;
-
-    public bool IsTransitioning { get; private set; }
     private Pose previousPose, nextPose;
     private float transitionStart, transitionFinish;
     private bool isInitialized;
@@ -137,7 +135,7 @@ public class PoseRecorder : MonoBehaviour
 
 //---------------------------------------------------------------------MONO METHODS:
 
-    void FixedUpdate()
+    void FixedUpdate()  
     {
         if( ! IsTransitioning )   return;
 
@@ -163,7 +161,7 @@ public class PoseRecorder : MonoBehaviour
 	void Update()
 	{
         // TODO temp!
-        //if( Input.GetKeyDown( KeyCode.Space ) )    SaveCurrentPose();
+        //if( Input.GetKeyDown( KeyCode.Space ) ) SaveCurrentPose();
     }
 
 //--------------------------------------------------------------------------METHODS:

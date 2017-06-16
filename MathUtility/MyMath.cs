@@ -336,6 +336,16 @@ public static class MyMath
         return possibleInts.GetRange( 0, numInts ).ToArray();
     }
 
+    public static Vector2 RandomDirectionVector2()
+    {
+        return RandomVectorInRange( -Vector2.one, Vector2.one ).normalized;
+    }
+
+    public static Vector3 RandomDirectionVector3()
+    {
+        return RandomVectorInRange( -Vector3.one, Vector3.one ).normalized;
+    }
+
     // Generate a random point within the given Bounds
     public static Vector3 RandomPointInBounds( Bounds bounds )
     {

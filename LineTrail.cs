@@ -14,25 +14,25 @@ public class LineTrail : MonoBehaviour
 
     public GameObject LinePrefab;
         
-    public Vector3 LastAddedOrigin
+    public Vector3 ActiveSegmentOrigin
     {
         get
         {
-            if( lastAddedSegment != null )
+            if( activeSegment != null )
             {
-                return lastAddedSegment.Origin;
+                return activeSegment.Origin;
             }
             return Vector3.zero;
         }
     }
 
-    public Vector3 LastAddedTarget
+    public Vector3 EndPoint
     {
         get
         {
-            if( lastAddedSegment != null )
+            if( activeSegment != null )
             {
-                return lastAddedSegment.Target;
+                return activeSegment.Target;
             }
             return Vector3.zero;
         }
@@ -49,7 +49,7 @@ public class LineTrail : MonoBehaviour
     }
 
     private List<StretchyThing> oldSegments;
-    private StretchyThing lastAddedSegment;
+    private StretchyThing activeSegment;
     		
 //---------------------------------------------------------------------MONO METHODS:
 
@@ -68,26 +68,37 @@ public class LineTrail : MonoBehaviour
     public void AddSegment( Vector3 from, Vector3 to, Vector3 scale )
     {
         // lastAddedSegment is now old and will be replaced with new segment
-        if( lastAddedSegment != null )
+        if( activeSegment != null )
         {
-            oldSegments.Add( lastAddedSegment );
+            oldSegments.Add( activeSegment );
         }
-        lastAddedSegment = createNewLineSegement( scale );
-        lastAddedSegment.Stretch( from, to );
-        lastAddedSegment.transform.parent = transform;
+        activeSegment = createNewLineSegement( scale );
+        activeSegment.Stretch( from, to );
+        activeSegment.transform.parent = transform;
     }
 
     public void Clear()
     {
+        if( oldSegments != null )
+        {
+            foreach( StretchyThing segment in oldSegments )
+            {
+                GameObject.Destroy( segment.gameObject );
+            }
+        }
+        if( activeSegment != null )
+        {
+            GameObject.Destroy( activeSegment.gameObject );
+        }
         oldSegments = new List<StretchyThing>();
-        lastAddedSegment = null;
+        activeSegment = null;
     }
 
     public void EnableCollidersInOldSegmentsOnly()
     {
-        if( lastAddedSegment != null )
+        if( activeSegment != null )
         {
-            lastAddedSegment.gameObject.EnableCollidersInChildren( false );
+            activeSegment.gameObject.EnableCollidersInChildren( false );
         }
         foreach( StretchyThing thing in oldSegments )
         {
@@ -98,13 +109,13 @@ public class LineTrail : MonoBehaviour
     public List<Vector3> GetAllPointsInLine()
     {
         List<Vector3> points = new List<Vector3>();
-        if( lastAddedSegment == null )   return null;
+        if( activeSegment == null )   return null;
         foreach( StretchyThing segment in oldSegments )
         {
             points.Add( segment.Origin );
         }
-        if( points.Count == 0 )  points.Add( lastAddedSegment.Origin );
-        points.Add( lastAddedSegment.Target );
+        if( points.Count == 0 )  points.Add( activeSegment.Origin );
+        points.Add( activeSegment.Target );
         return points;
     }
 
@@ -117,8 +128,8 @@ public class LineTrail : MonoBehaviour
                 return true;
             }
         }
-        if( lastAddedSegment != null  &&
-            lastAddedSegment.gameObject.GetBounds().Contains( point ) )
+        if( activeSegment != null  &&
+            activeSegment.gameObject.GetBounds().Contains( point ) )
         {
             return true;
         }
@@ -127,18 +138,22 @@ public class LineTrail : MonoBehaviour
     
     public void RemoveLastAddedSegment()
     { 
-        if( lastAddedSegment != null )
+        if( activeSegment != null )
         {
-            Destroy( lastAddedSegment.gameObject );
+            Destroy( activeSegment.gameObject );
         }
-        lastAddedSegment = oldSegments.Pop<StretchyThing>();
+        activeSegment = oldSegments.Pop<StretchyThing>();
     }
 
-    public void UpdateLastAddedSegmentEndPoint( Vector3 newEndPoint )
+    /// <summary>
+    /// Updates the end point of the trail
+    /// </summary>
+    /// <param name="newEndPoint"></param>
+    public void UpdateEndPoint( Vector3 newEndPoint )
     {
-        if( lastAddedSegment != null )
+        if( activeSegment != null )
         {
-            lastAddedSegment.UpdateTarget( newEndPoint );
+            activeSegment.UpdateTarget( newEndPoint );
         }
     }
 

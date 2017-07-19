@@ -50,6 +50,20 @@ public static class MyMath
 	}
 
     /// <summary>
+    /// Clamps the magnitude of the given vector to maxMagnitude
+    /// </summary>
+    /// <param name="vector"></param>
+    /// <param name="maxMagnitude"></param>
+    public static Vector3 Clamped( this Vector3 vector, float maxMagnitude )
+    {
+        if( vector.magnitude > maxMagnitude )
+        {
+            vector = vector.normalized * maxMagnitude;            
+        }
+        return vector;
+    }
+
+    /// <summary>
     /// Returns the absolute difference between given numbers
     /// </summary>
     /// <param name="a"></param>
@@ -318,6 +332,13 @@ public static class MyMath
         solutionTwo = quadFormHelper( a, b, c, false );
     }
 
+    /// <summary>
+    /// Returns numInts ints between min (inclusive) and max (exclusive)
+    /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <param name="numInts"></param>
+    /// <returns></returns>
     public static int[] RandomDistinctInts( int min, int max, int numInts )
     {
         if( max < min || numInts > max - min )

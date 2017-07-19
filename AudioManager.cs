@@ -99,11 +99,6 @@ namespace MyUtility
                 {
                     sound.Play( location );
                 }
-                else
-                {
-                    print( "sound: " + sound );
-                    print( "is playing: " + sound.IsPlaying );
-                }
             }
             else if( VERBOSE )
             { 

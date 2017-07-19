@@ -6,7 +6,7 @@ public static class MyMath
 {	
 //-------------------------------------------------------------CONSTANTS AND FIELDS:
 	
-	public static float EPSILON = 0.0001f;
+	public const float EPSILON = 0.0001f;
 
     // Euler's number
     public static float E = 2.71828182845904523536f;
@@ -216,42 +216,55 @@ public static class MyMath
 		if( y >= x  &&  y >= z )  return Y;
 		return Z;
 	}
+    /// <summary>
+    /// Returns true if a and b are nearly equal (each component has absolute 
+    /// difference less than epsilon
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <param name="epsilon"></param>
+    /// <returns></returns>
+    public static bool NearlyEquals( this Vector3 a,
+                                    Vector3 b,
+                                    float epsilon = EPSILON )
+    {
+        return a.x.NearlyEquals( b.x, epsilon ) &&
+               a.y.NearlyEquals( b.y, epsilon ) &&
+               a.z.NearlyEquals( b.z, epsilon );
+    }
 
-	public static bool NearlyEqual( Vector3 a, Vector3 b )
-	{
-		return NearlyEqual( a.x, b.x ) &&
-			   NearlyEqual( a.y, b.y ) &&
-			   NearlyEqual( a.z, b.z );
-	}
+    /// <summary>
+    /// Returns true if a and b are nearly equal (have absolute difference less than
+    /// epsilon
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <param name="epsilon"></param>
+    /// <returns></returns>
+	public static bool NearlyEquals( this float a,
+                                     float b,
+                                     float epsilon = EPSILON )
+    {
+        /* From Norm Badler's slides */
+        float absA = Mathf.Abs( a );
+        float absB = Mathf.Abs( b );
+        float diff = Mathf.Abs( a - b );
 
-	public static bool NearlyEqual( float a, float b )
-	{
-		return NearlyEqual( a, b, EPSILON );
-	}
-	
-	/* From Norm Badler's slides */
-	public static bool NearlyEqual( float a, float b, float epsilon )
-	{
-		float absA = Mathf.Abs( a );
-	    float absB = Mathf.Abs( b );
-	    float diff = Mathf.Abs( a - b );
-
-		// shortcut
-		if( a == b ) 
-		{ 	
-			return true;
-	    } 
-		else if( a * b == 0 ) 
-		{ 	// a or b or both are zero -- relative error is not meaningful here
-			return diff < (epsilon * epsilon);
-	    } 
-		else 
-		{ 	// use relative error
-			return diff / ( absA + absB ) < epsilon;
-	    }
-	}
-		
-	public static Vector3 PositionWS( GameObject thing )
+        // shortcut
+        if( a == b )
+        {
+            return true;
+        }
+        else if( a * b == 0 )
+        {   // a or b or both are zero -- relative error is not meaningful here
+            return diff < ( epsilon * epsilon );
+        }
+        else
+        {   // use relative error
+            return diff / ( absA + absB ) < epsilon;
+        }
+    }
+    public static Vector3 PositionWS( GameObject thing )
 	{
 		return thing.transform.TransformPoint( Vector3.zero );
 	}

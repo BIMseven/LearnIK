@@ -17,6 +17,17 @@ namespace MyUtility
 
 //--------------------------------------------------------------------------METHODS:
 
+        public static Vector3 ClampMag( this Vector3 vector, 
+                                        float minMag, 
+                                        float maxMag )
+        {
+            if( vector.magnitude < minMag )   return vector.normalized * minMag;
+
+            if( vector.magnitude > maxMag )   return vector.normalized * maxMag;
+
+            return vector;
+        }
+
         /// <summary>
         /// Returns true if given collider is inside any other objects with colliders
         /// in the scene.
@@ -265,6 +276,19 @@ namespace MyUtility
             int ascii = (int)character;
             return ( ascii >= 65  &&  ascii <= 90 )  ||     // Is uppercase letter
                    ( ascii >= 97  &&  ascii <= 122 );       // Is lowercase letter
+        }
+
+        /// <summary>
+        /// Returns the linear velocity of given Rigidbody
+        /// </summary>
+        /// <param name="rigidbody"></param>
+        /// <returns></returns>
+        public static Vector3 LinearVelocity( this Rigidbody rigidbody )
+        {
+            float currentSpeed = rigidbody.velocity.magnitude;
+            float linearSpeed = Vector3.Dot( rigidbody.velocity, 
+                                             rigidbody.transform.forward );
+            return rigidbody.transform.forward * linearSpeed;
         }
 
         /// <summary>

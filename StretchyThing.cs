@@ -15,7 +15,10 @@ public class StretchyThing : MonoBehaviour
     public Vector3 Origin { get; private set; }
     public Vector3 Target { get; private set; }
 
-    private float unscaledLength = 1;	
+    // Else pivot assumed to be at center
+    public bool PivotAtOrigin = false;
+
+    private float unscaledLength = 1;
 
 //---------------------------------------------------------------------MONO METHODS:
 
@@ -24,25 +27,27 @@ public class StretchyThing : MonoBehaviour
         unscaledLength = findUnscaledLength();
     }
 		
-	void Update()
-	{
-        //lookAtTarget( Target.position );
-        //Stretch( ShoulderJoint.position, ElbowJoint.position );
-    }
-
 //--------------------------------------------------------------------------METHODS:
 
     public void Stretch( Vector3 origin, Vector3 target )
+    {
+        Stretch( origin, target, Vector3.up );
+    }
+
+    public void Stretch( Vector3 origin, Vector3 target, Vector3 upwards )
     {
         Origin = origin;
         Target = target;
         // set position to from if not anchored at joint
         transform.position = origin;
         // look at target
-        lookAtTarget( target );
-        // move halfway to target if not anchored at joint
+        lookAtTarget( target, upwards );
         Vector3 toTarget = target - origin;
-        transform.position = transform.position + 0.5f * toTarget;
+        // move halfway to target if not anchored at joint
+        if( ! PivotAtOrigin )
+        {
+            transform.position = transform.position + 0.5f * toTarget;
+        }
         // scale
         float desiredLength = toTarget.magnitude;
         float desiredScale = desiredLength / unscaledLength;
@@ -76,12 +81,12 @@ public class StretchyThing : MonoBehaviour
         return unscaledBounds.extents.z * 2;
     }
 
-    private void lookAtTarget( Vector3 targetPosition )
+    private void lookAtTarget( Vector3 targetPosition, Vector3 upwards )
     {
         Vector3 relativePos = targetPosition - transform.position;
-        if( relativePos.magnitude > 0 )
+        if( ! relativePos.magnitude.NearlyEquals( 0 ) )
         {
-            transform.rotation = Quaternion.LookRotation( relativePos ); 
+            transform.rotation = Quaternion.LookRotation( relativePos, upwards ); 
         }
     }
 }

@@ -8,7 +8,7 @@ public class ButterworthFilter
 	private const string LOG_TAG = "ChangeMe";
 	public bool VERBOSE = false;
     
-    public enum PassType
+    public enum PassTypes
     {
         Highpass,
         Lowpass,
@@ -24,13 +24,13 @@ public class ButterworthFilter
     /// <summary>
     /// rez amount, from sqrt(2) to ~ 0.1
     /// </summary>
-    private readonly float resonance;
+    public float Resonance { get; private set; }    
 
-    private readonly float frequency;
-    private readonly int sampleRate;
-    private readonly PassType passType;
+    public float Frequency { get; private set; }
+    public int SampleRate { get; private set; }
+    public PassTypes PassType { get; private set; }
 
-    private readonly float c, a1, a2, a3, b1, b2;
+    private  float c, a1, a2, a3, b1, b2;
 
     /// <summary>
     /// Array of input values, latest are in front
@@ -46,17 +46,33 @@ public class ButterworthFilter
 	
     public ButterworthFilter( float frequency, 
                               int sampleRate, 
-                              PassType passType, 
+                              PassTypes passType, 
                               float resonance )
     {
-        this.resonance = resonance;
-        this.frequency = frequency;
-        this.sampleRate = sampleRate;
-        this.passType = passType;
+        SetParameters( frequency, sampleRate, passType, resonance );
+    }
+
+//--------------------------------------------------------------------------METHODS:
+
+    public void ClearHistory()
+    {
+        inputHistory = new float[2];
+        outputHistory = new float[3];
+    }
+
+    public void SetParameters( float frequency,
+                               int sampleRate,
+                               PassTypes passType,
+                               float resonance )
+    {
+        this.Resonance = resonance;
+        this.Frequency = frequency;
+        this.SampleRate = sampleRate;
+        this.PassType = passType;
 
         switch( passType )
         {
-            case PassType.Lowpass:
+            case PassTypes.Lowpass:
                 c = 1.0f / (float)Mathf.Tan( Mathf.PI * frequency / sampleRate );
                 a1 = 1.0f / ( 1.0f + resonance * c + c * c );
                 a2 = 2f * a1;
@@ -64,7 +80,7 @@ public class ButterworthFilter
                 b1 = 2.0f * ( 1.0f - c * c ) * a1;
                 b2 = ( 1.0f - resonance * c + c * c ) * a1;
                 break;
-            case PassType.Highpass:
+            case PassTypes.Highpass:
                 c = (float)Mathf.Tan( Mathf.PI * frequency / sampleRate );
                 a1 = 1.0f / ( 1.0f + resonance * c + c * c );
                 a2 = -2f * a1;
@@ -74,8 +90,6 @@ public class ButterworthFilter
                 break;
         }
     }
-    
-//--------------------------------------------------------------------------METHODS:
 
     public void Update( float newInput )
     {

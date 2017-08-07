@@ -53,5 +53,10 @@ namespace MyUtility
         {
             applicationIsQuitting = true;
         }
+
+        public void OnLevelWasLoaded( int level )
+        {
+            applicationIsQuitting = false;
+        }
     }
 }

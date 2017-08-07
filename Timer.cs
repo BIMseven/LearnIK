@@ -13,7 +13,8 @@ public class Timer
 
 //---------------------------------------------------------------------------FIELDS:
 
-	private static Dictionary<string, float> startTimes = new Dictionary<string, float>();
+	private static Dictionary<string, float> startTimes = 
+                                                    new Dictionary<string, float>();
 
 //--------------------------------------------------------------------------METHODS:
 

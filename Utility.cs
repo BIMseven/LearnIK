@@ -446,6 +446,13 @@ namespace MyUtility
                                 UnityEngine.Random.Range( min.z, max.z ) );
         }
 
+        public static string RemoveWhitespace( this string str )
+        {
+            return string.Join( "", 
+                                str.Split( default( string[] ), 
+                                StringSplitOptions.RemoveEmptyEntries ) );
+        }
+
         public static void SetPlayerPref( string tag, bool isTrue )
         {
             if( isTrue )

@@ -158,6 +158,27 @@ namespace MyUtility
             }
             return "";
         }
+
+        public static string[] ReadLinesEntireFile( string filepath )
+        {
+            List<string> lines = new List<string>();
+            StreamReader reader;
+            try
+            {
+                using( reader = new StreamReader( filepath ) )
+                {
+                    while( !reader.EndOfStream )
+                    {
+                        lines.Add( reader.ReadLine() );
+                    }
+                }
+            }
+            catch( Exception e )
+            {
+                Debug.Log( "Unable to read from file! " + e );
+            }
+            return lines.ToArray();
+        }
     }    
 }
 

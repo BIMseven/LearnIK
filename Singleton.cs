@@ -7,10 +7,6 @@ namespace MyUtility
     {
 //---------------------------------------------------------------------------FIELDS:
 
-        protected static T instance;
-        private static object _lock = new object();
-        private static bool applicationIsQuitting = false;
-
         public static T Instance
         {
             // Getter method automatically called when this field is accessed
@@ -38,6 +34,9 @@ namespace MyUtility
                 return instance;
             }
         }
+        
+        protected static T instance;
+        private static bool applicationIsQuitting = false;
 
 //---------------------------------------------------------------------MONO METHODS:
 

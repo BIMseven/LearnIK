@@ -15,8 +15,8 @@ public static class MyMath
 
 	private static float MAX_RAY_LENGTH = 1000.0f;
 
-	// For Intersection( Ray a, Ray b )
-	private static float MAX_INTERSECTION_DISTANCE = 100;
+	//// For Intersection( Ray a, Ray b )
+	//private static float MAX_INTERSECTION_DISTANCE = 100;
     
 //--------------------------------------------------------------------------METHODS:
 

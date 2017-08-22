@@ -24,13 +24,14 @@ public class ButterworthFilter
     /// <summary>
     /// rez amount, from sqrt(2) to ~ 0.1
     /// </summary>
+    
     public float Resonance { get; private set; }
 
     public float Frequency { get; private set; }
     public int SampleRate { get; private set; }
     public PassTypes PassType { get; private set; }
 
-    private readonly float c, a1, a2, a3, b1, b2;
+    private  float c, a1, a2, a3, b1, b2;
 
     /// <summary>
     /// Array of input values, latest are in front
@@ -49,10 +50,33 @@ public class ButterworthFilter
                               PassTypes passType, 
                               float resonance )
     {
+<<<<<<< HEAD
         Resonance = resonance;
         Frequency = frequency;
         SampleRate = sampleRate;
         PassType = passType;
+=======
+        SetParameters( frequency, sampleRate, passType, resonance );
+    }
+
+//--------------------------------------------------------------------------METHODS:
+
+    public void ClearHistory()
+    {
+        inputHistory = new float[2];
+        outputHistory = new float[3];
+    }
+
+    public void SetParameters( float frequency,
+                               int sampleRate,
+                               PassTypes passType,
+                               float resonance )
+    {
+        this.Resonance = resonance;
+        this.Frequency = frequency;
+        this.SampleRate = sampleRate;
+        this.PassType = passType;
+>>>>>>> b2176bc763aed68e00ad750bc03ea04891121d5a
 
         switch( passType )
         {
@@ -74,8 +98,6 @@ public class ButterworthFilter
                 break;
         }
     }
-    
-//--------------------------------------------------------------------------METHODS:
 
     public void Update( float newInput )
     {

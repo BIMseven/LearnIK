@@ -76,26 +76,34 @@ namespace MyUtility
         /// Plays the sound with the given name at the main camera's location
         /// </summary>
         /// <param name="soundName"></param>
-        public void PlaySound( string soundName )
+        public void PlaySound( string soundName, 
+                               bool playAgainIfAlreadyPlaying = false )
         {
             if( Camera.current != null )
             {
-                PlaySound( soundName, Camera.current.transform.position );
+                PlaySound( soundName, 
+                           Camera.current.transform.position,
+                           playAgainIfAlreadyPlaying );
             }
             else
             {
-                PlaySound( soundName, Vector3.zero );
+                PlaySound( soundName, 
+                           Vector3.zero, 
+                           playAgainIfAlreadyPlaying );
             }
         }
 
         // Plays the sound with the given name if it isn't already playing
-        public void PlaySound( string soundName, Vector3 location )
+        public void PlaySound( string soundName, 
+                               Vector3 location,
+                               bool playAgainIfAlreadyPlaying )
         {
             Sound sound;
             if( mySounds != null  &&
-                mySounds.TryGetValue( soundName, out sound ) )
+                mySounds.TryGetValue( soundName, out sound ) &&
+                sound != null )
             {
-                if( sound != null  &&  ! sound.IsPlaying )
+                if( ! sound.IsPlaying  ||  playAgainIfAlreadyPlaying )
                 {
                     sound.Play( location );
                 }

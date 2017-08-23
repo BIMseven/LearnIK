@@ -96,7 +96,7 @@ namespace MyUtility
         // Plays the sound with the given name if it isn't already playing
         public void PlaySound( string soundName, 
                                Vector3 location,
-                               bool playAgainIfAlreadyPlaying )
+                               bool playAgainIfAlreadyPlaying = false )
         {
             Sound sound;
             if( mySounds != null  &&

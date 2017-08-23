@@ -50,12 +50,10 @@ public class ButterworthFilter
                               PassTypes passType, 
                               float resonance )
     {
-<<<<<<< HEAD
         Resonance = resonance;
         Frequency = frequency;
         SampleRate = sampleRate;
         PassType = passType;
-=======
         SetParameters( frequency, sampleRate, passType, resonance );
     }
 
@@ -76,7 +74,6 @@ public class ButterworthFilter
         this.Frequency = frequency;
         this.SampleRate = sampleRate;
         this.PassType = passType;
->>>>>>> b2176bc763aed68e00ad750bc03ea04891121d5a
 
         switch( passType )
         {

@@ -6,7 +6,6 @@ using System.IO.Ports;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using MyUtility;
 
 // This class will establish a serial connection with an Arduino and read in data
 // from the attached IMU and EMU sensors. Whenever the sensors are updated, the
@@ -189,7 +188,11 @@ public class Arduino
 			}
 			catch( TimeoutException exception )
 			{
-				if( VERBOSE )   Utility.Print ( LOG_TAG, "Still waiting for data" );
+                if( VERBOSE )
+                {
+                    Utility.Print( LOG_TAG, "Still waiting for data: " + exception );
+                }
+
 			}			
 		};
 		kickOffRead();

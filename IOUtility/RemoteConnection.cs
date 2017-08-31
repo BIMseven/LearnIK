@@ -59,8 +59,8 @@ public class RemoteConnection : MonoBehaviour
 
     private TcpClient client;
 
-    private string ip;
-    private int port;
+    public string IP { get; private set; }
+    public int Port { get; private set; }
 
     private DataSender dataSender;
     private DataReceiver dataReceiver;
@@ -102,8 +102,8 @@ public class RemoteConnection : MonoBehaviour
     /// </summary>
     public void ConnectToServer( string ip, int port )
     {
-        this.ip = ip;
-        this.port = port;
+        this.IP = ip;
+        this.Port = port;
         Socket = createConnectingSocket( ip, port );
     }
 
@@ -127,7 +127,7 @@ public class RemoteConnection : MonoBehaviour
     /// </summary>
     public void ListenForConnections( int port )
     {
-        this.port = port;
+        this.Port = port;
         Socket = createListeningSocket( port );
     }
 
@@ -300,7 +300,7 @@ public class RemoteConnection : MonoBehaviour
             Socket client = (Socket)ar.AsyncState;
 
             // Complete sending the data to the remote device.  
-            int bytesSent = client.EndSend( ar );
+            client.EndSend( ar );
         }
         catch( Exception e )
         {

@@ -9,12 +9,12 @@ public class Timer
 //------------------------------------------------------------------------CONSTANTS:
 
 	private static string LOG_TAG = "Timer";
-	private static bool VERBOSE = true;
+	public static bool VERBOSE = true;
 
 //---------------------------------------------------------------------------FIELDS:
 
 	private static Dictionary<string, float> startTimes = 
-                                                    new Dictionary<string, float>();
+                                                  new Dictionary<string, float>();
 
 //--------------------------------------------------------------------------METHODS:
 

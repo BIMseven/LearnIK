@@ -110,7 +110,6 @@ namespace MyUtility
         {
             float angle = camera.fieldOfView * 0.5f * Mathf.Deg2Rad;
             float height = 2.0f * distance * Mathf.Tan( angle );
-            float fov = 2.0f * Mathf.Atan( height * 0.5f / distance ) * Mathf.Rad2Deg;
 
             Rect frustum = new Rect();
             frustum.width = height * camera.aspect;

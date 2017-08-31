@@ -24,7 +24,8 @@ public class ButterworthFilter
     /// <summary>
     /// rez amount, from sqrt(2) to ~ 0.1
     /// </summary>
-    public float Resonance { get; private set; }    
+    
+    public float Resonance { get; private set; }
 
     public float Frequency { get; private set; }
     public int SampleRate { get; private set; }
@@ -49,6 +50,10 @@ public class ButterworthFilter
                               PassTypes passType, 
                               float resonance )
     {
+        Resonance = resonance;
+        Frequency = frequency;
+        SampleRate = sampleRate;
+        PassType = passType;
         SetParameters( frequency, sampleRate, passType, resonance );
     }
 

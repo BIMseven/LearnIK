@@ -9,7 +9,7 @@ public class MessageTrigger : MonoBehaviour
 //------------------------------------------------------------------------CONSTANTS:
 
 	private const string LOG_TAG = "MessageTrigger";
-	private const bool VERBOSE = false;
+	public bool VERBOSE = false;
 
 //---------------------------------------------------------------------------FIELDS:
 	

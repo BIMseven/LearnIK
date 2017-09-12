@@ -105,7 +105,7 @@ namespace MyUtility
             {
                 if( ! sound.IsPlaying  ||  playAgainIfAlreadyPlaying )
                 {
-                    sound.Play( location );
+                    sound.Play( location, soundName );
                 }
             }
             else if( VERBOSE )
@@ -130,6 +130,23 @@ namespace MyUtility
             {
                 Utility.Print( LOG_TAG, "Unable to find track" );
             }
+        }
+
+        /// <summary>
+        /// Returns the duration of sound if it exists, -1 otherwise
+        /// </summary>
+        /// <param name="soundName"></param>
+        /// <returns></returns>
+        public float SoundDuration( string soundName )
+        {
+            Sound sound;
+            if( mySounds != null &&
+                mySounds.TryGetValue( soundName, out sound ) &&
+                sound != null )
+            {
+                return sound.Duration;
+            }
+            return -1f;
         }
 
         public void StopSound( string soundName )

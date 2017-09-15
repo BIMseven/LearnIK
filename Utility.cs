@@ -483,7 +483,7 @@ namespace MyUtility
         /// <param name="num"></param>
         /// <param name="otherNum"></param>
         /// <returns></returns>
-        public static bool SignsAgree( float num, float otherNum )
+        public static bool SignAgrees( this float num, float otherNum )
         {
             return ( num >= 0  &&  otherNum >= 0 ) ||
                    ( num < 0   &&  otherNum < 0 );

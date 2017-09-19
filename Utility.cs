@@ -346,6 +346,24 @@ namespace MyUtility
         }
 
         /// <summary>
+        /// Returns the screen space coordinate of the point this ray hits
+        /// </summary>
+        /// <param name="ray"></param>
+        /// <param name="camera"></param>
+        /// <returns></returns>
+        public static Vector2 ToScreenSpace( this Ray ray, Camera camera )
+        {
+            RaycastHit hit;
+            if( Physics.Raycast( ray, out hit ) )
+            {
+                Vector3 pixelCoordinate = camera.WorldToScreenPoint( hit.point );
+                return new Vector2( pixelCoordinate.x / camera.pixelWidth,
+                                    pixelCoordinate.y / camera.pixelHeight );
+            }
+            return Vector2.zero;
+        }
+
+        /// <summary>
         /// Prints given message with the caller's string used as a tag
         /// </summary>
         /// <param name="tag"></param>

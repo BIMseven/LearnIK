@@ -78,6 +78,28 @@ namespace MyUtility
             return enclosingRect;
         }
 
+
+        public static void DrawRay( Vector3 pos, Vector3 dir )
+        {
+            Debug.DrawLine( pos, pos + dir * 100 );
+        }
+
+        public static void DrawRay( Vector3 pos, Vector3 dir, Color color )
+        {
+            Debug.DrawLine( pos, pos + dir * 100, color );
+        }
+
+        public static void DrawRay( Ray ray )
+        {
+            Debug.DrawLine( ray.origin, ray.origin + ray.direction * 100 );
+
+        }
+
+        public static void DrawRay( Ray ray, Color color )
+        {
+            Debug.DrawLine( ray.origin, ray.origin + ray.direction * 100, color );
+        }
+
         public static void EnableCollidersInChildren( this GameObject obj, bool enable )
         {
             if( obj == null )  return;            

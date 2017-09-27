@@ -89,15 +89,15 @@ namespace MyUtility
             Debug.DrawLine( pos, pos + dir * 100, color );
         }
 
-        public static void DrawRay( Ray ray )
+        public static void DrawRay( Ray ray, float len = 100 )
         {
-            Debug.DrawLine( ray.origin, ray.origin + ray.direction * 100 );
+            Debug.DrawLine( ray.origin, ray.origin + ray.direction.normalized * len );
 
         }
 
-        public static void DrawRay( Ray ray, Color color )
+        public static void DrawRay( Ray ray, Color color, float len = 100 )
         {
-            Debug.DrawLine( ray.origin, ray.origin + ray.direction * 100, color );
+            Debug.DrawLine( ray.origin, ray.origin + ray.direction.normalized * len, color );
         }
 
         public static void EnableCollidersInChildren( this GameObject obj, bool enable )

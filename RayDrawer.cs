@@ -14,9 +14,10 @@ public class RayDrawer : MonoBehaviour
 
     public bool Active = true;
     public bool PrintTextureCoordinate;
-
     public Color RayColor = Color.cyan;
     public float HitSize = 0.01f;
+
+    public Vector2 LastHitCoordinate { get; private set; }
 
     private VisibilityToggler hitSphere;
 		
@@ -36,6 +37,12 @@ public class RayDrawer : MonoBehaviour
         if( Active )
         {
             drawRay();
+
+            if( VERBOSE )
+            {
+                LOG_TAG.TPrint( "Coordinate: " + LastHitCoordinate.ToString( "F4" ) );
+            }
+            
         }        
 
 	}
@@ -53,29 +60,10 @@ public class RayDrawer : MonoBehaviour
         {
             hitSphere.Visible = true;
             hitSphere.transform.position = hit.point;
-            if( PrintTextureCoordinate )
-            {
-                LOG_TAG.TPrint( "Coordinate: " + hit.textureCoord.ToString( "F4" ) );
-            }
+            LastHitCoordinate = hit.textureCoord;
+            
             rayLen = ( hit.point - transform.position ).magnitude;
-
-            if( Input.GetKeyDown( KeyCode.D ) )
-            {
-                print( "clicking at: " + hit.textureCoord.ToString( "F4" ) );
-                BrowserInputManager.Instance.SetMousePosition( hit.textureCoord.x, hit.textureCoord.y );
-                BrowserInputManager.Instance.LeftClickDown();
-            }
-            if( Input.GetKeyDown( KeyCode.U ) )
-            {
-                print( "clicking at: " + hit.textureCoord.ToString( "F4" ) );
-                BrowserInputManager.Instance.SetMousePosition( hit.textureCoord.x, hit.textureCoord.y );
-                BrowserInputManager.Instance.LeftClickUp();
-            }
-            if( Input.GetKeyDown( KeyCode.C ) )
-            {
-                print( "clicking at: " + hit.textureCoord.ToString( "F4" ) );
-                BrowserInputManager.Instance.LeftClick( hit.textureCoord.x, hit.textureCoord.y );
-            }
+            
         }
         else
         {

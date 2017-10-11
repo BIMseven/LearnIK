@@ -14,12 +14,42 @@ namespace MyUtility
 //------------------------------------------------------------------------CONSTANTS:
 
         public static int TAG_SPACE = 20;
+        public static float EPSILON = 0.001f;
 
 //--------------------------------------------------------------------------METHODS:
 
+        public static bool CanMove( this SphereCollider collider, Vector3 movement )
+        {
+            // We will cast a sphere with a radius half as big as the given collider.
+            float radius = collider.radius * collider.transform.localScale.x * 0.5f;
+
+            Vector3 origin = collider.transform.position +
+                             movement.normalized * radius;
+
+            Ray probeRay = new Ray( origin, movement );
+
+            RaycastHit[] hits = Physics.SphereCastAll( probeRay, radius );
+            foreach( RaycastHit hit in hits )
+            {
+                if( hit.collider != collider  &&  
+                    hit.distance <= ( movement.magnitude ) )
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static Vector3 ClampComponents( this Vector3 vector, 
+                                               float min, float max )
+        {
+            return new Vector3( Mathf.Clamp( vector.x, min, max ),
+                                Mathf.Clamp( vector.y, min, max ),
+                                Mathf.Clamp( vector.z, min, max ) );
+        }
+
         public static Vector3 ClampMag( this Vector3 vector, 
-                                        float minMag, 
-                                        float maxMag )
+                                        float minMag, float maxMag )
         {
             if( vector.magnitude < minMag )   return vector.normalized * minMag;
 

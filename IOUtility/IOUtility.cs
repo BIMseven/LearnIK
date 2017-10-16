@@ -57,6 +57,14 @@ namespace MyUtility
             }
         }
 
+        public static void Delete( string path )
+        {
+            if( File.Exists( path ) )
+            { 
+                File.Delete( path );
+            }
+        }
+
         /// <summary>
         /// Returns true if the given file exists 
         /// </summary>

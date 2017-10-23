@@ -403,7 +403,7 @@ namespace MyUtility
         /// <param name="ray"></param>
         /// <param name="camera"></param>
         /// <returns></returns>
-        public static Vector2 ToScreenSpace( this Ray ray, Camera camera )
+        public static Vector2 ToScreenSpace( this Camera camera, Ray ray )
         {
             RaycastHit hit;
             if( Physics.Raycast( ray, out hit ) )

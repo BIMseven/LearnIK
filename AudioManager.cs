@@ -16,13 +16,17 @@ namespace MyUtility
 
 //---------------------------------------------------------------------------FIELDS:
 
+        #region InspectorFields
         public AudioClip[] Clips;
         public string[] ClipNames;
-        public float[] ClipVolumes;
+        public float[] ClipVolumes; // Must be set at runtime 
+        #endregion
 
         // Background music
         public AudioSource[] BackgroundTracks;
         public string[] BackgroundTrackNames;
+
+        public bool UpdateSounds;
 
         private Dictionary<string, Sound> mySounds;
         private Dictionary<string, AudioSource> myBackgroundTracks;
@@ -31,43 +35,22 @@ namespace MyUtility
 
         void Start()
         {
-            mySounds = new Dictionary<string, Sound>();
+            populateMySounds();
+            populateBackgroundTracks();
+        }
 
-            if( Clips != null )
+        void Update()
+        {
+            if( UpdateSounds )
             {
-                if( ClipNames == null  ||  ClipNames.Length == 0 )
-                {
-                    ClipNames = new string[Clips.Length];
-                    for( int i = 0; i < Clips.Length; i++ )
-                    {
-                        ClipNames[i] = Clips[i].name;
-                    }
-                }
-                if( ClipVolumes == null  || ClipVolumes.Length == 0 )
-                {
-                    ClipVolumes = new float[Clips.Length];
-                    for( int i = 0; i < Clips.Length; i++ )
-                    {
-                        ClipVolumes[i] = DEFAULT_SOUNDS_VOLUME;
-                    }
-                }
-                for( int i = 0; i < Clips.Length; i++ )
-                {
-                    mySounds.Add( ClipNames[i],
-                                  new Sound( Clips[i], ClipVolumes[i] ) );
-                }
+                populateMySounds();
+                UpdateSounds = false;
             }
-
-            myBackgroundTracks = new Dictionary<string, AudioSource>();
-            if( BackgroundTracks != null )
-            {
-                for( int i = 0; i < BackgroundTracks.Length; i++ )
-                {
-                    myBackgroundTracks.Add( BackgroundTrackNames[i], 
-                                            BackgroundTracks[i] );
-                }
-
-            }
+            //if( Input.GetKeyDown( KeyCode.R ) )       populateMySounds();
+            //if( Input.GetKeyDown( KeyCode.Alpha4 ) )  PlaySound( "timeout" );
+            //if( Input.GetKeyDown( KeyCode.Alpha1 ) )  PlaySound( "beep_a" );
+            //if( Input.GetKeyDown( KeyCode.Alpha2 ) )  PlaySound( "beep_b" );
+            //if( Input.GetKeyDown( KeyCode.Alpha3 ) )  PlaySound( "beep_c" );
         }
 
 //--------------------------------------------------------------------------METHODS:
@@ -177,6 +160,50 @@ namespace MyUtility
         }
 
 //--------------------------------------------------------------------------HELPERS:
+
+        private void populateBackgroundTracks()
+        {
+            myBackgroundTracks = new Dictionary<string, AudioSource>();
+            if( BackgroundTracks != null )
+            {
+                for( int i = 0; i < BackgroundTracks.Length; i++ )
+                {
+                    myBackgroundTracks.Add( BackgroundTrackNames[i],
+                                            BackgroundTracks[i] );
+                }
+
+            }
+        }
+
+        private void populateMySounds()
+        {
+            mySounds = new Dictionary<string, Sound>();
+
+            if( Clips != null )
+            {
+                if( ClipNames == null || ClipNames.Length == 0 )
+                {
+                    ClipNames = new string[Clips.Length];
+                    for( int i = 0; i < Clips.Length; i++ )
+                    {
+                        ClipNames[i] = Clips[i].name;
+                    }
+                }
+                if( ClipVolumes == null || ClipVolumes.Length == 0 )
+                {
+                    ClipVolumes = new float[Clips.Length];
+                    for( int i = 0; i < Clips.Length; i++ )
+                    {
+                        ClipVolumes[i] = DEFAULT_SOUNDS_VOLUME;
+                    }
+                }
+                for( int i = 0; i < Clips.Length; i++ )
+                {
+                    mySounds.Add( ClipNames[i],
+                                  new Sound( Clips[i], ClipVolumes[i] ) );
+                }
+            }
+        }
 
         private void stopPlayingAllTracks()
         {

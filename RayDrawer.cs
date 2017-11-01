@@ -8,17 +8,29 @@ public class RayDrawer : MonoBehaviour
 //------------------------------------------------------------------------CONSTANTS:
 
 	private const string LOG_TAG = "RayDrawer";
-	public bool VERBOSE = false;
 
 //---------------------------------------------------------------------------FIELDS:
 
-    public bool Active = true;
     public bool PrintTextureCoordinate;
+    public bool PrintDistance;
+    public bool PrintScreenSpaceCoordinate;
+
+    public Camera CameraOfInterest;
+
     public Color RayColor = Color.cyan;
     public float HitSize = 0.01f;
 
     public Vector2 LastHitCoordinate { get; private set; }
+    public float LastHitDistance { get; private set; }
+    public Vector3 LastHitPoint
+    {
+        get
+        {
+            return hitSphere.transform.position;
+        }
+    }
 
+    private Ray lastCastRay;
     private VisibilityToggler hitSphere;
 		
 //---------------------------------------------------------------------MONO METHODS:
@@ -34,42 +46,49 @@ public class RayDrawer : MonoBehaviour
 	void Update()
     {
         hitSphere.transform.localScale = Vector3.one * HitSize;
-        if( Active )
+
+        drawRay();
+
+        if( PrintTextureCoordinate )
         {
-            drawRay();
+            LOG_TAG.TPrint( "Tex Coordinate: " + LastHitCoordinate.ToString( "F4" ) );
+        }
 
-            if( VERBOSE )
-            {
-                LOG_TAG.TPrint( "Coordinate: " + LastHitCoordinate.ToString( "F4" ) );
-            }
-            
-        }        
+        if( PrintDistance )
+        {
+            LOG_TAG.TPrint( "Distance: " + LastHitDistance.ToString( "F4" ) );  
+        }
+        
+        if( PrintScreenSpaceCoordinate  &&  CameraOfInterest != null )
+        {
+            var screenSpace = CameraOfInterest.ToScreenSpace( lastCastRay );
+            LOG_TAG.TPrint( "Screen Space Coordinate: " + screenSpace.ToString( "F4" ) );
+        }
 
-	}
 
-//--------------------------------------------------------------------------METHODS:
+    }
 
+    
 //--------------------------------------------------------------------------HELPERS:
-	
+
     private void drawRay()
     {
         float rayLen = 1000;
         RaycastHit hit;
-        Ray ray = new Ray( transform.position, transform.forward * rayLen );
-        if( Physics.Raycast( ray, out hit ) )
+        lastCastRay = new Ray( transform.position, transform.forward * rayLen );
+        if( Physics.Raycast( lastCastRay, out hit ) )
         {
             hitSphere.Visible = true;
             hitSphere.transform.position = hit.point;
             LastHitCoordinate = hit.textureCoord;
-            
-            rayLen = ( hit.point - transform.position ).magnitude;
-            
+            LastHitDistance = hit.distance;
+            rayLen = ( hit.point - transform.position ).magnitude;            
         }
         else
         {
             hitSphere.Visible = false;
         }
         hitSphere.GetComponent<Renderer>().material.color = RayColor;
-        Utility.DrawRay( ray, RayColor, rayLen );
+        Utility.DrawRay( lastCastRay, RayColor, rayLen );
     }
 }

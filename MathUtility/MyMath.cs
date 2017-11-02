@@ -278,7 +278,8 @@ public static class MyMath
             return diff / ( absA + absB ) < epsilon;
         }
     }
-    public static Vector3 PositionWS( GameObject thing )
+
+    public static Vector3 PositionWS( this GameObject thing )
 	{
 		return thing.transform.TransformPoint( Vector3.zero );
 	}

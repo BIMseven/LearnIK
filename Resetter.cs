@@ -21,12 +21,6 @@ public class Resetter : MonoBehaviour
 
 //---------------------------------------------------------------------MONO METHODS:
 
-    void Reset()
-    {
-        Debug.Log( "Resetting ressetter!" );
-        GoToInitialPosition();
-    }
-
     void Start() 
 	{
         rememberStartingState();

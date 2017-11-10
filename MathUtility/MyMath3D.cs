@@ -185,10 +185,14 @@ public class Math3d
         }
     }
 
-    //Calculate the intersection point of two lines. Returns true if lines intersect, otherwise false.
-    //Note that in 3d, two lines do not intersect most of the time. So if the two lines are not in the 
-    //same plane, use ClosestPointsOnTwoLines() instead.
-    public static bool LineLineIntersection( out Vector3 intersection, Vector3 linePoint1, Vector3 lineVec1, Vector3 linePoint2, Vector3 lineVec2 )
+    //--------------------------------------------------------------------------METHODS:
+
+    // Calculate the intersection point of two lines. Returns true if lines intersect, 
+    // otherwise false. Note that in 3d, two lines do not intersect most of the time. 
+    // So if the two lines are not in the same plane, use ClosestPointsOnTwoLines() instead.
+    public static bool LineLineIntersection( out Vector3 intersection, 
+                                             Vector3 linePoint1, Vector3 lineVec1, 
+                                             Vector3 linePoint2, Vector3 lineVec2 )
     {
 
         Vector3 lineVec3 = linePoint2 - linePoint1;

@@ -32,6 +32,26 @@ namespace MyUtility
             return stack;
         }
 
+        public static List<Vector3> LastElement( this List<List<Vector3>> list )
+        {
+            return list[list.Count - 1];
+        }
+
+        public static Vector3 LastElement( this List<Vector3> list )
+        {
+            return list[list.Count - 1];
+        }
+        
+        public static Vector2 LastElement( this List<Vector2> list )
+        {
+            return list[list.Count - 1];
+        }
+        
+        public static float LastElement( this List<float> list )
+        {
+            return list[list.Count - 1];
+        }
+
 //--------------------------------------------------------------------------HELPERS:
 
     }

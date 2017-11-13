@@ -170,6 +170,8 @@ namespace MyUtility
         public static string[] ReadLinesEntireFile( string filepath )
         {
             List<string> lines = new List<string>();
+            if( ! Exists( filepath ) )   return null;
+
             StreamReader reader;
             try
             {

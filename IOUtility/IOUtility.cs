@@ -56,15 +56,7 @@ namespace MyUtility
                 bytesInSource -= read;
             }
         }
-
-        public static void Delete( string path )
-        {
-            if( File.Exists( path ) )
-            { 
-                File.Delete( path );
-            }
-        }
-
+        
         /// <summary>
         /// Deletes file at given path.  Returns true if successfully deleted,
         /// false if the file didn't exist in the first place.

@@ -41,15 +41,7 @@ public class FillScreen : MonoBehaviour
             FillScreenOfParentCamera();
         }
 	}
-
-    void Update()
-    {
-        if( Input.GetKeyDown( KeyCode.Space ) )
-        {
-            FillScreenOfParentCamera();
-        }
-    }
-
+    
 //--------------------------------------------------------------------------METHODS:
 
 	public void FillScreenOfCamera( Camera cam )

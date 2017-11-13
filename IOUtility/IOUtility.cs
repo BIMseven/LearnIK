@@ -58,6 +58,22 @@ namespace MyUtility
         }
 
         /// <summary>
+        /// Deletes file at given path.  Returns true if successfully deleted,
+        /// false if the file didn't exist in the first place.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static bool Delete( string path )
+        {
+            if( File.Exists( path ) )
+            {
+                File.Delete( path );
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Returns true if the given file exists 
         /// </summary>
         /// <param name="path"></param>
@@ -161,13 +177,16 @@ namespace MyUtility
 
         public static string[] ReadLinesEntireFile( string filepath )
         {
+
+            if( ! File.Exists( filepath ) )   return new string[0];
+
             List<string> lines = new List<string>();
             StreamReader reader;
             try
             {
                 using( reader = new StreamReader( filepath ) )
                 {
-                    while( !reader.EndOfStream )
+                    while( ! reader.EndOfStream )
                     {
                         lines.Add( reader.ReadLine() );
                     }

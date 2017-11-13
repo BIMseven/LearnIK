@@ -9,7 +9,6 @@ namespace MyUtility
 
         public static T Instance
         {
-            // Getter method automatically called when this field is accessed
             get
             {
                 if( applicationIsQuitting )  return null;
@@ -32,6 +31,14 @@ namespace MyUtility
                     }
                 }
                 return instance;
+            }
+        }
+
+        public static bool InstanceExists
+        {
+            get
+            {
+                return instance != null;
             }
         }
         

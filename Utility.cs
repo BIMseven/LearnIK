@@ -14,12 +14,42 @@ namespace MyUtility
 //------------------------------------------------------------------------CONSTANTS:
 
         public static int TAG_SPACE = 20;
+        public static float EPSILON = 0.001f;
 
 //--------------------------------------------------------------------------METHODS:
 
+        public static bool CanMove( this SphereCollider collider, Vector3 movement )
+        {
+            // We will cast a sphere with a radius half as big as the given collider.
+            float radius = collider.radius * collider.transform.localScale.x * 0.5f;
+
+            Vector3 origin = collider.transform.position +
+                             movement.normalized * radius;
+
+            Ray probeRay = new Ray( origin, movement );
+
+            RaycastHit[] hits = Physics.SphereCastAll( probeRay, radius );
+            foreach( RaycastHit hit in hits )
+            {
+                if( hit.collider != collider  &&  
+                    hit.distance <= ( movement.magnitude ) )
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static Vector3 ClampComponents( this Vector3 vector, 
+                                               float min, float max )
+        {
+            return new Vector3( Mathf.Clamp( vector.x, min, max ),
+                                Mathf.Clamp( vector.y, min, max ),
+                                Mathf.Clamp( vector.z, min, max ) );
+        }
+
         public static Vector3 ClampMag( this Vector3 vector, 
-                                        float minMag, 
-                                        float maxMag )
+                                        float minMag, float maxMag )
         {
             if( vector.magnitude < minMag )   return vector.normalized * minMag;
 
@@ -76,6 +106,28 @@ namespace MyUtility
             enclosingRect.yMax = Mathf.Max( a.yMax, b.yMax );
             enclosingRect.yMin = Mathf.Min( a.yMin, b.yMin );
             return enclosingRect;
+        }
+
+
+        public static void DrawRay( Vector3 pos, Vector3 dir )
+        {
+            Debug.DrawLine( pos, pos + dir * 100 );
+        }
+
+        public static void DrawRay( Vector3 pos, Vector3 dir, Color color )
+        {
+            Debug.DrawLine( pos, pos + dir * 100, color );
+        }
+
+        public static void DrawRay( Ray ray, float len = 100 )
+        {
+            Debug.DrawLine( ray.origin, ray.origin + ray.direction.normalized * len );
+
+        }
+
+        public static void DrawRay( Ray ray, Color color, float len = 100 )
+        {
+            Debug.DrawLine( ray.origin, ray.origin + ray.direction.normalized * len, color );
         }
 
         public static void EnableCollidersInChildren( this GameObject obj, bool enable )
@@ -346,6 +398,24 @@ namespace MyUtility
         }
 
         /// <summary>
+        /// Returns the screen space coordinate of the point this ray hits
+        /// </summary>
+        /// <param name="ray"></param>
+        /// <param name="camera"></param>
+        /// <returns></returns>
+        public static Vector2 ToScreenSpace( this Camera camera, Ray ray )
+        {
+            RaycastHit hit;
+            if( Physics.Raycast( ray, out hit ) )
+            {
+                Vector3 pixelCoordinate = camera.WorldToScreenPoint( hit.point );
+                return new Vector2( pixelCoordinate.x / camera.pixelWidth,
+                                    pixelCoordinate.y / camera.pixelHeight );
+            }
+            return Vector2.zero;
+        }
+
+        /// <summary>
         /// Prints given message with the caller's string used as a tag
         /// </summary>
         /// <param name="tag"></param>
@@ -483,7 +553,7 @@ namespace MyUtility
         /// <param name="num"></param>
         /// <param name="otherNum"></param>
         /// <returns></returns>
-        public static bool SignsAgree( float num, float otherNum )
+        public static bool SignAgrees( this float num, float otherNum )
         {
             return ( num >= 0  &&  otherNum >= 0 ) ||
                    ( num < 0   &&  otherNum < 0 );

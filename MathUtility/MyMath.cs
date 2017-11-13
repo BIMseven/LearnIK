@@ -278,7 +278,8 @@ public static class MyMath
             return diff / ( absA + absB ) < epsilon;
         }
     }
-    public static Vector3 PositionWS( GameObject thing )
+
+    public static Vector3 PositionWS( this GameObject thing )
 	{
 		return thing.transform.TransformPoint( Vector3.zero );
 	}
@@ -406,18 +407,39 @@ public static class MyMath
     /// <param name="pivot"></param>
     /// <param name="rotation"></param>
     /// <returns></returns>
-    public static Vector3 RotateAroundPivot( this Vector3 point, 
-                                             Vector3 pivot, 
-                                             Quaternion rotation )
+    public static Vector3 RotatedAroundPivot( this Vector3 point,
+                                              Vector3 pivot,
+                                              Quaternion rotation )
     {
         // Get direction relative to pivot
         Vector3 direction = point - pivot;
         // Apply rotation to direction
         direction = rotation * direction;
 
-        return point + direction;
+        return pivot + direction;
     }
-    
+
+    /// <summary>
+    /// Returns the position of this point when rotated around given pivot
+    /// </summary>
+    /// <param name="point"></param>
+    /// <param name="pivot"></param>
+    /// <param name="rotation"></param>
+    /// <returns></returns>
+    public static Vector3 RotatedAroundPivot( this Vector3 point,
+                                              Vector3 pivot,
+                                              Vector3 rotation )
+    {
+        // Get direction relative to pivot
+        Vector3 direction = point - pivot;
+        //Debug.DrawLine( pivot, pivot + direction, Color.cyan );
+
+        // Apply rotation to direction
+        direction = Quaternion.Euler( rotation ) * direction;
+
+        return pivot + direction;
+    }
+
     public static int Round( this double num )
     {
         double decimalComp = num - (int)num;

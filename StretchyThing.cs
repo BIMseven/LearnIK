@@ -84,7 +84,9 @@ public class StretchyThing : MonoBehaviour
     private void lookAtTarget( Vector3 targetPosition, Vector3 upwards )
     {
         Vector3 relativePos = targetPosition - transform.position;
-        if( ! relativePos.magnitude.NearlyEquals( 0 ) )
+        //if( ! relativePos.magnitude.NearlyEquals( 0 )  &&
+        //    ! upwards.magnitude.NearlyEquals( 0 ) )
+        if( relativePos != Vector3.zero )
         {
             transform.rotation = Quaternion.LookRotation( relativePos, upwards ); 
         }

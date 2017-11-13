@@ -18,6 +18,14 @@ public class Sound
 
 //---------------------------------------------------------------------------FIELDS:
 	
+    public float Duration
+    {
+        get
+        {
+            return clip.length;
+        }
+    }
+
     public bool IsPlaying
     {
         get
@@ -40,14 +48,14 @@ public class Sound
 
 //--------------------------------------------------------------------------METHODS:
 
-	public void Play( Vector3 soundOrigin )
+	public void Play( Vector3 soundOrigin, string name = "" )
 	{
         if( tempAudioSource != null )
         {
             GameObject.Destroy( tempAudioSource );
         }
         GameObject tempObject = new GameObject();
-        tempObject.name = "Sound";
+        tempObject.name = name + "Sound";
         tempAudioSource = tempObject.AddComponent<AudioSource>();
         tempAudioSource.volume = volume;
         tempAudioSource.loop = false;

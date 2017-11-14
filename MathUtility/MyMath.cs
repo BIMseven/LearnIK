@@ -50,6 +50,19 @@ public static class MyMath
 	}
 
     /// <summary>
+    /// Returns the center of given equilateral triangle
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <param name="c"></param>
+    /// <returns></returns>
+    public static Vector3 CenterOfEquilateral( Vector3 a, Vector3 b, Vector3 c )
+    {
+        Vector3 midAB = Vector3.Lerp( a, b, 0.5f );
+        return Vector3.Lerp( midAB, c, 1.0f / 3 );
+    }
+
+    /// <summary>
     /// Clamps the magnitude of the given vector to maxMagnitude
     /// </summary>
     /// <param name="vector"></param>

@@ -28,6 +28,26 @@ namespace MyUtility
        
 //--------------------------------------------------------------------------METHODS:
 
+        public void HideAllText()
+        {
+            foreach( Text text in Texts )
+            {
+                text.enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// Hides text
+        /// </summary>
+        /// <param name="textNumber"></param>
+        public void HideText( int textNumber )
+        {
+            if( textNumber >= 0  &&  textNumber < Texts.Length )
+            {
+                Texts[textNumber].enabled = false;
+            }
+        }
+
         /// <summary>
         /// Prints given message on the textNumberth Text 
         /// </summary>

@@ -12,9 +12,12 @@ public class Resetter : MonoBehaviour
 //---------------------------------------------------------------------------FIELDS:
 
     public KeyCode ResetPoitionKey;
+    public bool UseGlobalPosition;
 
-    private Vector3 initialLocalPosition;
+    private Vector3 initialPosition;
     private Quaternion initialRotation;
+    private Vector3 initialLocalPosition;
+    private Quaternion initialLocalRotation;
 
     private bool wasKinematic;
     private bool usedGravity;
@@ -46,8 +49,16 @@ public class Resetter : MonoBehaviour
             rigidbody.isKinematic = wasKinematic;
             rigidbody.useGravity = usedGravity;
         }
-        transform.localPosition = initialLocalPosition;
-        transform.rotation = initialRotation;
+        if( UseGlobalPosition )
+        {
+            transform.position = initialPosition;
+            transform.rotation = initialRotation;
+        }
+        else
+        {
+            transform.localPosition = initialLocalPosition;
+            transform.localRotation = initialLocalRotation;
+        }
     }
 
 //--------------------------------------------------------------------------HELPERS:
@@ -55,7 +66,11 @@ public class Resetter : MonoBehaviour
     private void rememberStartingState()
     {
         initialLocalPosition = transform.localPosition;
+        initialRotation = transform.localRotation;
+
+        initialPosition = transform.position;
         initialRotation = transform.rotation;
+
 
         Rigidbody rigidbody = GetComponent<Rigidbody>();
         if( rigidbody != null )

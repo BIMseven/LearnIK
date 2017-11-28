@@ -37,15 +37,6 @@ namespace MyUtility
        
         void Update()
         {
-            float time = Time.realtimeSinceStartup;
-            foreach( KeyValuePair<int, float> pair in timesToDestroyTexts )
-            {
-                if( time > pair.Value )
-                {
-                    HideText( pair.Key );
-                    timesToDestroyTexts.Remove( pair.Key );
-                }
-            }
         }
 
 //--------------------------------------------------------------------------METHODS:
@@ -107,7 +98,14 @@ namespace MyUtility
         {
             Print( textNumber, message );
             float timeToDestroy = Time.realtimeSinceStartup + duration;
-            timesToDestroyTexts.Add( textNumber, timeToDestroy );                
+            if( timesToDestroyTexts.ContainsKey( textNumber ) )
+            {
+                timesToDestroyTexts[textNumber] = timeToDestroy;
+            }
+            else
+            {
+                timesToDestroyTexts.Add( textNumber, timeToDestroy );                
+            }
         }
 
         /// <summary>
@@ -123,5 +121,25 @@ namespace MyUtility
 
 //--------------------------------------------------------------------------HELPERS:
 
+        private void removeExpiredMessages()
+        {
+            if( timesToDestroyTexts.Count == 0 )   return;
+
+            float time = Time.realtimeSinceStartup;
+            List<int> toRemove = new List<int>();
+
+            foreach( KeyValuePair<int, float> pair in timesToDestroyTexts )
+            {
+                if( time > pair.Value )
+                {
+                    HideText( pair.Key );
+                    toRemove.Add( pair.Key );
+                }
+            }
+            foreach( int key in toRemove )
+            {
+                timesToDestroyTexts.Remove( key );
+            }
+        }
     }
 }

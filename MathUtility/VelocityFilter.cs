@@ -95,8 +95,9 @@ namespace MyUtility
             // position was equal to previousPosition because we might actually be 
             // stopped, but we don't want a bum value to affect our speed if it isn't
             if( position == PreviousPosition &&
-                ++timesPositionEqualedPreviousPosition < TRANSFORM_UPDATES_PER_VELOCITY_UPDATES )
+                ++timesPositionEqualedPreviousPosition > TRANSFORM_UPDATES_PER_VELOCITY_UPDATES )
             {
+                Debug.Log( "Bad value!" );
                 return true;
             }
             timesPositionEqualedPreviousPosition = 0;

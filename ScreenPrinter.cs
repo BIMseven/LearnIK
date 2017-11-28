@@ -12,11 +12,20 @@ namespace MyUtility
         private const string LOG_TAG = "TextPrinter";
         public bool VERBOSE = false;
 
+        private const float DEFAULT_TOAST_TIME = 2.0f;
+
 //---------------------------------------------------------------------------FIELDS:
 
         public Text[] Texts;
 
+        Dictionary<int, float> timesToDestroyTexts;
+
 //---------------------------------------------------------------------MONO METHODS:
+
+        void Awake()
+        {
+            timesToDestroyTexts = new Dictionary<int, float>();
+        }
 
         void Start()
         {
@@ -26,6 +35,19 @@ namespace MyUtility
             }
         }
        
+        void Update()
+        {
+            float time = Time.realtimeSinceStartup;
+            foreach( KeyValuePair<int, float> pair in timesToDestroyTexts )
+            {
+                if( time > pair.Value )
+                {
+                    HideText( pair.Key );
+                    timesToDestroyTexts.Remove( pair.Key );
+                }
+            }
+        }
+
 //--------------------------------------------------------------------------METHODS:
 
         public void HideAllText()
@@ -64,9 +86,39 @@ namespace MyUtility
             Texts[textNumber].text = message;
         }
 
+        /// <summary>
+        /// Prints given message on the first Text object
+        /// </summary>
+        /// <param name="text"></param>
         public void Print( string text )
         {
             Print( 0, text );
+        }
+
+        /// <summary>
+        /// Displays given message on given text object for duration seconds
+        /// </summary>
+        /// <param name="textNumber"></param>
+        /// <param name="message"></param>
+        /// <param name="duration"></param>
+        public void Toast( int textNumber, 
+                           string message, 
+                           float duration = DEFAULT_TOAST_TIME )
+        {
+            Print( textNumber, message );
+            float timeToDestroy = Time.realtimeSinceStartup + duration;
+            timesToDestroyTexts.Add( textNumber, timeToDestroy );                
+        }
+
+        /// <summary>
+        /// Displays given message on first text object for duration seconds
+        /// </summary>
+        /// <param name="textNumber"></param>
+        /// <param name="message"></param>
+        /// <param name="duration"></param>
+        public void Toast( string message, float duration = DEFAULT_TOAST_TIME )
+        {
+            Toast( 0, message, duration );
         }
 
 //--------------------------------------------------------------------------HELPERS:

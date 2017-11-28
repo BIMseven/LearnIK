@@ -21,10 +21,14 @@ public class VisibilityToggler : MonoBehaviour
     void OnEnable()
     {
         updateVisibility();
+        wasVisible = Visible;
+        updateVisibility();
     }
 
 	void Start() 
 	{
+        updateVisibility();
+        wasVisible = Visible;
         updateVisibility();
     }
 

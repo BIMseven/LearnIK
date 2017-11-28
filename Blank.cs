@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using MyUtility;
 
 public class Blank : MonoBehaviour 
 {
@@ -18,10 +19,11 @@ public class Blank : MonoBehaviour
 
 	}
 		
-	void Update()
-	{
 
-	}
+	void Update()
+    {
+    }
+
 
 //--------------------------------------------------------------------------METHODS:
 

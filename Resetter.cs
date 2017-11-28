@@ -46,8 +46,8 @@ public class Resetter : MonoBehaviour
         {
             rigidbody.velocity = Vector3.zero;
             rigidbody.angularVelocity = Vector3.zero;
-            rigidbody.isKinematic = wasKinematic;
-            rigidbody.useGravity = usedGravity;
+            //rigidbody.isKinematic = wasKinematic;
+            //rigidbody.useGravity = usedGravity;
         }
         if( UseGlobalPosition )
         {
@@ -66,7 +66,7 @@ public class Resetter : MonoBehaviour
     private void rememberStartingState()
     {
         initialLocalPosition = transform.localPosition;
-        initialRotation = transform.localRotation;
+        initialLocalRotation = transform.localRotation;
 
         initialPosition = transform.position;
         initialRotation = transform.rotation;

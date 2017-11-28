@@ -37,6 +37,7 @@ namespace MyUtility
        
         void Update()
         {
+            removeExpiredMessages();
         }
 
 //--------------------------------------------------------------------------METHODS:

@@ -67,12 +67,51 @@ public static class MyMath
     /// </summary>
     /// <param name="vector"></param>
     /// <param name="maxMagnitude"></param>
+    public static Vector2 Clamped( this Vector2 vector, float maxMagnitude )
+    {
+        if( vector.magnitude > maxMagnitude )
+        {
+            vector = vector.normalized * maxMagnitude;
+        }
+        return vector;
+    }
+
+    /// <summary>
+    /// Clamps the magnitude of the given vector to maxMagnitude
+    /// </summary>
+    /// <param name="vector"></param>
+    /// <param name="maxMagnitude"></param>
+    public static Vector2 Clamped( this Vector2 vector, Vector2 min, Vector2 max )
+    {
+        vector.x = Mathf.Clamp( vector.x, min.x, max.x );
+        vector.y = Mathf.Clamp( vector.y, min.y, max.y );
+        return vector;
+    }
+
+    /// <summary>
+    /// Clamps the magnitude of the given vector to maxMagnitude
+    /// </summary>
+    /// <param name="vector"></param>
+    /// <param name="maxMagnitude"></param>
     public static Vector3 Clamped( this Vector3 vector, float maxMagnitude )
     {
         if( vector.magnitude > maxMagnitude )
         {
             vector = vector.normalized * maxMagnitude;            
         }
+        return vector;
+    }
+
+    /// <summary>
+    /// Clamps the magnitude of the given vector to maxMagnitude
+    /// </summary>
+    /// <param name="vector"></param>
+    /// <param name="maxMagnitude"></param>
+    public static Vector3 Clamped( this Vector3 vector, Vector3 min, Vector3 max )
+    {
+        vector.x = Mathf.Clamp( vector.x, min.x, max.x );
+        vector.y = Mathf.Clamp( vector.y, min.y, max.y );
+        vector.z = Mathf.Clamp( vector.z, min.z, max.z );
         return vector;
     }
 

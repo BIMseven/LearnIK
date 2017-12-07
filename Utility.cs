@@ -575,6 +575,12 @@ namespace MyUtility
         }
 
         // Returns a vector2 made from the x and z components of given vector
+        public static Vector2 XY( this Vector3 vector )
+        {
+            return new Vector2( vector.x, vector.y );
+        }
+
+        // Returns a vector2 made from the x and z components of given vector
         public static Vector2 XZ( this Vector3 vector )
         {
             return new Vector2( vector.x, vector.z );

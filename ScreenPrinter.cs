@@ -16,6 +16,16 @@ namespace MyUtility
 
 //---------------------------------------------------------------------------FIELDS:
 
+        public int NumTexts
+        {
+            get
+            {
+                if( Texts == null )    return 0;
+
+                return Texts.Length; 
+            }
+        }
+
         public Text[] Texts;
 
         Dictionary<int, float> timesToDestroyTexts;

@@ -12,8 +12,20 @@ public class Resetter : MonoBehaviour
 //---------------------------------------------------------------------------FIELDS:
 
     public KeyCode ResetPoitionKey;
-    public bool UseGlobalPosition;
 
+    public bool UseGlobalPosition;
+    public float DistanceFromStartPosition
+    {
+        get
+        {
+            if( UseGlobalPosition )
+            {
+                return ( transform.position - initialPosition ).magnitude;
+            }
+            return ( transform.localPosition - initialLocalPosition ).magnitude;
+        }
+    }
+    
     private Vector3 initialPosition;
     private Quaternion initialRotation;
     private Vector3 initialLocalPosition;
@@ -46,8 +58,6 @@ public class Resetter : MonoBehaviour
         {
             rigidbody.velocity = Vector3.zero;
             rigidbody.angularVelocity = Vector3.zero;
-            //rigidbody.isKinematic = wasKinematic;
-            //rigidbody.useGravity = usedGravity;
         }
         if( UseGlobalPosition )
         {

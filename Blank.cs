@@ -11,7 +11,6 @@ public class Blank : MonoBehaviour
 
 //---------------------------------------------------------------------------FIELDS:
 	
-		
 //---------------------------------------------------------------------MONO METHODS:
 
 	void Start() 
@@ -19,7 +18,6 @@ public class Blank : MonoBehaviour
 
 	}
 		
-
 	void Update()
     {
 

@@ -145,6 +145,16 @@ namespace MyUtility
                 collider.enabled = enable;
             }
         }
+        
+        public static T EnsureComponent<T>( this GameObject obj ) where T : MonoBehaviour
+        {
+            T component = obj.GetComponent<T>();
+            if( component == null )
+            {
+                return obj.AddComponent<T>();
+            }
+            return component;
+        }
 
         public static T FindComponent<T>( this GameObject obj )
         {

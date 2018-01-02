@@ -52,6 +52,64 @@ namespace MyUtility
             return list[list.Count - 1];
         }
 
+        /// <summary>
+        /// Pulls numToPull random elements from given list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static T[] PullRandom<T>( this List<T> list, int numToPull = 1 )
+        {
+            T[] randomElements = new T[numToPull];
+            int[] randomIndices = Utility.RandomUniqueIndices( list.Count, numToPull );
+            for( int i = 0; i < numToPull; i++ )
+            {
+                int index = randomIndices[i];
+                randomElements[i] = list[index];
+            }
+            return randomElements;
+        }
+
+        /// <summary>
+        /// Pulls numToPull random elements from given set
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static T[] PullRandom<T>( this HashSet<T> set, int numToPull = 1 )
+        {
+            return PullRandom<T>( new List<T>( set ), numToPull );
+        }
+        
+        /// <summary>
+        /// Pulls numToPull random elements from given set
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static T[] PullRandom<T>( this T[] array, int numToPull = 1 )
+        {
+            return PullRandom<T>( new List<T>( array ), numToPull );
+        }
+        
+        /// <summary>
+        /// Shuffles this list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        public static void Shuffle<T>( this IList<T> list )
+        {
+            int listLength = list.Count;
+
+            for( int i = 0; i < listLength; i++ )
+            {
+                int indexToSwapWith = UnityEngine.Random.Range( 0, listLength );
+                T value = list[indexToSwapWith];
+                list[indexToSwapWith] = list[i];
+                list[i] = value;
+            }
+        }
+
 //--------------------------------------------------------------------------HELPERS:
 
     }

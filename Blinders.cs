@@ -32,16 +32,27 @@ namespace MyUtility
             visibilityToggler.Visible = false;
         }		
 
+        //void Update()
+        //{
+        //    if( Input.GetKeyDown( KeyCode.P ) )
+        //    {
+        //        BlindersOn( true );
+        //    }
+        //}
+
 //--------------------------------------------------------------------------METHODS:
 
         public void BlindersOn( bool on )
         {
-            transform.parent = CameraToCover.transform;
-            float distFromCam = CameraToCover.nearClipPlane + EPSILON;
-            transform.position = Vector3.zero;
-            transform.position += CameraToCover.transform.forward * distFromCam;
-            transform.LookAt( CameraToCover.transform.position );
+            if( VERBOSE )  LOG_TAG.TPrint( "Blinders on: " + on );
+            //transform.parent = null;
+            //float distFromCam = CameraToCover.nearClipPlane + EPSILON;
+            //transform.position = Vector3.zero;
+            //transform.position += CameraToCover.transform.position +
+            //                      CameraToCover.transform.forward * distFromCam;
+            //transform.LookAt( CameraToCover.transform.position );
             ScreenFiller.FillScreenOfCamera( CameraToCover );
+            transform.parent = CameraToCover.transform;
             visibilityToggler.Visible = on;
         }
         

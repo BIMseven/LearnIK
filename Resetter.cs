@@ -11,7 +11,9 @@ public class Resetter : MonoBehaviour
 
 //---------------------------------------------------------------------------FIELDS:
 
+    #if RESETTER_DEBUG_MODE
     public KeyCode ResetPoitionKey;
+    #endif
 
     public bool UseGlobalPosition;
     public float DistanceFromStartPosition
@@ -30,6 +32,8 @@ public class Resetter : MonoBehaviour
     private Quaternion initialRotation;
     private Vector3 initialLocalPosition;
     private Quaternion initialLocalRotation;
+    private Transform initialParent;
+    private Vector3 initialScale;
 
     private bool wasKinematic;
     private bool usedGravity;
@@ -38,20 +42,47 @@ public class Resetter : MonoBehaviour
 
     void Start() 
 	{
-        rememberStartingState();
+        Initialize();
     }
-		
+
+    #if RESETTER_DEBUG_MODE
 	void Update()
 	{
         if( Input.GetKeyDown( ResetPoitionKey ) )
         {
-            GoToInitialPosition();
+            ResetObject();
         }
 	}
+    #endif
 
 //--------------------------------------------------------------------------METHODS:
 
-    public void GoToInitialPosition()
+    public void Initialize()
+    {
+        initialScale = transform.localScale;
+
+        initialLocalPosition = transform.localPosition;
+        initialLocalRotation = transform.localRotation;
+
+        initialPosition = transform.position;
+        initialRotation = transform.rotation;
+
+        initialParent = transform.parent;
+
+        Rigidbody rigidbody = GetComponent<Rigidbody>();
+        if( rigidbody != null )
+        {
+            wasKinematic = rigidbody.isKinematic;
+            usedGravity = rigidbody.useGravity;
+        }
+    }
+
+    /// <summary>
+    /// Returns object to initial global or local (depending on field UseGlobalPos)
+    /// position and rotation.  Rigidbody's positional and rotational speed are 
+    /// set to zero, and the object goes back to its initial parent.
+    /// </summary>
+    public void ResetObject()
     {
         Rigidbody rigidbody = GetComponent<Rigidbody>();
         if( rigidbody != null )
@@ -59,6 +90,12 @@ public class Resetter : MonoBehaviour
             rigidbody.velocity = Vector3.zero;
             rigidbody.angularVelocity = Vector3.zero;
         }
+        if( initialParent != null )
+        {
+            transform.parent = initialParent;
+            transform.localScale = initialScale;
+        }
+
         if( UseGlobalPosition )
         {
             transform.position = initialPosition;
@@ -70,23 +107,7 @@ public class Resetter : MonoBehaviour
             transform.localRotation = initialLocalRotation;
         }
     }
-
+        
 //--------------------------------------------------------------------------HELPERS:
 
-    private void rememberStartingState()
-    {
-        initialLocalPosition = transform.localPosition;
-        initialLocalRotation = transform.localRotation;
-
-        initialPosition = transform.position;
-        initialRotation = transform.rotation;
-
-
-        Rigidbody rigidbody = GetComponent<Rigidbody>();
-        if( rigidbody != null )
-        {
-            wasKinematic = rigidbody.isKinematic;
-            usedGravity = rigidbody.useGravity;
-        }
-    }	
 }

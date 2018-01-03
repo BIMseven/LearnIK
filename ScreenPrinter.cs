@@ -28,6 +28,8 @@ namespace MyUtility
 
         public Text[] Texts;
 
+        public Color DefaultColor = Color.black;
+
         Dictionary<int, float> timesToDestroyTexts;
 
 //---------------------------------------------------------------------MONO METHODS:
@@ -79,12 +81,23 @@ namespace MyUtility
         /// <param name="message"></param>
         public void Print( int textNumber, string message )
         {
+            Print( textNumber, message, DefaultColor );
+        }
+
+        /// <summary>
+        /// Prints given message on the textNumberth Text 
+        /// </summary>
+        /// <param name="textNumber"></param>
+        /// <param name="message"></param>
+        public void Print( int textNumber, string message, Color color )
+        {
             if( textNumber >= Texts.Length )
             {
                 LOG_TAG.TPrint( "Pick textnumber between 0 and " + Texts.Length );
                 return;
             }
             Texts[textNumber].enabled = true;
+            Texts[textNumber].color = color;
             Texts[textNumber].text = message;
         }
 
@@ -94,7 +107,18 @@ namespace MyUtility
         /// <param name="text"></param>
         public void Print( string text )
         {
-            Print( 0, text );
+            Print( 0, text, DefaultColor );
+        }
+
+        /// <summary>
+        /// Prints given message on the first Text object
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="color"></param>
+        public void Print( string text, Color color )
+        {
+            Texts[0].color = color;
+            Print( 0, text, color );
         }
 
         /// <summary>
@@ -107,7 +131,21 @@ namespace MyUtility
                            string message, 
                            float duration = DEFAULT_TOAST_TIME )
         {
-            Print( textNumber, message );
+            Toast( textNumber, message, DefaultColor, duration );
+        }
+
+        /// <summary>
+        /// Displays given message on given text object for duration seconds
+        /// </summary>
+        /// <param name="textNumber"></param>
+        /// <param name="message"></param>
+        /// <param name="duration"></param>
+        public void Toast( int textNumber,
+                           string message,
+                           Color color,
+                           float duration = DEFAULT_TOAST_TIME )
+        {
+            Print( textNumber, message, color );
             float timeToDestroy = Time.realtimeSinceStartup + duration;
             if( timesToDestroyTexts.ContainsKey( textNumber ) )
             {
@@ -115,7 +153,7 @@ namespace MyUtility
             }
             else
             {
-                timesToDestroyTexts.Add( textNumber, timeToDestroy );                
+                timesToDestroyTexts.Add( textNumber, timeToDestroy );
             }
         }
 
@@ -128,6 +166,19 @@ namespace MyUtility
         public void Toast( string message, float duration = DEFAULT_TOAST_TIME )
         {
             Toast( 0, message, duration );
+        }
+
+        /// <summary>
+        /// Displays given message on first text object for duration seconds
+        /// </summary>
+        /// <param name="textNumber"></param>
+        /// <param name="message"></param>
+        /// <param name="duration"></param>
+        public void Toast( string message, 
+                           Color color, 
+                           float duration = DEFAULT_TOAST_TIME )
+        {
+            Toast( 0, message, color, duration );
         }
 
 //--------------------------------------------------------------------------HELPERS:

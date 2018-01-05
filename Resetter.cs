@@ -40,12 +40,12 @@ public class Resetter : MonoBehaviour
 
 //---------------------------------------------------------------------MONO METHODS:
 
+    #if RESETTER_DEBUG_MODE
     void Start() 
 	{
-        Initialize();
+        RememberPosition();
     }
 
-    #if RESETTER_DEBUG_MODE
 	void Update()
 	{
         if( Input.GetKeyDown( ResetPoitionKey ) )
@@ -57,7 +57,7 @@ public class Resetter : MonoBehaviour
 
 //--------------------------------------------------------------------------METHODS:
 
-    public void Initialize()
+    public void RememberState()
     {
         initialScale = transform.localScale;
 

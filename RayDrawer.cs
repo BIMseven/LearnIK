@@ -7,7 +7,7 @@ public class RayDrawer : MonoBehaviour
 {
 //------------------------------------------------------------------------CONSTANTS:
 
-	private const string LOG_TAG = "RayDrawer";
+    private const string LOG_TAG = "RayDrawer";
 
 //---------------------------------------------------------------------------FIELDS:
 
@@ -21,6 +21,9 @@ public class RayDrawer : MonoBehaviour
     public float HitSize = 0.01f;
 
     public Vector2 LastHitCoordinate { get; private set; }
+
+    public GameObject LastHitObject { get; private set; }
+
     public float LastHitDistance { get; private set; }
     public Vector3 LastHitPoint
     {
@@ -32,18 +35,18 @@ public class RayDrawer : MonoBehaviour
 
     private Ray lastCastRay;
     private VisibilityToggler hitSphere;
-		
+        
 //---------------------------------------------------------------------MONO METHODS:
 
-	void Start() 
-	{
+    void Start() 
+    {
         var obj = GameObject.CreatePrimitive( PrimitiveType.Sphere );
         obj.GetComponent<Collider>().enabled = false;
         obj.name = "RayDrawer Hit";
         hitSphere = obj.AddComponent<VisibilityToggler>();
-	}
-		
-	void Update()
+    }
+        
+    void Update()
     {
         hitSphere.transform.localScale = Vector3.one * HitSize;
 
@@ -81,8 +84,9 @@ public class RayDrawer : MonoBehaviour
             hitSphere.Visible = true;
             hitSphere.transform.position = hit.point;
             LastHitCoordinate = hit.textureCoord;
+            LastHitObject = hit.collider.gameObject;
             LastHitDistance = hit.distance;
-            rayLen = ( hit.point - transform.position ).magnitude;            
+            rayLen = ( hit.point - transform.position ).magnitude;
         }
         else
         {

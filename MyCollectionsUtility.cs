@@ -107,6 +107,15 @@ namespace MyUtility
             return PullRandom<T>( new List<T>( array ), numToPull );
         }
         
+        public static void SetActive( this GameObject[] objects, bool active )
+        {
+            foreach( GameObject obj in objects )
+            {
+                obj.SetActive( active );
+            }
+        }
+
+
         /// <summary>
         /// Shuffles this list
         /// </summary>

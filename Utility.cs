@@ -108,6 +108,58 @@ namespace MyUtility
             return enclosingRect;
         }
 
+        public static Vector3[] CornersAndCenter( this Bounds bounds )
+        {
+            Vector3[] points = new Vector3[9];
+
+            Vector3 toCorner = bounds.extents;
+
+            // forward, top right
+            points[0] = bounds.center + toCorner;
+            // backward, bottom left (if still facing forward)
+            points[1] = bounds.center - toCorner;
+
+            toCorner.x *= -1;
+            points[2] = bounds.center + toCorner; // forward, top left
+            points[3] = bounds.center - toCorner; // back, bottom right
+
+            toCorner.z *= -1;
+            points[4] = bounds.center + toCorner; // back, top right
+            points[5] = bounds.center - toCorner; // forward, bottom right
+
+            toCorner.x *= -1;
+            points[6] = bounds.center + toCorner; // forward, bottom left
+            points[7] = bounds.center - toCorner; // backward, bottom right
+
+            points[8] = bounds.center;
+            return points;
+        }
+
+        public static Vector3[] CornerPoints( this Bounds bounds )
+        {
+            Vector3[] points = new Vector3[8];
+
+            Vector3 toCorner = bounds.extents;
+
+            // forward, top right
+            points[0] = bounds.center + toCorner;
+            // backward, bottom left (if still facing forward)
+            points[1] = bounds.center - toCorner;
+
+            toCorner.x *= -1;
+            points[2] = bounds.center + toCorner; // forward, top left
+            points[3] = bounds.center - toCorner; // back, bottom right
+
+            toCorner.z *= -1;
+            points[4] = bounds.center + toCorner; // back, top right
+            points[5] = bounds.center - toCorner; // forward, bottom right
+
+            toCorner.x *= -1;
+            points[6] = bounds.center + toCorner; // forward, bottom left
+            points[7] = bounds.center - toCorner; // backward, bottom right
+
+            return points;
+        }
 
         public static void DrawRay( Vector3 pos, Vector3 dir )
         {

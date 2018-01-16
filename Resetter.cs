@@ -90,11 +90,9 @@ public class Resetter : MonoBehaviour
             rigidbody.velocity = Vector3.zero;
             rigidbody.angularVelocity = Vector3.zero;
         }
-        if( initialParent != null )
-        {
-            transform.parent = initialParent;
-            transform.localScale = initialScale;
-        }
+        
+        transform.parent = initialParent;
+        transform.localScale = initialScale;
 
         if( UseGlobalPosition )
         {

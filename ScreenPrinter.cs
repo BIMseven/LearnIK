@@ -185,6 +185,7 @@ namespace MyUtility
 
         private void removeExpiredMessages()
         {
+            if( timesToDestroyTexts == null )   return;
             if( timesToDestroyTexts.Count == 0 )   return;
 
             float time = Time.realtimeSinceStartup;

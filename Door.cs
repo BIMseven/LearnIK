@@ -50,24 +50,50 @@ namespace MyUtility
 
         }
         
+        void Update()
+        {
+            if( Input.GetKeyDown( KeyCode.O ) )
+            {
+                Open();
+            }
+            if( Input.GetKeyDown( KeyCode.C ) )
+            {
+                Close();
+            }
+            if( Input.GetKeyDown( KeyCode.E ) )
+            {
+                OpenOrClose();
+            }
+        }
+
 //--------------------------------------------------------------------------METHODS:
 
-        public void Open( bool open )
+        public void Close()
         {
-            if( open  &&  state == States.Closed )
+            if( state != States.Closed )
+            {
+                if( VERBOSE )  LOG_TAG.TPrint( "Closing" );
+                timeStartedMoving = Time.realtimeSinceStartup;
+                state = States.Closing;
+                StartCoroutine( "close" );
+            }
+        }
+
+        public void Open()
+        {
+            if( state != States.Open )
             {
                 if( VERBOSE )  LOG_TAG.TPrint( "Opening" );
                 timeStartedMoving = Time.realtimeSinceStartup;
                 state = States.Opening;
                 StartCoroutine( "open" );
-            }
-            else if( ! open  &&  state == States.Open )
-            {
-                if( VERBOSE ) LOG_TAG.TPrint( "Closing" );
-                timeStartedMoving = Time.realtimeSinceStartup;
-                state = States.Closing;
-                StartCoroutine( "close" );
-            }
+            }            
+        }
+
+        public void OpenOrClose()
+        {
+            if( state == States.Open )   Close();
+            else                         Open();
         }
 
 //--------------------------------------------------------------------------HELPERS:

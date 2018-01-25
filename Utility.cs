@@ -39,7 +39,7 @@ namespace MyUtility
             }
             return true;
         }
-
+        
         public static Vector3 ClampComponents( this Vector3 vector, 
                                                float min, float max )
         {
@@ -208,6 +208,20 @@ namespace MyUtility
             return component;
         }
 
+        public static Vector3 FindCenter( this GameObject[] gameObjects )
+        {
+            Vector3 sum = Vector3.zero;
+            foreach( GameObject gameObject in gameObjects )
+            {
+                sum += gameObject.transform.position;
+            }
+            if( gameObjects.Length > 0 )
+            {
+                return sum / gameObjects.Length;
+            }
+            return default( Vector3 );
+        }
+        
         public static T FindComponent<T>( this GameObject obj )
         {
             T component = obj.GetComponentInChildren<T>();

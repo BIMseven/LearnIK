@@ -29,7 +29,26 @@ namespace MyUtility
                 child.parent = transform;
             }
         }
-                
+
+        /// <summary>
+        /// Returns the average position of given transforms
+        /// </summary>
+        /// <param name="transforms"></param>
+        /// <returns></returns>
+        public static Vector3 FindCenter( this Transform[] transforms )
+        {
+            Vector3 sum = Vector3.zero;
+            foreach( Transform transform in transforms )
+            {
+                sum += transform.position;
+            }
+            if( transforms.Length > 0 )
+            {
+                return sum / transforms.Length;
+            }
+            return default( Vector3 );
+        }
+
         /// <summary>
         /// Returns an array of the children of this transform
         /// </summary>

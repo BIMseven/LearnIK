@@ -38,7 +38,8 @@ namespace MyUtility
         {
             get
             {
-                return instance != null;
+                return instance != null  ||
+                       FindObjectOfType<T>() != null;
             }
         }
         

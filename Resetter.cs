@@ -22,18 +22,18 @@ public class Resetter : MonoBehaviour
         {
             if( UseGlobalPosition )
             {
-                return ( transform.position - initialPosition ).magnitude;
+                return ( transform.position - InitialPosition ).magnitude;
             }
-            return ( transform.localPosition - initialLocalPosition ).magnitude;
+            return ( transform.localPosition - InitialLocalPosition ).magnitude;
         }
     }
     
-    private Vector3 initialPosition;
-    private Quaternion initialRotation;
-    private Vector3 initialLocalPosition;
-    private Quaternion initialLocalRotation;
-    private Transform initialParent;
-    private Vector3 initialScale;
+    public Vector3 InitialPosition { get; private set; }
+    public Quaternion InitialRotation { get; private set; }
+    public Vector3 InitialLocalPosition { get; private set; }
+    public Quaternion InitialLocalRotation { get; private set; }
+    public Transform initialParent;
+    public Vector3 initialScale;
 
     private bool wasKinematic;
     private bool usedGravity;
@@ -61,11 +61,11 @@ public class Resetter : MonoBehaviour
     {
         initialScale = transform.localScale;
 
-        initialLocalPosition = transform.localPosition;
-        initialLocalRotation = transform.localRotation;
+        InitialLocalPosition = transform.localPosition;
+        InitialLocalRotation = transform.localRotation;
 
-        initialPosition = transform.position;
-        initialRotation = transform.rotation;
+        InitialPosition = transform.position;
+        InitialRotation = transform.rotation;
 
         initialParent = transform.parent;
 
@@ -96,13 +96,13 @@ public class Resetter : MonoBehaviour
 
         if( UseGlobalPosition )
         {
-            transform.position = initialPosition;
-            transform.rotation = initialRotation;
+            transform.position = InitialPosition;
+            transform.rotation = InitialRotation;
         }
         else
         {
-            transform.localPosition = initialLocalPosition;
-            transform.localRotation = initialLocalRotation;
+            transform.localPosition = InitialLocalPosition;
+            transform.localRotation = InitialLocalRotation;
         }
     }
         

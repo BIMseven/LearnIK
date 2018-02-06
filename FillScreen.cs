@@ -15,23 +15,12 @@ public class FillScreen : MonoBehaviour
 
 //---------------------------------------------------------------------------FIELDS:
 
-    public bool FillOnAwake = false;
 	public bool FillOnStart = false;
-
-    private float unscaledWidth, unscaledHeight;
-
+    
 //---------------------------------------------------------------------MONO METHODS:
 
     void Awake()
     {
-        Bounds unscaledBounds = transform.UnscaledAndUnrotatedBounds();
-        unscaledWidth = unscaledBounds.extents.x * 2;
-        unscaledHeight = unscaledBounds.extents.z * 2;
-
-        if( FillOnAwake )
-        {
-            FillScreenOfParentCamera();
-        }
     }
 
 	void Start()
@@ -45,8 +34,12 @@ public class FillScreen : MonoBehaviour
 //--------------------------------------------------------------------------METHODS:
 
 	public void FillScreenOfCamera( Camera cam )
-	{
-		Vector3 toCamera = cam.transform.position - transform.position;
+    {
+        Bounds unscaledBounds = transform.UnscaledAndUnrotatedBounds();
+        float unscaledWidth = unscaledBounds.extents.x * 2;
+        float unscaledHeight = unscaledBounds.extents.z * 2;
+
+        Vector3 toCamera = cam.transform.position - transform.position;
 
 		Rect planeDim = cam.FrustumAtDistance( toCamera.magnitude );
 

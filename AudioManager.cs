@@ -26,8 +26,6 @@ namespace MyUtility
         public AudioSource[] BackgroundTracks;
         public string[] BackgroundTrackNames;
 
-        public bool UpdateSounds;
-
         private Dictionary<string, Sound> mySounds;
         private Dictionary<string, AudioSource> myBackgroundTracks;
 
@@ -38,21 +36,7 @@ namespace MyUtility
             populateMySounds();
             populateBackgroundTracks();
         }
-
-        void Update()
-        {
-            if( UpdateSounds )
-            {
-                populateMySounds();
-                UpdateSounds = false;
-            }
-            //if( Input.GetKeyDown( KeyCode.R ) )       populateMySounds();
-            //if( Input.GetKeyDown( KeyCode.Alpha4 ) )  PlaySound( "timeout" );
-            //if( Input.GetKeyDown( KeyCode.Alpha1 ) )  PlaySound( "beep_a" );
-            //if( Input.GetKeyDown( KeyCode.Alpha2 ) )  PlaySound( "beep_b" );
-            //if( Input.GetKeyDown( KeyCode.Alpha3 ) )  PlaySound( "beep_c" );
-        }
-
+        
 //--------------------------------------------------------------------------METHODS:
 
         /// <summary>
@@ -115,6 +99,10 @@ namespace MyUtility
             }
         }
 
+        public void RefreshSoundList()
+        {
+            populateMySounds();
+        }
         /// <summary>
         /// Returns the duration of sound if it exists, -1 otherwise
         /// </summary>
@@ -158,7 +146,7 @@ namespace MyUtility
                 track.Stop();
             }
         }
-
+        
 //--------------------------------------------------------------------------HELPERS:
 
         private void populateBackgroundTracks()

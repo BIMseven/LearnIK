@@ -40,24 +40,6 @@ namespace MyUtility
             return true;
         }
         
-        public static Vector3 ClampComponents( this Vector3 vector, 
-                                               float min, float max )
-        {
-            return new Vector3( Mathf.Clamp( vector.x, min, max ),
-                                Mathf.Clamp( vector.y, min, max ),
-                                Mathf.Clamp( vector.z, min, max ) );
-        }
-
-        public static Vector3 ClampMag( this Vector3 vector, 
-                                        float minMag, float maxMag )
-        {
-            if( vector.magnitude < minMag )   return vector.normalized * minMag;
-
-            if( vector.magnitude > maxMag )   return vector.normalized * maxMag;
-
-            return vector;
-        }
-
         /// <summary>
         /// Returns true if given collider is inside any other objects with colliders
         /// in the scene.
@@ -606,18 +588,6 @@ namespace MyUtility
         public static string WithQuotes( this string text )
         {
             return "\"" + text + "\"";
-        }
-
-        // Returns a vector2 made from the x and z components of given vector
-        public static Vector2 XY( this Vector3 vector )
-        {
-            return new Vector2( vector.x, vector.y );
-        }
-
-        // Returns a vector2 made from the x and z components of given vector
-        public static Vector2 XZ( this Vector3 vector )
-        {
-            return new Vector2( vector.x, vector.z );
         }
 
 //--------------------------------------------------------------------------HELPERS:

@@ -519,6 +519,11 @@ namespace MyUtility
             Debug.LogError( tag + " --- " + message );
         }
 
+        public static bool RandBool()
+        {
+            return UnityEngine.Random.Range( 0f, 1f ) >= 0.5;
+        }
+
         // Generate a random point within the given Bounds
         public static Vector3 RandomPointInBounds( Bounds bounds )
         {

@@ -64,7 +64,27 @@ namespace MyUtility
             }
             return children;
         }
-        
+
+        public static void SetDimensions( this Transform transform, 
+                                          float width, 
+                                          float depth, 
+                                          float height )
+        {
+            Bounds unscaledBounds = transform.UnscaledAndUnrotatedBounds();
+
+            float unscaledWidth = unscaledBounds.extents.x * 2;
+            float unscaledHeight = unscaledBounds.extents.y * 2;
+            float unscaledDepth = unscaledBounds.extents.z * 2;
+
+            float targetXScale = width / unscaledWidth;
+            float targetYScale = height / unscaledHeight;
+            float targetZScale = depth / unscaledDepth;
+
+            transform.localScale = new Vector3( targetXScale, 
+                                                targetYScale, 
+                                                targetZScale );
+        }
+
         public static void SetEulerX( this Transform transform, float x )
         {
             Vector3 rot = transform.eulerAngles;
@@ -239,7 +259,7 @@ namespace MyUtility
                     Debug.LogError( "No Renderer or Collider attached to object!" );
                     transform.rotation = startingRot;
                     transform.localScale = startingScale;
-                    return new Bounds();
+                    return default( Bounds );
                 }
                 else
                 {

@@ -6,7 +6,7 @@ namespace MyUtility
 {
     public enum Sides
     {
-        Neither, Left, Right        
+        Neither, Both, Left, Right        
     }
 }
 

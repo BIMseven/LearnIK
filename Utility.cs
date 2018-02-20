@@ -555,7 +555,7 @@ namespace MyUtility
                                 str.Split( default( string[] ), 
                                 StringSplitOptions.RemoveEmptyEntries ) );
         }
-
+        
         public static void SetPlayerPref( string tag, bool isTrue )
         {
             if( isTrue )

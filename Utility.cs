@@ -53,7 +53,7 @@ namespace MyUtility
             return ObjColliderIsInside( collider, rayLength ) != null;
         }
 
-        public static Bounds CombineBounds( Bounds[] allBounds )
+        public static Bounds Combine( this Bounds[] allBounds )
         {
             Bounds bounds = new Bounds( Vector3.zero, Vector3.zero );
 
@@ -261,7 +261,7 @@ namespace MyUtility
                 return GetBoundsFromColliders( gameObject );
             }
             Bounds[] allBounds = renderers.Select( x => x.bounds ).ToArray();
-            return CombineBounds( allBounds );
+            return Combine( allBounds );
         }
 
         /// <summary>
@@ -273,7 +273,7 @@ namespace MyUtility
         {
             Collider[] colliders = gameObject.GetComponentsInChildren<Collider>();
             Bounds[] allBounds = colliders.Select( x => x.bounds ).ToArray();
-            return CombineBounds( allBounds );
+            return Combine( allBounds );
         }
         
         /// <summary>

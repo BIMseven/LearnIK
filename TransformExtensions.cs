@@ -64,7 +64,7 @@ namespace MyUtility
             }
             return children;
         }
-
+        
         public static void SetDimensions( this Transform transform, 
                                           float width, 
                                           float depth, 
@@ -75,7 +75,7 @@ namespace MyUtility
             float unscaledWidth = unscaledBounds.extents.x * 2;
             float unscaledHeight = unscaledBounds.extents.y * 2;
             float unscaledDepth = unscaledBounds.extents.z * 2;
-
+            
             float targetXScale = width / unscaledWidth;
             float targetYScale = height / unscaledHeight;
             float targetZScale = depth / unscaledDepth;
@@ -101,6 +101,22 @@ namespace MyUtility
         {
             Vector3 rot = transform.eulerAngles;
             transform.eulerAngles = new Vector3( rot.x, rot.y, z );
+        }
+
+        public static void SetFootprint( this Transform transform,
+                                         float width, float depth )
+        {
+            Bounds unscaledBounds = transform.UnscaledAndUnrotatedBounds();
+            float unscaledWidth = unscaledBounds.extents.x * 2;
+            float unscaledDepth = unscaledBounds.extents.z * 2;
+
+            float targetXScale = width / unscaledWidth;
+            float targetZScale = depth / unscaledDepth;
+            float yScale = transform.localScale.y;
+
+            transform.localScale = new Vector3( targetXScale,
+                                                yScale,
+                                                targetZScale );
         }
 
         public static void SetLocalEulerX( this Transform transform, float x )
@@ -245,27 +261,8 @@ namespace MyUtility
             Vector3 startingScale = transform.localScale;
             transform.localScale = Vector3.one;
 
-            Collider collider = transform.GetComponentInChildren<Collider>();
-            Bounds bounds = new Bounds();
-            if( collider != null  &&  collider.bounds.extents.magnitude > 0 )
-            {
-                bounds = collider.bounds;
-            }
-            else
-            {
-                Renderer renderer = transform.GetComponentInChildren<Renderer>();
-                if( renderer == null )
-                {
-                    Debug.LogError( "No Renderer or Collider attached to object!" );
-                    transform.rotation = startingRot;
-                    transform.localScale = startingScale;
-                    return default( Bounds );
-                }
-                else
-                {
-                    bounds = renderer.bounds;
-                }
-            }
+
+            Bounds bounds = Utility.GetBounds( transform.gameObject );
             transform.rotation = startingRot;
             transform.localScale = startingScale;
             return bounds;

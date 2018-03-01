@@ -20,7 +20,7 @@ namespace MyUtility
 //---------------------------------------------------------------------------FIELDS:
 
         [Range( 0, 2.5f )]
-        public float glowPower;
+        private float glowPower;
         public float GlowPower
         {
             get

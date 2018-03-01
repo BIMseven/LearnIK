@@ -5,8 +5,39 @@ namespace NearestPoint
 {
     public static class SuperCollider
     {
+        /// <summary>
+        /// Finds the closest point on surface of any type of collider that is NOT a terrain collider
+        /// </summary>
+        /// <param name="collider"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public static Vector3 ClosestPointOnSurface( this Collider collider, Vector3 to )
+        {
+            if( collider is BoxCollider )
+            {
+                return SuperCollider.ClosestPointOnSurface( (BoxCollider)collider, to );
+            }
+            else if( collider is SphereCollider )
+            {
+                return SuperCollider.ClosestPointOnSurface( (SphereCollider)collider, to );
+            }
+            else if( collider is CapsuleCollider )
+            {
+                return SuperCollider.ClosestPointOnSurface( (CapsuleCollider)collider, to );
+            }
+            else if( collider is MeshCollider )
+            {
+                MeshKDTree meshKDTree = collider.GetComponent<MeshKDTree>();
 
-        public static Vector3 ClosestPointOnSurface( Collider collider, Vector3 to, float radius )
+                if( meshKDTree != null )
+                {
+                    return meshKDTree.ClosestPointOnSurface( to );
+                }
+            }
+            return Vector3.zero;
+        }
+
+        public static Vector3 ClosestPointOnSurface( this Collider collider, Vector3 to, float radius )
         {
             if( collider is BoxCollider )
             {
@@ -37,7 +68,7 @@ namespace NearestPoint
             return Vector3.zero;
         }
 
-        public static Vector3 ClosestPointOnSurface( SphereCollider collider, Vector3 to )
+        public static Vector3 ClosestPointOnSurface( this SphereCollider collider, Vector3 to )
         {
             Vector3 p;
 
@@ -50,7 +81,7 @@ namespace NearestPoint
             return p;
         }
 
-        public static Vector3 ClosestPointOnSurface( BoxCollider collider, Vector3 to )
+        public static Vector3 ClosestPointOnSurface( this BoxCollider collider, Vector3 to )
         {
             // Cache the collider transform
             var ct = collider.transform;
@@ -98,7 +129,7 @@ namespace NearestPoint
         }
 
         // Courtesy of Moodie
-        public static Vector3 ClosestPointOnSurface( CapsuleCollider collider, Vector3 to )
+        public static Vector3 ClosestPointOnSurface( this CapsuleCollider collider, Vector3 to )
         {
             Transform ct = collider.transform; // Transform of the collider
 

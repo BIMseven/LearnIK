@@ -20,8 +20,36 @@ namespace MyUtility
 //---------------------------------------------------------------------------FIELDS:
 
         [Range( 0, 2.5f )]
-        public float GlowPower;
-        public float GlowTextureStrength;
+        public float glowPower;
+        public float GlowPower
+        {
+            get
+            {
+                return glowPower;
+            }
+            set
+            {
+                glowPower = value;
+                updateMaterials();
+            }
+        }
+
+        private float glowTextureStrength;
+        public float GlowTextureStrength
+        {
+            get
+            {
+                return glowTextureStrength;
+            }
+            set
+            {
+                glowTextureStrength = value;
+                updateMaterials();
+            }
+        }
+
+
+        private Texture glowTexture;
         public Texture GlowTexture
         {
             get
@@ -41,16 +69,12 @@ namespace MyUtility
             }
         }
 
-        private Texture glowTexture;
 
         private Material[] glowingMaterials;
         private int glowTextureStrengthHandle;
         private int glowPowerHandle;
         private int glowTextureHandle;
-
-        private float secondsToGlow;
-        private float secondGlowBegan;
-
+        
  //---------------------------------------------------------------------MONO METHODS:
 
         void Start()
@@ -65,49 +89,35 @@ namespace MyUtility
             glowPowerHandle = Shader.PropertyToID( "_MKGlowPower" );
             glowTextureHandle = Shader.PropertyToID( "_MKGlowTex" );
         }
-
-        void Update()
-        {
-            // Check if time to turn off glow (GlowForSeconds may have been called)
-            checkIfTimeToStopGlowing();
-
-            // Update shader variables to correspond with Glow Power and Texture Strength
-            updateMaterials();
-        }
-
+        
 //--------------------------------------------------------------------------METHODS:
 
         public void GlowForSeconds( float seconds, 
                                     float power = 1, 
                                     float textureStrength = 1 )
         {
-            secondsToGlow = seconds;
-            secondGlowBegan = Time.realtimeSinceStartup;
-            GlowPower = power;
-            GlowTextureStrength = textureStrength;
+            glowPower = power;
+            glowTextureStrength = textureStrength;
+            StartCoroutine( glowForSecondsRoutine( seconds ) );
         }
-
+        
 //--------------------------------------------------------------------------HELPERS:
 
-        private void checkIfTimeToStopGlowing()
+        private IEnumerator glowForSecondsRoutine( float secondsToGlow )
         {
-            if( secondsToGlow > 0 )
-            {
-                if( Time.realtimeSinceStartup - secondGlowBegan >= secondsToGlow )
-                {
-                    secondsToGlow = 0;
-                    GlowTextureStrength = 0;
-                    GlowPower = 0;
-                }
-            }
+
+            yield return new WaitForSeconds( secondsToGlow );
+            secondsToGlow = 0;
+            glowTextureStrength = 0;
+            glowPower = 0;
         }
 
         private void updateMaterials()
         {
             foreach( Material material in glowingMaterials )
             {
-                material.SetFloat( glowTextureStrengthHandle, GlowTextureStrength );
-                material.SetFloat( glowPowerHandle, GlowPower );
+                material.SetFloat( glowTextureStrengthHandle, glowTextureStrength );
+                material.SetFloat( glowPowerHandle, glowPower );
             }
         }
     }

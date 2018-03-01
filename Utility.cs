@@ -359,6 +359,22 @@ namespace MyUtility
         }
 
         /// <summary>
+        /// Each collider will ignore collisions with each other collider
+        /// </summary>
+        /// <param name="colliders"></param>
+        /// <param name="ignore"></param>
+        public static void IgnoreCollisions( Collider[] colliders, bool ignore = true )
+        {
+            for( int i = 0; i < colliders.Length; i++ )
+            {
+                for( int j = i + 1; j < colliders.Length; j++ )
+                {
+                    Physics.IgnoreCollision( colliders[i], colliders[j], ignore );
+                }
+            }
+        }
+
+        /// <summary>
         /// Returns true if given text is only letters (a-z or A-Z)
         /// </summary>
         /// <param name="text"></param>

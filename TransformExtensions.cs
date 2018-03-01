@@ -109,7 +109,7 @@ namespace MyUtility
             Bounds unscaledBounds = transform.UnscaledAndUnrotatedBounds();
             float unscaledWidth = unscaledBounds.extents.x * 2;
             float unscaledDepth = unscaledBounds.extents.z * 2;
-
+            //unscaledWidth += .3f; unscaledDepth += .3f;
             float targetXScale = width / unscaledWidth;
             float targetZScale = depth / unscaledDepth;
             float yScale = transform.localScale.y;

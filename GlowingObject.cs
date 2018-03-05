@@ -47,8 +47,7 @@ namespace MyUtility
                 updateMaterials();
             }
         }
-
-
+        
         private Texture glowTexture;
         public Texture GlowTexture
         {
@@ -68,16 +67,44 @@ namespace MyUtility
                 }
             }
         }
-
-
+        
         private Material[] glowingMaterials;
         private int glowTextureStrengthHandle;
         private int glowPowerHandle;
         private int glowTextureHandle;
+        private bool initialized;
         
  //---------------------------------------------------------------------MONO METHODS:
 
         void Start()
+        {
+            init();
+        }
+        
+//--------------------------------------------------------------------------METHODS:
+
+        public void GlowForSeconds( float seconds, 
+                                    float power = 1, 
+                                    float textureStrength = 1 )
+        {
+            if( ! initialized )   init();
+
+            glowPower = power;
+            glowTextureStrength = textureStrength;
+            StartCoroutine( glowForSecondsRoutine( seconds ) );
+        }
+        
+//--------------------------------------------------------------------------HELPERS:
+
+        private IEnumerator glowForSecondsRoutine( float secondsToGlow )
+        {
+            yield return new WaitForSeconds( secondsToGlow );
+            secondsToGlow = 0;
+            glowTextureStrength = 0;
+            glowPower = 0;
+        }
+
+        private void init()
         {
             Renderer[] renderers = GetComponentsInChildren<Renderer>();
             glowingMaterials = new Material[renderers.Length];
@@ -88,32 +115,14 @@ namespace MyUtility
             glowTextureStrengthHandle = Shader.PropertyToID( "_MKGlowTexStrength" );
             glowPowerHandle = Shader.PropertyToID( "_MKGlowPower" );
             glowTextureHandle = Shader.PropertyToID( "_MKGlowTex" );
-        }
-        
-//--------------------------------------------------------------------------METHODS:
 
-        public void GlowForSeconds( float seconds, 
-                                    float power = 1, 
-                                    float textureStrength = 1 )
-        {
-            glowPower = power;
-            glowTextureStrength = textureStrength;
-            StartCoroutine( glowForSecondsRoutine( seconds ) );
-        }
-        
-//--------------------------------------------------------------------------HELPERS:
-
-        private IEnumerator glowForSecondsRoutine( float secondsToGlow )
-        {
-
-            yield return new WaitForSeconds( secondsToGlow );
-            secondsToGlow = 0;
-            glowTextureStrength = 0;
-            glowPower = 0;
+            initialized = true;
         }
 
         private void updateMaterials()
         {
+            if( ! initialized )   init();
+
             foreach( Material material in glowingMaterials )
             {
                 material.SetFloat( glowTextureStrengthHandle, glowTextureStrength );

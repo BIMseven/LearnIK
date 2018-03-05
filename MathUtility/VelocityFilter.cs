@@ -26,6 +26,7 @@ namespace MyUtility
 
         public Vector3 RawVelocity { get; private set; }
         public Vector3 SmoothedVelocity { get; private set; }
+        public Vector3 Acceleration { get; private set; }
 
         // 0 puts more weight towards smoothed value, 1 puts more weight/trust into 
         // the raw value
@@ -75,13 +76,24 @@ namespace MyUtility
             {
                 return;
             }
+            Vector3 velocityLastFrame = SmoothedVelocity;
+
             // Get a raw reading of velocity
             RawVelocity = ( position - PreviousPosition ) / deltaT;
+            
+
             // Set the current velocity to be a combination of raw reading and the 
             // smoothed reading from previous frame.
-            SmoothedVelocity = Vector3.Lerp( SmoothedVelocity,
+            SmoothedVelocity = Vector3.Lerp( velocityLastFrame,
                                              RawVelocity,
                                              SmoothingWeight );
+
+            //Vector3 accelerationLastFrame = Acceleration;
+            //Vector3 accelerationThisFrame = SmoothedVelocity - velocityLastFrame;
+            //Acceleration = Vector3.Lerp( Acceleration, 
+            //                             accelerationThisFrame, 
+            //                             SmoothingWeight );
+            Acceleration = SmoothedVelocity - velocityLastFrame;
 
             // We will need this for the next update
             PreviousPosition = position;

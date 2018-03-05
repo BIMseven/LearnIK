@@ -35,6 +35,14 @@ namespace MyUtility
             }
         }
 
+        public Vector3 Acceleration
+        {
+            get
+            {
+                return velocitySmoother.Acceleration;
+            }
+        }
+
         private VelocityFilter velocitySmoother;
 
 //---------------------------------------------------------------------MONO METHODS:

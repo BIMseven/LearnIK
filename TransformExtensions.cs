@@ -50,6 +50,14 @@ namespace MyUtility
         }
 
         /// <summary>
+        /// Returns the bounds of given GameObject and its children's Renderers
+        /// </summary>    
+        public static Bounds GetBounds( this Transform transform )
+        {
+            return transform.gameObject.GetBounds();
+        }
+
+        /// <summary>
         /// Returns an array of the children of this transform
         /// </summary>
         /// <param name="transform"></param>
@@ -64,7 +72,15 @@ namespace MyUtility
             }
             return children;
         }
-        
+
+        /// <summary>
+        /// Sets the length of the x, y, and z dimensions of this Transform in
+        /// global space
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <param name="width"></param>
+        /// <param name="depth"></param>
+        /// <param name="height"></param>
         public static void SetDimensions( this Transform transform, 
                                           float width, 
                                           float depth, 
@@ -103,6 +119,12 @@ namespace MyUtility
             transform.eulerAngles = new Vector3( rot.x, rot.y, z );
         }
 
+        /// <summary>
+        /// Sets this Transform's x and z dimensions in global space
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <param name="width"></param>
+        /// <param name="depth"></param>
         public static void SetFootprint( this Transform transform,
                                          float width, float depth )
         {
@@ -117,6 +139,22 @@ namespace MyUtility
             transform.localScale = new Vector3( targetXScale,
                                                 yScale,
                                                 targetZScale );
+        }
+
+        /// <summary>
+        /// Sets the y dimension of this transform in global space
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <param name="height"></param>
+        public static void SetHeight( this Transform transform, float height )
+        {
+            Bounds unscaledBounds = transform.UnscaledAndUnrotatedBounds();
+            float unscaledY = unscaledBounds.extents.y * 2;
+
+            float targetYScale = height / unscaledY;
+            float xScale = transform.localScale.x;
+            float zScale = transform.localScale.z;
+            transform.localScale = new Vector3( xScale, targetYScale, zScale );
         }
 
         public static void SetLocalEulerX( this Transform transform, float x )

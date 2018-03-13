@@ -263,7 +263,7 @@ namespace MyUtility
             Bounds[] allBounds = renderers.Select( x => x.bounds ).ToArray();
             return Combine( allBounds );
         }
-
+        
         /// <summary>
         /// Returns the bounds of a given GameObject and it's children's Colliders
         /// </summary>
@@ -456,6 +456,19 @@ namespace MyUtility
                 return secondToLastThingHitFromAhead.gameObject;
             }
             return null;
+        }
+
+        public static Vector3 ParseVec3( string vector )
+        {
+            if( vector.StartsWith( "(" ) )
+            {
+                vector = vector.Split( '(' )[1].Split( ')' )[0];
+            }
+            string[] components = vector.Split( ',' );
+            float x = float.Parse( components[0] );
+            float y = float.Parse( components[1] );
+            float z = float.Parse( components[2] );
+            return new Vector3( x, y, z );
         }
 
         /// <summary>

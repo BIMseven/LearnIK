@@ -40,7 +40,7 @@ namespace MyUtility
             if( absY > Mathf.Max( absX, absZ ) )   return 1;
             return 2;
         }
-
+    
         // Returns a vector2 made from the x and z components of given vector
         public static Vector2 XY( this Vector3 vector )
         {

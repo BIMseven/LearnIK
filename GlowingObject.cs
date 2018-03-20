@@ -75,12 +75,7 @@ namespace MyUtility
         private bool initialized;
         
  //---------------------------------------------------------------------MONO METHODS:
-
-        void Start()
-        {
-            init();
-        }
-        
+         
 //--------------------------------------------------------------------------METHODS:
 
         public void GlowForSeconds( float seconds, 

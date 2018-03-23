@@ -13,7 +13,7 @@ namespace MyUtility
 //---------------------------------------------------------------------------FIELDS:
 
 
-//--------------------------------------------------------------------------METHODS:
+        //--------------------------------------------------------------------------METHODS:
 
         /// <summary>
         /// Returns a stack build from given list.  The first element of the list
@@ -37,16 +37,21 @@ namespace MyUtility
             return list[list.Count - 1];
         }
 
+        public static Transform LastElement( this List<Transform> list )
+        {
+            return list[list.Count - 1];
+        }
+
         public static Vector3 LastElement( this List<Vector3> list )
         {
             return list[list.Count - 1];
         }
-        
+
         public static Vector2 LastElement( this List<Vector2> list )
         {
             return list[list.Count - 1];
         }
-        
+
         public static float LastElement( this List<float> list )
         {
             return list[list.Count - 1];
@@ -61,7 +66,7 @@ namespace MyUtility
         {
             return PullRandom<T>( set, 1 )[0];
         }
-        
+
         public static T OneAtRandom<T>( this T[] array )
         {
             return array[Random.Range( 0, array.Length )];
@@ -95,7 +100,7 @@ namespace MyUtility
         {
             return PullRandom<T>( new List<T>( set ), numToPull );
         }
-        
+
         /// <summary>
         /// Pulls numToPull random elements from given set
         /// </summary>
@@ -106,7 +111,72 @@ namespace MyUtility
         {
             return PullRandom<T>( new List<T>( array ), numToPull );
         }
-        
+
+        /// <summary>
+        /// Removes and returns last element of given list
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static List<Vector3> Pop( this List<List<Vector3>> list )
+        {
+            int lastI = list.Count - 1;
+            var lastValue = list[lastI];
+            list.RemoveAt( lastI );
+            return lastValue;
+        }
+
+        /// <summary>
+        /// Removes and returns last element of given list
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static Transform Pop( this List<Transform> list )
+        {
+            int lastI = list.Count - 1;
+            var lastValue = list[lastI];
+            list.RemoveAt( lastI );
+            return lastValue;
+        }
+
+        /// <summary>
+        /// Removes and returns last element of given list
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static Vector3 Pop( this List<Vector3> list )
+        {
+            int lastI = list.Count - 1;
+            var lastValue = list[lastI];
+            list.RemoveAt( lastI );
+            return lastValue;
+        }
+
+        /// <summary>
+        /// Removes and returns last element of given list
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static Vector2 Pop( this List<Vector2> list )
+        {
+            int lastI = list.Count - 1;
+            var lastValue = list[lastI];
+            list.RemoveAt( lastI );
+            return lastValue;
+        }
+
+        /// <summary>
+        /// Removes and returns last element of given list
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static float Pop( this List<float> list )
+        {
+            int lastI = list.Count - 1;
+            var lastValue = list[lastI];
+            list.RemoveAt( lastI );
+            return lastValue;
+        }
+
         public static void SetActive( this GameObject[] objects, bool active )
         {
             foreach( GameObject obj in objects )
@@ -114,8 +184,7 @@ namespace MyUtility
                 obj.SetActive( active );
             }
         }
-
-
+                
         /// <summary>
         /// Shuffles this list
         /// </summary>

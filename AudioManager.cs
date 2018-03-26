@@ -1,11 +1,26 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
+using System;
 
 namespace MyUtility
 {
     public class AudioManager : Singleton<AudioManager>
     {
+        [Serializable]
+        public class AMClip
+        {
+            public AudioClip Clip;
+            public string Name;
+            public float Volume;
+        }
+
+        [Serializable]
+        public class BackgroundTrack
+        {
+            public AudioSource Track;
+            public string Name;
+        }
+
 //------------------------------------------------------------------------CONSTANTS:
 
         private const string LOG_TAG = "AudioManager";
@@ -17,17 +32,14 @@ namespace MyUtility
 //---------------------------------------------------------------------------FIELDS:
 
         #region InspectorFields
-        public AudioClip[] Clips;
-        public string[] ClipNames;
-        public float[] ClipVolumes; // Must be set at runtime 
+        public AMClip[] Clips;
         #endregion
 
         // Background music
-        public AudioSource[] BackgroundTracks;
-        public string[] BackgroundTrackNames;
+        public BackgroundTrack[] BackgroundTracks;
 
         private Dictionary<string, Sound> mySounds;
-        private Dictionary<string, AudioSource> myBackgroundTracks;
+        private Dictionary<string, AudioSource> backgroundTracks;
 
 //---------------------------------------------------------------------MONO METHODS:
 
@@ -83,7 +95,7 @@ namespace MyUtility
 
         public void PlayTrack( string trackName, bool loopTrack = true )
         {
-            AudioSource track = myBackgroundTracks[trackName];
+            AudioSource track = backgroundTracks[trackName];
 
             if( track != null )
             {
@@ -139,7 +151,7 @@ namespace MyUtility
 
         public void StopTrack( string trackName )
         {
-            AudioSource track = myBackgroundTracks[trackName];
+            AudioSource track = backgroundTracks[trackName];
 
             if( track != null )
             {
@@ -151,13 +163,13 @@ namespace MyUtility
 
         private void populateBackgroundTracks()
         {
-            myBackgroundTracks = new Dictionary<string, AudioSource>();
+            backgroundTracks = new Dictionary<string, AudioSource>();
             if( BackgroundTracks != null )
             {
                 for( int i = 0; i < BackgroundTracks.Length; i++ )
                 {
-                    myBackgroundTracks.Add( BackgroundTrackNames[i],
-                                            BackgroundTracks[i] );
+                    backgroundTracks.Add( BackgroundTracks[i].Name,
+                                            BackgroundTracks[i].Track );
                 }
 
             }
@@ -169,33 +181,20 @@ namespace MyUtility
 
             if( Clips != null )
             {
-                if( ClipNames == null || ClipNames.Length == 0 )
+                foreach( AMClip clip in Clips )
                 {
-                    ClipNames = new string[Clips.Length];
-                    for( int i = 0; i < Clips.Length; i++ )
+                    if( clip.Name == "" )
                     {
-                        ClipNames[i] = Clips[i].name;
+                        clip.Name = clip.Clip.name;
                     }
-                }
-                if( ClipVolumes == null || ClipVolumes.Length == 0 )
-                {
-                    ClipVolumes = new float[Clips.Length];
-                    for( int i = 0; i < Clips.Length; i++ )
-                    {
-                        ClipVolumes[i] = DEFAULT_SOUNDS_VOLUME;
-                    }
-                }
-                for( int i = 0; i < Clips.Length; i++ )
-                {
-                    mySounds.Add( ClipNames[i],
-                                  new Sound( Clips[i], ClipVolumes[i] ) );
+                    mySounds.Add( clip.Name, new Sound( clip.Clip, clip.Volume ) );
                 }
             }
         }
 
         private void stopPlayingAllTracks()
         {
-            foreach( KeyValuePair<string, AudioSource> pair in myBackgroundTracks )
+            foreach( KeyValuePair<string, AudioSource> pair in backgroundTracks )
             {
                 pair.Value.Stop();
             }

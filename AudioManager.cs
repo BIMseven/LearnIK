@@ -183,7 +183,7 @@ namespace MyUtility
             {
                 foreach( AMClip clip in Clips )
                 {
-                    if( clip.Name == "" )
+                    if( clip.Name == ""  &&  clip.Clip != null )
                     {
                         clip.Name = clip.Clip.name;
                     }

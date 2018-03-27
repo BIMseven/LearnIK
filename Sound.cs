@@ -8,7 +8,6 @@ using MyUtility;
 ///  that we use to keep track of which sounds are playing.  Like PlayClipAtPoint,
 ///  it creates a temporary GameObject and attaches an AudioSource to it.  It is
 ///  destoryed when the clip finishes or Stop() is called
-
 public class Sound
 {
     
@@ -48,7 +47,9 @@ public class Sound
 
 //--------------------------------------------------------------------------METHODS:
 
-	public void Play( Vector3 soundOrigin, string name = "" )
+	public void Play( Vector3 soundOrigin, 
+                      string name = "",
+                      bool spatial = false )
 	{
         if( tempAudioSource != null )
         {
@@ -60,6 +61,7 @@ public class Sound
         tempAudioSource.volume = volume;
         tempAudioSource.loop = false;
         tempAudioSource.clip = clip;
+        if( spatial )   tempAudioSource.spatialBlend = 1;
         tempObject.transform.position = soundOrigin;
         tempAudioSource.Play();
 

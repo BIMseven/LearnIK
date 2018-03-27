@@ -58,17 +58,19 @@ namespace MyUtility
         public void PlaySound( string soundName, 
                                bool playAgainIfAlreadyPlaying = false )
         {
-            if( Camera.current != null )
+            Sound sound;
+            if( mySounds != null  &&
+                mySounds.TryGetValue( soundName, out sound ) &&
+                sound != null )
             {
-                PlaySound( soundName, 
-                           Camera.current.transform.position,
-                           playAgainIfAlreadyPlaying );
+                if( ! sound.IsPlaying  ||  playAgainIfAlreadyPlaying )
+                {
+                    sound.Play( Vector3.zero, soundName );
+                }
             }
-            else
-            {
-                PlaySound( soundName, 
-                           Vector3.zero, 
-                           playAgainIfAlreadyPlaying );
+            else if( VERBOSE )
+            { 
+                Utility.Print( LOG_TAG, "Unable to find sound: " + soundName );
             }
         }
 
@@ -84,7 +86,7 @@ namespace MyUtility
             {
                 if( ! sound.IsPlaying  ||  playAgainIfAlreadyPlaying )
                 {
-                    sound.Play( location, soundName );
+                    sound.Play( location, soundName, true );
                 }
             }
             else if( VERBOSE )

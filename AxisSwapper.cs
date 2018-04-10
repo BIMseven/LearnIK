@@ -86,16 +86,16 @@ namespace MyUtility
 
         // These fields specify the components of localEulerAngles to which the roll, 
         // pitch, and yaw apply. Each will be a Vector3 index
-        private int rollComp = 2;
-        private int pitchComp = 0;
-        private int yawComp = 1;
+        protected int rollComp = 2;
+        protected int pitchComp = 0;
+        protected int yawComp = 1;
         private Quaternion toAdjustedLocal;
 
 //---------------------------------------------------------------------MONO METHODS:
 
         void Start()
         {
-            initialize();            
+            initAxisSwapper();            
         }
         
 //--------------------------------------------------------------------------METHODS:
@@ -113,9 +113,22 @@ namespace MyUtility
             transform.rotation = Quaternion.LookRotation( forward, up ); 
         }
         
+        public void SetLocalAttitude( float roll, float pitch, float yaw )
+        {
+            Vector3 eulers = new Vector3( pitch, yaw, roll );
+            SetLocalAttitude( Quaternion.Euler( eulers ) );
+        }
+
+        public void SetLocalAttitude( Quaternion attitude )
+        {
+            Vector3 forward = attitude * toAdjustedLocal * Vector3.forward;
+            Vector3 up      = attitude * toAdjustedLocal * Vector3.up;
+            transform.localRotation = Quaternion.LookRotation( forward, up ); 
+        }
+
 //--------------------------------------------------------------------------HELPERS:
 
-        protected void initialize()
+        protected void initAxisSwapper()
         {
             // find roll
             if( LocalForward.x != 0 )       rollComp = 0;
@@ -136,7 +149,7 @@ namespace MyUtility
             LocalUp = LocalUp.normalized;
             
             toAdjustedLocal = Quaternion.LookRotation( LocalForward, LocalUp );
-            toAdjustedLocal = Quaternion.Inverse( toAdjustedLocal );
+            toAdjustedLocal = Quaternion.Inverse( toAdjustedLocal );            
         }
 
     }

@@ -528,12 +528,24 @@ public static class MyMath
 		}
 		return roundedVector;
 	}
+
+    public static T[] Shuffled<T>( this T[] array )
+    {
+        return new List<T>( array ).Shuffled<T>().ToArray();
+    }
    
+    public static List<T> Shuffled<T>( this List<T> list )
+    {
+        List<T> shuffled = new List<T>( list );
+        shuffled.Shuffle<T>();
+        return shuffled;
+    }
+
     public static void Shuffle<T>( this IList<T> list )
     {
         for( int i = 0; i < list.Count; i++ )
         {
-            int swapIndex = Random.Range( 0, list.Count - 1 );
+            int swapIndex = Random.Range( 0, list.Count );
             var temp = list[i];
             list[i] = list[swapIndex];
             list[swapIndex] = temp;

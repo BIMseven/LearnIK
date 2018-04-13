@@ -38,8 +38,9 @@ namespace MyUtility
         {
             get
             {
-                return instance != null  ||
-                       FindObjectOfType<T>() != null;
+                if( applicationIsQuitting )   return false;
+
+                return  instance != null  ||  FindObjectOfType<T>() != null;
             }
         }
         
@@ -56,14 +57,14 @@ namespace MyUtility
         /// even after stopping playing the Application. Really bad!
         /// So, this was made to be sure we're not creating that buggy ghost object.
         /// </summary>
-        public void OnDestroy()
+        public void OnApplicationQuit()
         {
             applicationIsQuitting = true;
         }
 
-        public void OnLevelWasLoaded( int level )
-        {
-            applicationIsQuitting = false;
-        }
+        //public void OnLevelWasLoaded( int level )
+        //{
+            //applicationIsQuitting = false;
+        //}
     }
 }

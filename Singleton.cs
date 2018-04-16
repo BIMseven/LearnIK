@@ -15,8 +15,8 @@ namespace MyUtility
                 
                 if( instance == null )
                 {
-                    //try to find it
                     instance = (T)FindObjectOfType( typeof( T ) );
+                    
                     //if we can't find it:
                     if( instance == null )
                     {
@@ -26,8 +26,6 @@ namespace MyUtility
                         container.name = typeof( T ) + "Container";
                         //add the appropriate script
                         instance = (T)container.AddComponent( typeof( T ) );
-
-                        DontDestroyOnLoad( container );
                     }
                 }
                 return instance;

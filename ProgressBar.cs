@@ -48,19 +48,13 @@ namespace MyUtility
 
         public void Hide()
         {
-            if( visibilityToggler == null )
-            {
-                visibilityToggler = gameObject.AddComponent<VisibilityToggler>();
-            }
+            visibilityToggler = gameObject.EnsureComponent<VisibilityToggler>();            
             visibilityToggler.Visible = false;
         }
 
         public void Show()
         {
-            if( visibilityToggler == null )
-            {
-                visibilityToggler = gameObject.AddComponent<VisibilityToggler>();
-            }
+            visibilityToggler = gameObject.EnsureComponent<VisibilityToggler>();
             visibilityToggler.Visible = true;
             updateProgressBar( PercentComplete );
         }

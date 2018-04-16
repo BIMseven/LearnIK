@@ -12,41 +12,31 @@ public class VisibilityToggler : MonoBehaviour
 
 //---------------------------------------------------------------------------FIELDS:
 	
-    public bool Visible;
+    public bool StartVisible = false;
 
-    private bool wasVisible;	
-
-//---------------------------------------------------------------------MONO METHODS:
-
-    void OnEnable()
+    private bool isVisible;
+    public bool Visible
     {
-        updateVisibility();
-        wasVisible = Visible;
-        updateVisibility();
+        get
+        {
+            return isVisible;
+        }
+        set
+        {
+            isVisible = value;
+            Utility.EnableRenderersInChildren( gameObject, isVisible );
+        }
     }
+    
+//---------------------------------------------------------------------MONO METHODS:
 
 	void Start() 
 	{
-        updateVisibility();
-        wasVisible = Visible;
-        updateVisibility();
-    }
-
-	void Update()
-	{
-        if( wasVisible != Visible )
-        {
-            updateVisibility();
-        }
-	}
+        Visible = StartVisible;
+    }    
 
 //--------------------------------------------------------------------------METHODS:
 
 //--------------------------------------------------------------------------HELPERS:
 	
-    private void updateVisibility()
-    {
-        Utility.EnableRenderersInChildren( gameObject, Visible );
-        wasVisible = Visible;
-    }
 }

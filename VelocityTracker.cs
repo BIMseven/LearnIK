@@ -52,7 +52,7 @@ namespace MyUtility
             velocitySmoother = new VelocityFilter( SmoothingWeight );
         }
 
-        void FixedUpdate()
+        void Update()
         {
             velocitySmoother.Update( transform.position, Time.fixedDeltaTime );
         }

@@ -17,14 +17,10 @@ namespace MyUtility
                 {
                     instance = (T)FindObjectOfType( typeof( T ) );
                     
-                    //if we can't find it:
                     if( instance == null )
                     {
-                        //create it
                         GameObject container = new GameObject();
-                        //name it
                         container.name = typeof( T ) + "Container";
-                        //add the appropriate script
                         instance = (T)container.AddComponent( typeof( T ) );
                     }
                 }
@@ -59,10 +55,5 @@ namespace MyUtility
         {
             applicationIsQuitting = true;
         }
-
-        //public void OnLevelWasLoaded( int level )
-        //{
-            //applicationIsQuitting = false;
-        //}
     }
 }

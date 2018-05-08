@@ -27,4 +27,8 @@ public class Blank : MonoBehaviour
 
 //--------------------------------------------------------------------------HELPERS:
 	
+    private void vPrint( string message )
+    {
+        if( VERBOSE )   LOG_TAG.TPrint( message );        
+    }
 }

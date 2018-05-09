@@ -30,6 +30,16 @@ namespace MyUtility
             return vector;
         }
 
+        public static Vector3 ClampMag( this Vector3 vector, float maxMag )
+        {
+            if( vector.magnitude > maxMag )
+            {
+                vector = vector.normalized * maxMag;
+            }
+            return vector;
+        }
+
+
         public static uint IndexOfLongestComponent( this Vector3 vector )
         {
             float absX = Mathf.Abs( vector.x );

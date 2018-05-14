@@ -22,7 +22,7 @@ namespace MyUtility
         {
             get
             {
-                return velocitySmoother.RawVelocity;
+                return filter.RawVelocity;
             }
         }
 
@@ -30,7 +30,7 @@ namespace MyUtility
         {
             get
             {
-                return velocitySmoother.SmoothedVelocity;
+                return filter.SmoothedVelocity;
             }
         }
 
@@ -38,32 +38,52 @@ namespace MyUtility
         {
             get
             {
-                return velocitySmoother.Acceleration;
+                return filter.Acceleration;
             }
         }
 
-        private VelocityFilter velocitySmoother;
+        public float MaxSecondsBetweenUpdates = 0.1f;
+
+        private VelocityFilter filter;
+
+        private Vector3 lastPosition;
+
+        private float sinceLastUpdate;
 
 //---------------------------------------------------------------------MONO METHODS:
 
         void Awake()
         {
-            velocitySmoother = new VelocityFilter( transform.position, 
-                                                   SmoothingWeight );
+            filter = new VelocityFilter( transform.position, SmoothingWeight );
+            lastPosition = transform.position;
         }
 
-        void Update()
+        private void FixedUpdate()
         {
-            velocitySmoother.Update( transform.position, Time.fixedDeltaTime );
+            updateFilter();
         }
 
 //--------------------------------------------------------------------------METHODS:
 
         public void Clear()
         {
-            velocitySmoother.Clear( transform.position );
+            filter.Clear( transform.position );
         }
 
 //--------------------------------------------------------------------------HELPERS:
+
+        private void updateFilter()
+        {
+            sinceLastUpdate += Time.fixedDeltaTime;
+
+            if( transform.position != lastPosition ||
+                sinceLastUpdate >= MaxSecondsBetweenUpdates )
+            {
+                filter.Update( transform.position, sinceLastUpdate );
+                sinceLastUpdate = 0;
+                lastPosition = transform.position;
+            }
+        }
+
     }
 }

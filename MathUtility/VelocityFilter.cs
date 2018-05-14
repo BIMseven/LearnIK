@@ -14,23 +14,25 @@ namespace MyUtility
 
         private const float EPSILON = 0.001f;
 
-        private const float DEFAULT_SMOOTHING_WEIGHT = 0.5f;
+        private const float DEFAULT_SMOOTHING_WEIGHT = 0.5f;       
         
 //---------------------------------------------------------------------------FIELDS:
 
         public Vector3 RawVelocity { get; private set; }
         public Vector3 SmoothedVelocity { get; private set; }
         public Vector3 Acceleration { get; private set; }
+        public Vector3 PreviousPosition { get; private set; }
 
         // 0 puts more weight towards smoothed value, 1 puts more weight/trust into 
         // the raw value
         [Range( 0, 1.0f )]
         public float SmoothingWeight;
 
-        public Vector3 PreviousPosition;
-        
+
         // TODO If we want to save older smoothed velocities, use queue:
         //https://msdn.microsoft.com/en-us/library/7977ey2c(v=vs.110).aspx
+
+        private bool firstRead = true;
 
 //---------------------------------------------------------------------CONSTRUCTORS:
         
@@ -39,7 +41,7 @@ namespace MyUtility
             SmoothingWeight = smoothingWeight;
         }
 
-        public VelocityFilter( Vector3 StartingPosition, 
+        public VelocityFilter( Vector3 StartingPosition,
                                float smoothingWeight = DEFAULT_SMOOTHING_WEIGHT )
         {
             SmoothingWeight = smoothingWeight;
@@ -54,9 +56,12 @@ namespace MyUtility
         /// <param name="restingPosition">The place the object is stopped</param>
         public void Clear( Vector3 restingPosition )
         {
+            firstRead = true;
             RawVelocity = Vector3.zero;
+            Acceleration = Vector3.zero;
             SmoothedVelocity = Vector3.zero;
             PreviousPosition = restingPosition;
+            firstRead = true;
         }
 
         /// <summary>
@@ -64,19 +69,27 @@ namespace MyUtility
         /// </summary>    
         public void Update( Vector3 position, float deltaT )
         {
-            Vector3 velocityLastFrame = SmoothedVelocity;
-
             // Get a raw reading of velocity
             RawVelocity = ( position - PreviousPosition ) / deltaT;
-            
 
+            if( firstRead )
+            {
+                SmoothedVelocity = RawVelocity;
+                PreviousPosition = position;
+                firstRead = false;
+                return;
+            }
+
+            Vector3 velocityLastFrame = SmoothedVelocity;
+
+            
             // Set the current velocity to be a combination of raw reading and the 
             // smoothed reading from previous frame.
             SmoothedVelocity = Vector3.Lerp( velocityLastFrame,
                                              RawVelocity,
                                              SmoothingWeight );
             
-            Acceleration = SmoothedVelocity - velocityLastFrame;
+            Acceleration = ( SmoothedVelocity - velocityLastFrame ) / deltaT;
 
             // We will need this for the next update
             PreviousPosition = position;

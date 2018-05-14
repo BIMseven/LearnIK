@@ -11,7 +11,6 @@ namespace MyUtility
         public bool VERBOSE = false;
 
         // 0 is conservative, 1 is confident in position
-
         private const float DEFAULT_SMOOTHING_WEIGHT = 0.2f;
 
 //---------------------------------------------------------------------------FIELDS:
@@ -49,7 +48,8 @@ namespace MyUtility
 
         void Awake()
         {
-            velocitySmoother = new VelocityFilter( SmoothingWeight );
+            velocitySmoother = new VelocityFilter( transform.position, 
+                                                   SmoothingWeight );
         }
 
         void Update()
@@ -59,9 +59,9 @@ namespace MyUtility
 
 //--------------------------------------------------------------------------METHODS:
 
-        public void Clear( Vector3 restingPosition )
+        public void Clear()
         {
-            velocitySmoother.Clear( restingPosition );
+            velocitySmoother.Clear( transform.position );
         }
 
 //--------------------------------------------------------------------------HELPERS:

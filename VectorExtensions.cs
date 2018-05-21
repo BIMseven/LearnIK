@@ -12,6 +12,11 @@ namespace MyUtility
         
 //--------------------------------------------------------------------------METHODS:
         
+        public static float BiggestComponent( this Vector3 vector )
+        {
+            return Mathf.Max( vector.x, vector.y, vector.z );
+        }
+
         public static Vector3 ClampComponents( this Vector3 vector, 
                                                float min, float max )
         {
@@ -38,8 +43,7 @@ namespace MyUtility
             }
             return vector;
         }
-
-
+                        
         public static uint IndexOfLongestComponent( this Vector3 vector )
         {
             float absX = Mathf.Abs( vector.x );
@@ -50,7 +54,23 @@ namespace MyUtility
             if( absY > Mathf.Max( absX, absZ ) )   return 1;
             return 2;
         }
-    
+
+        public static float MiddleComponent( this Vector3 vector )
+        {
+            float x = vector.x; float y = vector.y; float z = vector.z;
+
+            if( x > y && x < z ) return x;
+            if( x > z && x < y ) return x;
+            if( y > x && y < z ) return y;
+            if( y > z && y < x ) return y;
+            return z;
+        }
+
+        public static float SmallestComponent( this Vector3 vector )
+        {
+            return Mathf.Min( vector.x, vector.y, vector.z );
+        }
+
         // Returns a vector2 made from the x and z components of given vector
         public static Vector2 XY( this Vector3 vector )
         {

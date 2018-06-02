@@ -83,7 +83,7 @@ namespace MyUtility
                 return Vector3.Cross( Up, Forward );                
             }
         }
-
+        
         // These fields specify the components of localEulerAngles to which the roll, 
         // pitch, and yaw apply. Each will be a Vector3 index
         protected int rollComp = 2;

@@ -13,6 +13,10 @@ namespace MyUtility
 
         Ray GetGazeConvergence();
 
+        Ray GetLeftEyeRay();
+
+        Ray GetRightEyeRay();
+
         Vector3 GetLeftEyeVector();
 
         Vector3 GetRightEyeVector();

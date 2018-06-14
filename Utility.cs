@@ -306,23 +306,7 @@ namespace MyUtility
         public static float GetMidExtent( this GameObject gameObject )
         {
             Vector3 extents = GetBounds( gameObject ).extents;
-            if( extents.x > extents.y && extents.x < extents.z )
-            {
-                return extents.x;
-            }
-            if( extents.x < extents.y && extents.x > extents.z )
-            {
-                return extents.x;
-            }
-            if( extents.y > extents.x && extents.y < extents.z )
-            {
-                return extents.y;
-            }
-            if( extents.y < extents.x && extents.y > extents.z )
-            {
-                return extents.y;
-            }
-            return extents.z;
+            return extents.MiddleComponent();
         }
 
         /// <summary>

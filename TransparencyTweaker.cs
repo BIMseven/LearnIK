@@ -11,27 +11,27 @@ public class TransparencyTweaker : MonoBehaviour
 
 //---------------------------------------------------------------------------FIELDS:
 	
-    /// <summary>
-    /// This Material (set in the inspector) must use the Transparent/Diffuse
-    /// shader
-    /// </summary>
-    public Material TransparentDiffuseMaterial;
+    private Material transparantMaterial;
+    
+    public float Transparency
+    {
+        get
+        {
+            return transparantMaterial.color.a;
+        }
+        set
+        {
+            Color newColor = transparantMaterial.color;
+            newColor.a = value;
+            transparantMaterial.color = newColor;
+        }
+    }
 
-    [Range( 0, 1 )]
-    public float Transparency;
-		
 //---------------------------------------------------------------------MONO METHODS:
 
-	void Start() 
+    void Start() 
 	{
-        GetComponent<Renderer>().material = TransparentDiffuseMaterial;
-    }
-		
-	void Update()
-	{
-        Color newColor = TransparentDiffuseMaterial.color;
-        newColor.a = 1 - Transparency;
-        TransparentDiffuseMaterial.color = newColor;
+        transparantMaterial = GetComponent<Renderer>().material;        
     }
 
 //--------------------------------------------------------------------------METHODS:

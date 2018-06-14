@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace MyUtility
 {
+    [RequireComponent( typeof( Camera ) )]
     public class Blinders : MonoBehaviour 
     {
 //------------------------------------------------------------------------CONSTANTS:
@@ -15,35 +16,55 @@ namespace MyUtility
 
 //---------------------------------------------------------------------------FIELDS:
 	
-        public Camera CameraToCover;
+        private Camera cameraToCover;
 
-        // Should be attached to child plane with surface normal aligned with this
-        // transform's forward vector
-        public FillScreen ScreenFiller;
+        private float initialNearClip, initialFarClip;
+        private CameraClearFlags initialClearFlag;
 
-        // Will be added to this object at run time
-        private VisibilityToggler visibilityToggler;
+        private bool blindersVisible;
 
 //---------------------------------------------------------------------MONO METHODS:
 
 	    void Start() 
 	    {
-            visibilityToggler = gameObject.EnsureComponent<VisibilityToggler>();
-            visibilityToggler.Visible = false;
+            cameraToCover = GetComponent<Camera>();
+            initialClearFlag = cameraToCover.clearFlags;
+            initialNearClip = cameraToCover.nearClipPlane;
+            initialFarClip = cameraToCover.farClipPlane;
         }		
 
 //--------------------------------------------------------------------------METHODS:
 
-        public void BlindersOn( bool on )
+        public void SetVisible( bool visible )
         {
-            if( VERBOSE )  LOG_TAG.TPrint( "Blinders on: " + on );
+            vLog( "Blinders on: " + visible );
 
-            ScreenFiller.FillScreenOfCamera( CameraToCover );
-            transform.parent = CameraToCover.transform;
-            visibilityToggler.Visible = on;
+            blindersVisible = visible;
+
+            if( visible )
+            {
+                cameraToCover.nearClipPlane = EPSILON;
+                cameraToCover.farClipPlane = 2 * EPSILON;
+                cameraToCover.clearFlags = CameraClearFlags.SolidColor;
+            }
+            else
+            {
+                cameraToCover.nearClipPlane = initialNearClip;
+                cameraToCover.farClipPlane = initialFarClip;
+                cameraToCover.clearFlags = initialClearFlag;
+            }
         }
         
+        public void Toggle()
+        {
+            SetVisible( ! blindersVisible );
+        }
+
 //--------------------------------------------------------------------------HELPERS:
 	
+        private void vLog( string message )
+        {
+            if( VERBOSE )   LOG_TAG.TPrint( message );        
+        }
     }
 }

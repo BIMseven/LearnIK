@@ -4,35 +4,39 @@ using UnityEngine;
 
 namespace MyUtility
 {
-    public interface EyeTrackingHeadset
+    public abstract class EyeTrackingHeadset : MonoBehaviour
     {
 //-------------------------------------------------------EyeTrackingHeadset METHODS:
 
         // side must be left or right
-        Camera GetCamera( Sides side );
+        public abstract Camera GetCamera( Sides side );
 
-        Ray GetGazeConvergence();
+        public abstract Ray GetGazeConvergence();
 
-        Vector3 GetLeftEyeVector();
+        public abstract Ray GetLeftEyeRay();
 
-        Vector3 GetRightEyeVector();
+        public abstract Ray GetRightEyeRay();
 
-        Vector3 GetHMDPosition();
+        public abstract Vector3 GetLeftEyeVector();
 
-        Quaternion GetHMDRotation();
+        public abstract Vector3 GetRightEyeVector();
 
-        bool IsEyeTrackingCalibrated();
+        public abstract Vector3 GetHMDPosition();
 
-        bool IsHardwareConnected();
+        public abstract Quaternion GetHMDRotation();
 
-        bool IsHardwareReady();
+        public abstract bool IsEyeTrackingCalibrated();
 
-        void TarePosition();
+        public abstract bool IsHardwareConnected();
 
-        void TareOrientation();
+        public abstract bool IsHardwareReady();
+
+        public abstract void TarePosition();
+
+        public abstract void TareOrientation();
 
         // side must be left or right
-        Vector3 WorldToViewportPoint( Vector3 pos, Sides eye );
+        public abstract Vector3 WorldToViewportPoint( Vector3 pos, Sides eye );
 
     }
 }

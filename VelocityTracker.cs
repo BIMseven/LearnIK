@@ -44,11 +44,11 @@ namespace MyUtility
 
         public float MaxSecondsBetweenUpdates = 0.1f;
 
-        private VelocityFilter filter;
+        protected VelocityFilter filter;
 
-        private Vector3 lastPosition;
+        protected Vector3 lastPosition;
 
-        private float sinceLastUpdate;
+        protected float sinceLastUpdate;
 
 //---------------------------------------------------------------------MONO METHODS:
 
@@ -72,7 +72,7 @@ namespace MyUtility
 
 //--------------------------------------------------------------------------HELPERS:
 
-        private void updateFilter()
+        protected virtual void updateFilter()
         {
             sinceLastUpdate += Time.fixedDeltaTime;
 

@@ -7,6 +7,8 @@ using System;
 /// </summary>
 public class Math3d
 {
+    
+//---------------------------------------------------------------------------FIELDS:
 
     private static Transform tempChild = null;
     private static Transform tempParent = null;
@@ -19,22 +21,16 @@ public class Math3d
     private static float[] rotTimeRegister;
     private static int rotationSamplesTaken = 0;
 
-    public static void Init()
+
+//--------------------------------------------------------------------------METHODS:
+
+    //Add rotation B to rotation A.
+    public static Quaternion AddRotation( Quaternion A, Quaternion B )
     {
 
-        tempChild = ( new GameObject( "Math3d_TempChild" ) ).transform;
-        tempParent = ( new GameObject( "Math3d_TempParent" ) ).transform;
-
-        tempChild.gameObject.hideFlags = HideFlags.HideAndDontSave;
-        MonoBehaviour.DontDestroyOnLoad( tempChild.gameObject );
-
-        tempParent.gameObject.hideFlags = HideFlags.HideAndDontSave;
-        MonoBehaviour.DontDestroyOnLoad( tempParent.gameObject );
-
-        //set the parent
-        tempChild.parent = tempParent;
+        Quaternion C = A * B;
+        return C;
     }
-
 
     //increase or decrease the length of vector by size
     public static Vector3 AddVectorLength( Vector3 vector, float size )
@@ -53,40 +49,269 @@ public class Math3d
         return vector * scale;
     }
 
-    //create a vector of direction "vector" with length "size"
-    public static Vector3 SetVectorLength( Vector3 vector, float size )
+    // Returns true if line segment made up of pointA1 and pointA2 is crossing line 
+    // segment made up of pointB1 and pointB2. The two lines are assumed to be in 
+    // the same plane.
+    public static bool AreLineSegmentsCrossing( Vector3 pointA1, 
+                                                Vector3 pointA2, 
+                                                Vector3 pointB1, 
+                                                Vector3 pointB2 )
     {
 
-        //normalize the vector
-        Vector3 vectorNormalized = Vector3.Normalize( vector );
+        Vector3 closestPointA;
+        Vector3 closestPointB;
+        int sideA;
+        int sideB;
 
-        //scale the vector
-        return vectorNormalized *= size;
+        Vector3 lineVecA = pointA2 - pointA1;
+        Vector3 lineVecB = pointB2 - pointB1;
+
+        bool valid = ClosestPointsOnTwoLines( out closestPointA, out closestPointB, pointA1, lineVecA.normalized, pointB1, lineVecB.normalized );
+
+        //lines are not parallel
+        if( valid )
+        {
+
+            sideA = PointOnWhichSideOfLineSegment( pointA1, pointA2, closestPointA );
+            sideB = PointOnWhichSideOfLineSegment( pointB1, pointB2, closestPointB );
+
+            if( ( sideA == 0 ) && ( sideB == 0 ) )
+            {
+
+                return true;
+            }
+
+            else
+            {
+
+                return false;
+            }
+        }
+
+        //lines are parallel
+        else
+        {
+
+            return false;
+        }
+    }
+
+    /*
+	//This function calculates angular acceleration in object space as deg/second^2, encoded as a vector. 
+	//For example, if the output vector is 0,0,-5, the angular acceleration is 5 deg/second^2 around the object Z axis, to the left. 
+	//Input: rotation (quaternion). If the output is used for motion simulation, the input transform
+	//has to be located at the seat base, not at the vehicle CG. Attach an empty GameObject
+	//at the correct location and use that as the input for this function.
+	//A low number of samples can give a jittery result due to rounding errors.
+	//If more samples are used, the output is more smooth but has a higher latency.
+	//Note: the result is only accurate if the rotational difference between two samples is less than 180 degrees.
+	//Note: a suitable way to visualize the result is:
+	Vector3 dir;
+	float scale = 2f;	
+	dir = new Vector3(vector.x, 0, 0);
+	dir = Math3d.SetVectorLength(dir, dir.magnitude * scale);
+	dir = gameObject.transform.TransformDirection(dir);
+	Debug.DrawRay(gameObject.transform.position, dir, Color.red);	
+	dir = new Vector3(0, vector.y, 0);
+	dir = Math3d.SetVectorLength(dir, dir.magnitude * scale);
+	dir = gameObject.transform.TransformDirection(dir);
+	Debug.DrawRay(gameObject.transform.position, dir, Color.green);	
+	dir = new Vector3(0, 0, vector.z);
+	dir = Math3d.SetVectorLength(dir, dir.magnitude * scale);
+	dir = gameObject.transform.TransformDirection(dir);
+	Debug.DrawRay(gameObject.transform.position, dir, Color.blue);	*/
+    public static bool AngularAcceleration( out Vector3 vector, Quaternion rotation, int samples )
+    {
+
+        Vector3 averageSpeedChange = Vector3.zero;
+        vector = Vector3.zero;
+        Quaternion deltaRotation;
+        float deltaTime;
+        Vector3 speedA;
+        Vector3 speedB;
+
+        // Clamp sample amount. In order to calculate acceleration we need at least 2 changes
+        // in speed, so we need at least 3 rotation samples.
+        if( samples < 3 )
+        {
+            samples = 3;
+        }
+
+        //Initialize
+        if( rotationRegister == null )
+        {
+
+            rotationRegister = new Quaternion[samples];
+            rotTimeRegister = new float[samples];
+        }
+
+        //Fill the rotation and time sample array and shift the location in the array to the left
+        //each time a new sample is taken. This way index 0 will always hold the oldest sample and the
+        //highest index will always hold the newest sample. 
+        for( int i = 0; i < rotationRegister.Length - 1; i++ )
+        {
+
+            rotationRegister[i] = rotationRegister[i + 1];
+            rotTimeRegister[i] = rotTimeRegister[i + 1];
+        }
+        rotationRegister[rotationRegister.Length - 1] = rotation;
+        rotTimeRegister[rotTimeRegister.Length - 1] = Time.time;
+
+        rotationSamplesTaken++;
+
+        //The output acceleration can only be calculated if enough samples are taken.
+        if( rotationSamplesTaken >= samples )
+        {
+
+            //Calculate average speed change.
+            for( int i = 0; i < rotationRegister.Length - 2; i++ )
+            {
+
+                deltaRotation = SubtractRotation( rotationRegister[i + 1], rotationRegister[i] );
+                deltaTime = rotTimeRegister[i + 1] - rotTimeRegister[i];
+
+                //If deltaTime is 0, the output is invalid.
+                if( deltaTime == 0 )
+                {
+
+                    return false;
+                }
+
+                speedA = RotDiffToSpeedVec( deltaRotation, deltaTime );
+                deltaRotation = SubtractRotation( rotationRegister[i + 2], rotationRegister[i + 1] );
+                deltaTime = rotTimeRegister[i + 2] - rotTimeRegister[i + 1];
+
+                if( deltaTime == 0 )
+                {
+
+                    return false;
+                }
+
+                speedB = RotDiffToSpeedVec( deltaRotation, deltaTime );
+
+                //This is the accumulated speed change at this stage, not the average yet.
+                averageSpeedChange += speedB - speedA;
+            }
+
+            //Now this is the average speed change.
+            averageSpeedChange /= rotationRegister.Length - 2;
+
+            //Get the total time difference.
+            float deltaTimeTotal = rotTimeRegister[rotTimeRegister.Length - 1] - rotTimeRegister[0];
+
+            //Now calculate the acceleration, which is an average over the amount of samples taken.
+            vector = averageSpeedChange / deltaTimeTotal;
+
+            return true;
+        }
+
+        else
+        {
+
+            return false;
+        }
+    }
+    //Two non-parallel lines which may or may not touch each other have a point on each line which are closest
+    //to each other. This function finds those two points. If the lines are not parallel, the function 
+    //outputs true, otherwise false.
+    public static bool ClosestPointsOnTwoLines( out Vector3 closestPointLine1, out Vector3 closestPointLine2, Vector3 linePoint1, Vector3 lineVec1, Vector3 linePoint2, Vector3 lineVec2 )
+    {
+
+        closestPointLine1 = Vector3.zero;
+        closestPointLine2 = Vector3.zero;
+
+        float a = Vector3.Dot( lineVec1, lineVec1 );
+        float b = Vector3.Dot( lineVec1, lineVec2 );
+        float e = Vector3.Dot( lineVec2, lineVec2 );
+
+        float d = a * e - b * b;
+
+        //lines are not parallel
+        if( d != 0.0f )
+        {
+
+            Vector3 r = linePoint1 - linePoint2;
+            float c = Vector3.Dot( lineVec1, r );
+            float f = Vector3.Dot( lineVec2, r );
+
+            float s = ( b * f - c * e ) / d;
+            float t = ( a * f - c * b ) / d;
+
+            closestPointLine1 = linePoint1 + lineVec1 * s;
+            closestPointLine2 = linePoint2 + lineVec2 * t;
+
+            return true;
+        }
+
+        else
+        {
+            return false;
+        }
+    }
+
+    //Calculate the dot product as an angle
+    public static float DotProductAngle( Vector3 vec1, Vector3 vec2 )
+    {
+
+        double dot;
+        double angle;
+
+        //get the dot product
+        dot = Vector3.Dot( vec1, vec2 );
+
+        //Clamp to prevent NaN error. Shouldn't need this in the first place, but there could be a rounding error issue.
+        if( dot < -1.0f )
+        {
+            dot = -1.0f;
+        }
+        if( dot > 1.0f )
+        {
+            dot = 1.0f;
+        }
+
+        //Calculate the angle. The output is in radians
+        //This step can be skipped for optimization...
+        angle = Math.Acos( dot );
+
+        return (float)angle;
     }
 
 
-    //caclulate the rotational difference from A to B
-    public static Quaternion SubtractRotation( Quaternion B, Quaternion A )
+    //Returns the forward vector of a quaternion
+    public static Vector3 GetForwardVector( Quaternion q )
     {
 
-        Quaternion C = Quaternion.Inverse( A ) * B;
-        return C;
+        return q * Vector3.forward;
     }
 
-    //Add rotation B to rotation A.
-    public static Quaternion AddRotation( Quaternion A, Quaternion B )
+    //Returns the up vector of a quaternion
+    public static Vector3 GetUpVector( Quaternion q )
     {
 
-        Quaternion C = A * B;
-        return C;
+        return q * Vector3.up;
     }
 
-    //Same as the build in TransformDirection(), but using a rotation instead of a transform.
-    public static Vector3 TransformDirectionMath( Quaternion rotation, Vector3 vector )
+    //Returns the right vector of a quaternion
+    public static Vector3 GetRightVector( Quaternion q )
     {
 
-        Vector3 output = rotation * vector;
-        return output;
+        return q * Vector3.right;
+    }
+
+    public static void Init()
+    {
+
+        tempChild = ( new GameObject( "Math3d_TempChild" ) ).transform;
+        tempParent = ( new GameObject( "Math3d_TempParent" ) ).transform;
+
+        tempChild.gameObject.hideFlags = HideFlags.HideAndDontSave;
+        MonoBehaviour.DontDestroyOnLoad( tempChild.gameObject );
+
+        tempParent.gameObject.hideFlags = HideFlags.HideAndDontSave;
+        MonoBehaviour.DontDestroyOnLoad( tempParent.gameObject );
+
+        //set the parent
+        tempChild.parent = tempParent;
     }
 
     //Same as the build in InverseTransformDirection(), but using a rotation instead of a transform.
@@ -97,17 +322,315 @@ public class Math3d
         return output;
     }
 
-    //Rotate a vector as if it is attached to an object with rotation "from", which is then rotated to rotation "to".
-    //Similar to TransformWithParent(), but rotating a vector instead of a transform.
-    public static Vector3 RotateVectorFromTo( Quaternion from, Quaternion to, Vector3 vector )
+    //Returns true if a line segment (made up of linePoint1 and linePoint2) is fully or partially in a rectangle
+    //made up of RectA to RectD. The line segment is assumed to be on the same plane as the rectangle. If the line is 
+    //not on the plane, use ProjectPointOnPlane() on linePoint1 and linePoint2 first.
+    public static bool IsLineInRectangle( Vector3 linePoint1, Vector3 linePoint2, Vector3 rectA, Vector3 rectB, Vector3 rectC, Vector3 rectD )
     {
-        //Note: comments are in case all inputs are in World Space.
-        Quaternion Q = SubtractRotation( to, from );                //Output is in object space.
-        Vector3 A = InverseTransformDirectionMath( from, vector );//Output is in object space.
-        Vector3 B = Q * A;                                      //Output is in local space.
-        Vector3 C = TransformDirectionMath( from, B );          //Output is in world space.
-        return C;
+
+        bool pointAInside = false;
+        bool pointBInside = false;
+
+        pointAInside = IsPointInRectangle( linePoint1, rectA, rectC, rectB, rectD );
+
+        if( !pointAInside )
+        {
+
+            pointBInside = IsPointInRectangle( linePoint2, rectA, rectC, rectB, rectD );
+        }
+
+        //none of the points are inside, so check if a line is crossing
+        if( !pointAInside && !pointBInside )
+        {
+
+            bool lineACrossing = AreLineSegmentsCrossing( linePoint1, linePoint2, rectA, rectB );
+            bool lineBCrossing = AreLineSegmentsCrossing( linePoint1, linePoint2, rectB, rectC );
+            bool lineCCrossing = AreLineSegmentsCrossing( linePoint1, linePoint2, rectC, rectD );
+            bool lineDCrossing = AreLineSegmentsCrossing( linePoint1, linePoint2, rectD, rectA );
+
+            if( lineACrossing || lineBCrossing || lineCCrossing || lineDCrossing )
+            {
+
+                return true;
+            }
+
+            else
+            {
+
+                return false;
+            }
+        }
+
+        else
+        {
+
+            return true;
+        }
     }
+
+    //Returns true if "point" is in a rectangle mad up of RectA to RectD. The line point is assumed to be on the same 
+    //plane as the rectangle. If the point is not on the plane, use ProjectPointOnPlane() first.
+    public static bool IsPointInRectangle( Vector3 point, Vector3 rectA, Vector3 rectC, Vector3 rectB, Vector3 rectD )
+    {
+
+        Vector3 vector;
+        Vector3 linePoint;
+
+        //get the center of the rectangle
+        vector = rectC - rectA;
+        float size = -( vector.magnitude / 2f );
+        vector = AddVectorLength( vector, size );
+        Vector3 middle = rectA + vector;
+
+        Vector3 xVector = rectB - rectA;
+        float width = xVector.magnitude / 2f;
+
+        Vector3 yVector = rectD - rectA;
+        float height = yVector.magnitude / 2f;
+
+        linePoint = ProjectPointOnLine( middle, xVector.normalized, point );
+        vector = linePoint - point;
+        float yDistance = vector.magnitude;
+
+        linePoint = ProjectPointOnLine( middle, yVector.normalized, point );
+        vector = linePoint - point;
+        float xDistance = vector.magnitude;
+
+        if( ( xDistance <= width ) && ( yDistance <= height ) )
+        {
+
+            return true;
+        }
+
+        else
+        {
+
+            return false;
+        }
+    }
+
+    //This function calculates the acceleration vector in meter/second^2.
+    //Input: position. If the output is used for motion simulation, the input transform
+    //has to be located at the seat base, not at the vehicle CG. Attach an empty GameObject
+    //at the correct location and use that as the input for this function.
+    //Gravity is not taken into account but this can be added to the output if needed.
+    //A low number of samples can give a jittery result due to rounding errors.
+    //If more samples are used, the output is more smooth but has a higher latency.
+    public static bool LinearAcceleration( out Vector3 vector, Vector3 position, int samples )
+    {
+
+        Vector3 averageSpeedChange = Vector3.zero;
+        vector = Vector3.zero;
+        Vector3 deltaDistance;
+        float deltaTime;
+        Vector3 speedA;
+        Vector3 speedB;
+
+        //Clamp sample amount. In order to calculate acceleration we need at least 2 changes
+        //in speed, so we need at least 3 position samples.
+        if( samples < 3 )
+        {
+
+            samples = 3;
+        }
+
+        //Initialize
+        if( positionRegister == null )
+        {
+
+            positionRegister = new Vector3[samples];
+            posTimeRegister = new float[samples];
+        }
+
+        //Fill the position and time sample array and shift the location in the array to the left
+        //each time a new sample is taken. This way index 0 will always hold the oldest sample and the
+        //highest index will always hold the newest sample. 
+        for( int i = 0; i < positionRegister.Length - 1; i++ )
+        {
+
+            positionRegister[i] = positionRegister[i + 1];
+            posTimeRegister[i] = posTimeRegister[i + 1];
+        }
+        positionRegister[positionRegister.Length - 1] = position;
+        posTimeRegister[posTimeRegister.Length - 1] = Time.time;
+
+        positionSamplesTaken++;
+
+        //The output acceleration can only be calculated if enough samples are taken.
+        if( positionSamplesTaken >= samples )
+        {
+
+            //Calculate average speed change.
+            for( int i = 0; i < positionRegister.Length - 2; i++ )
+            {
+
+                deltaDistance = positionRegister[i + 1] - positionRegister[i];
+                deltaTime = posTimeRegister[i + 1] - posTimeRegister[i];
+
+                //If deltaTime is 0, the output is invalid.
+                if( deltaTime == 0 )
+                {
+
+                    return false;
+                }
+
+                speedA = deltaDistance / deltaTime;
+                deltaDistance = positionRegister[i + 2] - positionRegister[i + 1];
+                deltaTime = posTimeRegister[i + 2] - posTimeRegister[i + 1];
+
+                if( deltaTime == 0 )
+                {
+
+                    return false;
+                }
+
+                speedB = deltaDistance / deltaTime;
+
+                //This is the accumulated speed change at this stage, not the average yet.
+                averageSpeedChange += speedB - speedA;
+            }
+
+            //Now this is the average speed change.
+            averageSpeedChange /= positionRegister.Length - 2;
+
+            //Get the total time difference.
+            float deltaTimeTotal = posTimeRegister[posTimeRegister.Length - 1] - posTimeRegister[0];
+
+            //Now calculate the acceleration, which is an average over the amount of samples taken.
+            vector = averageSpeedChange / deltaTimeTotal;
+
+            return true;
+        }
+
+        else
+        {
+
+            return false;
+        }
+    }
+        
+    //Get y from a linear function, with x as an input. The linear function goes through points
+    //0,0 on the left ,and Qxy on the right.
+    public static float LinearFunction2DBasic( float x, float Qx, float Qy )
+    {
+
+        float y = x * ( Qy / Qx );
+
+        return y;
+    }
+
+    //Get y from a linear function, with x as an input. The linear function goes through points
+    //Pxy on the left ,and Qxy on the right.
+    public static float LinearFunction2DFull( float x, float Px, float Py, float Qx, float Qy )
+    {
+
+        float y = 0f;
+
+        float A = Qy - Py;
+        float B = Qx - Px;
+        float C = A / B;
+
+        y = Py + ( C * ( x - Px ) );
+
+        return y;
+    }
+
+    // Calculate the intersection point of two lines. Returns true if lines intersect, 
+    // otherwise false. Note that in 3d, two lines do not intersect most of the time. 
+    // So if the two lines are not in the same plane, use ClosestPointsOnTwoLines() instead.
+    public static bool LineLineIntersection( out Vector3 intersection,
+                                             Vector3 linePoint1, Vector3 lineVec1,
+                                             Vector3 linePoint2, Vector3 lineVec2 )
+    {
+
+        Vector3 lineVec3 = linePoint2 - linePoint1;
+        Vector3 crossVec1and2 = Vector3.Cross( lineVec1, lineVec2 );
+        Vector3 crossVec3and2 = Vector3.Cross( lineVec3, lineVec2 );
+
+        float planarFactor = Vector3.Dot( lineVec3, crossVec1and2 );
+
+        //is coplanar, and not parrallel
+        if( Mathf.Abs( planarFactor ) < 0.0001f && crossVec1and2.sqrMagnitude > 0.0001f )
+        {
+            float s = Vector3.Dot( crossVec3and2, crossVec1and2 ) / crossVec1and2.sqrMagnitude;
+            intersection = linePoint1 + ( lineVec1 * s );
+            return true;
+        }
+        else
+        {
+            intersection = Vector3.zero;
+            return false;
+        }
+    }
+
+    // Get the intersection between a line and a plane. 
+    // If the line and plane are not parallel, the function outputs true, 
+    // otherwise false.
+    public static bool LinePlaneIntersection( out Vector3 intersection, 
+                                              Vector3 linePoint, 
+                                              Vector3 lineVec, 
+                                              Vector3 planeNormal, 
+                                              Vector3 planePoint )
+    {
+
+        float length;
+        float dotNumerator;
+        float dotDenominator;
+        Vector3 vector;
+        intersection = Vector3.zero;
+
+        //calculate the distance between the linePoint and the line-plane intersection point
+        dotNumerator = Vector3.Dot( ( planePoint - linePoint ), planeNormal );
+        dotDenominator = Vector3.Dot( lineVec, planeNormal );
+
+        //line and plane are not parallel
+        if( dotDenominator != 0.0f )
+        {
+            length = dotNumerator / dotDenominator;
+
+            //create a vector from the linePoint to the intersection point
+            vector = SetVectorLength( lineVec, length );
+
+            //get the coordinates of the line-plane intersection point
+            intersection = linePoint + vector;
+
+            return true;
+        }
+
+        //output not valid
+        else
+        {
+            return false;
+        }
+    }
+
+    //This is an alternative for Quaternion.LookRotation. Instead of aligning the 
+    // forward and up vector of the game object with the input vectors, a custom 
+    // direction can be used instead of the fixed forward and up vectors.
+    // alignWithVector and alignWithNormal are in world space. customForward and 
+    // customUp are in object space.
+    // Usage: use alignWithVector and alignWithNormal as if you are using the 
+    // default LookRotation function.
+    // Set customForward and customUp to the vectors you wish to use instead of 
+    // the default forward and up vectors.
+    public static void LookRotationExtended( ref GameObject gameObjectInOut, 
+                                             Vector3 alignWithVector, 
+                                             Vector3 alignWithNormal, 
+                                             Vector3 customForward, 
+                                             Vector3 customUp )
+    {
+
+        //Set the rotation of the destination
+        Quaternion rotationA = Quaternion.LookRotation( alignWithVector, alignWithNormal );
+
+        //Set the rotation of the custom normal and up vectors. 
+        //When using the default LookRotation function, this would be hard coded to the forward and up vector.
+        Quaternion rotationB = Quaternion.LookRotation( customForward, customUp );
+
+        //Calculate the rotation
+        gameObjectInOut.transform.rotation = rotationA * Quaternion.Inverse( rotationB );
+    }
+
 
     //Find the line of intersection between two planes.	The planes are defined by a normal and a point on that plane.
     //The outputs are a point on the line and a vector which indicates it's direction. If the planes are not parallel, 
@@ -143,110 +666,6 @@ public class Math3d
         }
 
         //output not valid
-        else
-        {
-            return false;
-        }
-    }
-
-    //Get the intersection between a line and a plane. 
-    //If the line and plane are not parallel, the function outputs true, otherwise false.
-    public static bool LinePlaneIntersection( out Vector3 intersection, Vector3 linePoint, Vector3 lineVec, Vector3 planeNormal, Vector3 planePoint )
-    {
-
-        float length;
-        float dotNumerator;
-        float dotDenominator;
-        Vector3 vector;
-        intersection = Vector3.zero;
-
-        //calculate the distance between the linePoint and the line-plane intersection point
-        dotNumerator = Vector3.Dot( ( planePoint - linePoint ), planeNormal );
-        dotDenominator = Vector3.Dot( lineVec, planeNormal );
-
-        //line and plane are not parallel
-        if( dotDenominator != 0.0f )
-        {
-            length = dotNumerator / dotDenominator;
-
-            //create a vector from the linePoint to the intersection point
-            vector = SetVectorLength( lineVec, length );
-
-            //get the coordinates of the line-plane intersection point
-            intersection = linePoint + vector;
-
-            return true;
-        }
-
-        //output not valid
-        else
-        {
-            return false;
-        }
-    }
-
-    //--------------------------------------------------------------------------METHODS:
-
-    // Calculate the intersection point of two lines. Returns true if lines intersect, 
-    // otherwise false. Note that in 3d, two lines do not intersect most of the time. 
-    // So if the two lines are not in the same plane, use ClosestPointsOnTwoLines() instead.
-    public static bool LineLineIntersection( out Vector3 intersection, 
-                                             Vector3 linePoint1, Vector3 lineVec1, 
-                                             Vector3 linePoint2, Vector3 lineVec2 )
-    {
-
-        Vector3 lineVec3 = linePoint2 - linePoint1;
-        Vector3 crossVec1and2 = Vector3.Cross( lineVec1, lineVec2 );
-        Vector3 crossVec3and2 = Vector3.Cross( lineVec3, lineVec2 );
-
-        float planarFactor = Vector3.Dot( lineVec3, crossVec1and2 );
-
-        //is coplanar, and not parrallel
-        if( Mathf.Abs( planarFactor ) < 0.0001f && crossVec1and2.sqrMagnitude > 0.0001f )
-        {
-            float s = Vector3.Dot( crossVec3and2, crossVec1and2 ) / crossVec1and2.sqrMagnitude;
-            intersection = linePoint1 + ( lineVec1 * s );
-            return true;
-        }
-        else
-        {
-            intersection = Vector3.zero;
-            return false;
-        }
-    }
-
-    //Two non-parallel lines which may or may not touch each other have a point on each line which are closest
-    //to each other. This function finds those two points. If the lines are not parallel, the function 
-    //outputs true, otherwise false.
-    public static bool ClosestPointsOnTwoLines( out Vector3 closestPointLine1, out Vector3 closestPointLine2, Vector3 linePoint1, Vector3 lineVec1, Vector3 linePoint2, Vector3 lineVec2 )
-    {
-
-        closestPointLine1 = Vector3.zero;
-        closestPointLine2 = Vector3.zero;
-
-        float a = Vector3.Dot( lineVec1, lineVec1 );
-        float b = Vector3.Dot( lineVec1, lineVec2 );
-        float e = Vector3.Dot( lineVec2, lineVec2 );
-
-        float d = a * e - b * b;
-
-        //lines are not parallel
-        if( d != 0.0f )
-        {
-
-            Vector3 r = linePoint1 - linePoint2;
-            float c = Vector3.Dot( lineVec1, r );
-            float f = Vector3.Dot( lineVec2, r );
-
-            float s = ( b * f - c * e ) / d;
-            float t = ( a * f - c * b ) / d;
-
-            closestPointLine1 = linePoint1 + lineVec1 * s;
-            closestPointLine2 = linePoint2 + lineVec2 * t;
-
-            return true;
-        }
-
         else
         {
             return false;
@@ -329,6 +748,46 @@ public class Math3d
         return vector - ( Vector3.Dot( vector, planeNormal ) * planeNormal );
     }
 
+    //Rotate a vector as if it is attached to an object with rotation "from", which is then rotated to rotation "to".
+    //Similar to TransformWithParent(), but rotating a vector instead of a transform.
+    public static Vector3 RotateVectorFromTo( Quaternion from, Quaternion to, Vector3 vector )
+    {
+        //Note: comments are in case all inputs are in World Space.
+        Quaternion Q = SubtractRotation( to, from );                //Output is in object space.
+        Vector3 A = InverseTransformDirectionMath( from, vector );//Output is in object space.
+        Vector3 B = Q * A;                                      //Output is in local space.
+        Vector3 C = TransformDirectionMath( from, B );          //Output is in world space.
+        return C;
+    }
+
+    // create a vector of direction "vector" with length "size"
+    public static Vector3 SetVectorLength( Vector3 vector, float size )
+    {
+
+        //normalize the vector
+        Vector3 vectorNormalized = Vector3.Normalize( vector );
+
+        //scale the vector
+        return vectorNormalized *= size;
+    }
+
+
+    //caclulate the rotational difference from A to B
+    public static Quaternion SubtractRotation( Quaternion B, Quaternion A )
+    {
+
+        Quaternion C = Quaternion.Inverse( A ) * B;
+        return C;
+    }
+
+    //Same as the build in TransformDirection(), but using a rotation instead of a transform.
+    public static Vector3 TransformDirectionMath( Quaternion rotation, Vector3 vector )
+    {
+
+        Vector3 output = rotation * vector;
+        return output;
+    }
+
     //Get the shortest distance between a point and a plane. The output is signed so it holds information
     //as to which side of the plane normal the point is.
     public static float SignedDistancePlanePoint( Vector3 planeNormal, Vector3 planePoint, Vector3 point )
@@ -389,33 +848,6 @@ public class Math3d
         return 1.570796326794897f - angle; //90 degrees - angle
     }
 
-    //Calculate the dot product as an angle
-    public static float DotProductAngle( Vector3 vec1, Vector3 vec2 )
-    {
-
-        double dot;
-        double angle;
-
-        //get the dot product
-        dot = Vector3.Dot( vec1, vec2 );
-
-        //Clamp to prevent NaN error. Shouldn't need this in the first place, but there could be a rounding error issue.
-        if( dot < -1.0f )
-        {
-            dot = -1.0f;
-        }
-        if( dot > 1.0f )
-        {
-            dot = 1.0f;
-        }
-
-        //Calculate the angle. The output is in radians
-        //This step can be skipped for optimization...
-        angle = Math.Acos( dot );
-
-        return (float)angle;
-    }
-
     //Convert a plane defined by 3 points to a plane defined by a vector and a point. 
     //The plane point is the middle of the triangle defined by the 3 points.
     public static void PlaneFrom3Points( out Vector3 planeNormal, out Vector3 planePoint, Vector3 pointA, Vector3 pointB, Vector3 pointC )
@@ -447,27 +879,6 @@ public class Math3d
         ClosestPointsOnTwoLines( out planePoint, out temp, middleAB, middleABtoC, middleAC, middleACtoB );
     }
 
-    //Returns the forward vector of a quaternion
-    public static Vector3 GetForwardVector( Quaternion q )
-    {
-
-        return q * Vector3.forward;
-    }
-
-    //Returns the up vector of a quaternion
-    public static Vector3 GetUpVector( Quaternion q )
-    {
-
-        return q * Vector3.up;
-    }
-
-    //Returns the right vector of a quaternion
-    public static Vector3 GetRightVector( Quaternion q )
-    {
-
-        return q * Vector3.right;
-    }
-
     //Gets a quaternion from a matrix
     public static Quaternion QuaternionFromMatrix( Matrix4x4 m )
     {
@@ -481,26 +892,6 @@ public class Math3d
 
         Vector4 vector4Position = m.GetColumn( 3 );
         return new Vector3( vector4Position.x, vector4Position.y, vector4Position.z );
-    }
-
-    //This is an alternative for Quaternion.LookRotation. Instead of aligning the forward and up vector of the game 
-    //object with the input vectors, a custom direction can be used instead of the fixed forward and up vectors.
-    //alignWithVector and alignWithNormal are in world space.
-    //customForward and customUp are in object space.
-    //Usage: use alignWithVector and alignWithNormal as if you are using the default LookRotation function.
-    //Set customForward and customUp to the vectors you wish to use instead of the default forward and up vectors.
-    public static void LookRotationExtended( ref GameObject gameObjectInOut, Vector3 alignWithVector, Vector3 alignWithNormal, Vector3 customForward, Vector3 customUp )
-    {
-
-        //Set the rotation of the destination
-        Quaternion rotationA = Quaternion.LookRotation( alignWithVector, alignWithNormal );
-
-        //Set the rotation of the custom normal and up vectors. 
-        //When using the default LookRotation function, this would be hard coded to the forward and up vector.
-        Quaternion rotationB = Quaternion.LookRotation( customForward, customUp );
-
-        //Calculate the rotation
-        gameObjectInOut.transform.rotation = rotationA * Quaternion.Inverse( rotationB );
     }
 
     //This function transforms one object as if it was parented to the other.
@@ -695,379 +1086,6 @@ public class Math3d
         return circleDistance;
     }
 
-    //Returns true if a line segment (made up of linePoint1 and linePoint2) is fully or partially in a rectangle
-    //made up of RectA to RectD. The line segment is assumed to be on the same plane as the rectangle. If the line is 
-    //not on the plane, use ProjectPointOnPlane() on linePoint1 and linePoint2 first.
-    public static bool IsLineInRectangle( Vector3 linePoint1, Vector3 linePoint2, Vector3 rectA, Vector3 rectB, Vector3 rectC, Vector3 rectD )
-    {
-
-        bool pointAInside = false;
-        bool pointBInside = false;
-
-        pointAInside = IsPointInRectangle( linePoint1, rectA, rectC, rectB, rectD );
-
-        if( !pointAInside )
-        {
-
-            pointBInside = IsPointInRectangle( linePoint2, rectA, rectC, rectB, rectD );
-        }
-
-        //none of the points are inside, so check if a line is crossing
-        if( !pointAInside && !pointBInside )
-        {
-
-            bool lineACrossing = AreLineSegmentsCrossing( linePoint1, linePoint2, rectA, rectB );
-            bool lineBCrossing = AreLineSegmentsCrossing( linePoint1, linePoint2, rectB, rectC );
-            bool lineCCrossing = AreLineSegmentsCrossing( linePoint1, linePoint2, rectC, rectD );
-            bool lineDCrossing = AreLineSegmentsCrossing( linePoint1, linePoint2, rectD, rectA );
-
-            if( lineACrossing || lineBCrossing || lineCCrossing || lineDCrossing )
-            {
-
-                return true;
-            }
-
-            else
-            {
-
-                return false;
-            }
-        }
-
-        else
-        {
-
-            return true;
-        }
-    }
-
-    //Returns true if "point" is in a rectangle mad up of RectA to RectD. The line point is assumed to be on the same 
-    //plane as the rectangle. If the point is not on the plane, use ProjectPointOnPlane() first.
-    public static bool IsPointInRectangle( Vector3 point, Vector3 rectA, Vector3 rectC, Vector3 rectB, Vector3 rectD )
-    {
-
-        Vector3 vector;
-        Vector3 linePoint;
-
-        //get the center of the rectangle
-        vector = rectC - rectA;
-        float size = -( vector.magnitude / 2f );
-        vector = AddVectorLength( vector, size );
-        Vector3 middle = rectA + vector;
-
-        Vector3 xVector = rectB - rectA;
-        float width = xVector.magnitude / 2f;
-
-        Vector3 yVector = rectD - rectA;
-        float height = yVector.magnitude / 2f;
-
-        linePoint = ProjectPointOnLine( middle, xVector.normalized, point );
-        vector = linePoint - point;
-        float yDistance = vector.magnitude;
-
-        linePoint = ProjectPointOnLine( middle, yVector.normalized, point );
-        vector = linePoint - point;
-        float xDistance = vector.magnitude;
-
-        if( ( xDistance <= width ) && ( yDistance <= height ) )
-        {
-
-            return true;
-        }
-
-        else
-        {
-
-            return false;
-        }
-    }
-
-    //Returns true if line segment made up of pointA1 and pointA2 is crossing line segment made up of
-    //pointB1 and pointB2. The two lines are assumed to be in the same plane.
-    public static bool AreLineSegmentsCrossing( Vector3 pointA1, Vector3 pointA2, Vector3 pointB1, Vector3 pointB2 )
-    {
-
-        Vector3 closestPointA;
-        Vector3 closestPointB;
-        int sideA;
-        int sideB;
-
-        Vector3 lineVecA = pointA2 - pointA1;
-        Vector3 lineVecB = pointB2 - pointB1;
-
-        bool valid = ClosestPointsOnTwoLines( out closestPointA, out closestPointB, pointA1, lineVecA.normalized, pointB1, lineVecB.normalized );
-
-        //lines are not parallel
-        if( valid )
-        {
-
-            sideA = PointOnWhichSideOfLineSegment( pointA1, pointA2, closestPointA );
-            sideB = PointOnWhichSideOfLineSegment( pointB1, pointB2, closestPointB );
-
-            if( ( sideA == 0 ) && ( sideB == 0 ) )
-            {
-
-                return true;
-            }
-
-            else
-            {
-
-                return false;
-            }
-        }
-
-        //lines are parallel
-        else
-        {
-
-            return false;
-        }
-    }
-
-    //This function calculates the acceleration vector in meter/second^2.
-    //Input: position. If the output is used for motion simulation, the input transform
-    //has to be located at the seat base, not at the vehicle CG. Attach an empty GameObject
-    //at the correct location and use that as the input for this function.
-    //Gravity is not taken into account but this can be added to the output if needed.
-    //A low number of samples can give a jittery result due to rounding errors.
-    //If more samples are used, the output is more smooth but has a higher latency.
-    public static bool LinearAcceleration( out Vector3 vector, Vector3 position, int samples )
-    {
-
-        Vector3 averageSpeedChange = Vector3.zero;
-        vector = Vector3.zero;
-        Vector3 deltaDistance;
-        float deltaTime;
-        Vector3 speedA;
-        Vector3 speedB;
-
-        //Clamp sample amount. In order to calculate acceleration we need at least 2 changes
-        //in speed, so we need at least 3 position samples.
-        if( samples < 3 )
-        {
-
-            samples = 3;
-        }
-
-        //Initialize
-        if( positionRegister == null )
-        {
-
-            positionRegister = new Vector3[samples];
-            posTimeRegister = new float[samples];
-        }
-
-        //Fill the position and time sample array and shift the location in the array to the left
-        //each time a new sample is taken. This way index 0 will always hold the oldest sample and the
-        //highest index will always hold the newest sample. 
-        for( int i = 0; i < positionRegister.Length - 1; i++ )
-        {
-
-            positionRegister[i] = positionRegister[i + 1];
-            posTimeRegister[i] = posTimeRegister[i + 1];
-        }
-        positionRegister[positionRegister.Length - 1] = position;
-        posTimeRegister[posTimeRegister.Length - 1] = Time.time;
-
-        positionSamplesTaken++;
-
-        //The output acceleration can only be calculated if enough samples are taken.
-        if( positionSamplesTaken >= samples )
-        {
-
-            //Calculate average speed change.
-            for( int i = 0; i < positionRegister.Length - 2; i++ )
-            {
-
-                deltaDistance = positionRegister[i + 1] - positionRegister[i];
-                deltaTime = posTimeRegister[i + 1] - posTimeRegister[i];
-
-                //If deltaTime is 0, the output is invalid.
-                if( deltaTime == 0 )
-                {
-
-                    return false;
-                }
-
-                speedA = deltaDistance / deltaTime;
-                deltaDistance = positionRegister[i + 2] - positionRegister[i + 1];
-                deltaTime = posTimeRegister[i + 2] - posTimeRegister[i + 1];
-
-                if( deltaTime == 0 )
-                {
-
-                    return false;
-                }
-
-                speedB = deltaDistance / deltaTime;
-
-                //This is the accumulated speed change at this stage, not the average yet.
-                averageSpeedChange += speedB - speedA;
-            }
-
-            //Now this is the average speed change.
-            averageSpeedChange /= positionRegister.Length - 2;
-
-            //Get the total time difference.
-            float deltaTimeTotal = posTimeRegister[posTimeRegister.Length - 1] - posTimeRegister[0];
-
-            //Now calculate the acceleration, which is an average over the amount of samples taken.
-            vector = averageSpeedChange / deltaTimeTotal;
-
-            return true;
-        }
-
-        else
-        {
-
-            return false;
-        }
-    }
-
-
-    /*
-	//This function calculates angular acceleration in object space as deg/second^2, encoded as a vector. 
-	//For example, if the output vector is 0,0,-5, the angular acceleration is 5 deg/second^2 around the object Z axis, to the left. 
-	//Input: rotation (quaternion). If the output is used for motion simulation, the input transform
-	//has to be located at the seat base, not at the vehicle CG. Attach an empty GameObject
-	//at the correct location and use that as the input for this function.
-	//A low number of samples can give a jittery result due to rounding errors.
-	//If more samples are used, the output is more smooth but has a higher latency.
-	//Note: the result is only accurate if the rotational difference between two samples is less than 180 degrees.
-	//Note: a suitable way to visualize the result is:
-	Vector3 dir;
-	float scale = 2f;	
-	dir = new Vector3(vector.x, 0, 0);
-	dir = Math3d.SetVectorLength(dir, dir.magnitude * scale);
-	dir = gameObject.transform.TransformDirection(dir);
-	Debug.DrawRay(gameObject.transform.position, dir, Color.red);	
-	dir = new Vector3(0, vector.y, 0);
-	dir = Math3d.SetVectorLength(dir, dir.magnitude * scale);
-	dir = gameObject.transform.TransformDirection(dir);
-	Debug.DrawRay(gameObject.transform.position, dir, Color.green);	
-	dir = new Vector3(0, 0, vector.z);
-	dir = Math3d.SetVectorLength(dir, dir.magnitude * scale);
-	dir = gameObject.transform.TransformDirection(dir);
-	Debug.DrawRay(gameObject.transform.position, dir, Color.blue);	*/
-    public static bool AngularAcceleration( out Vector3 vector, Quaternion rotation, int samples )
-    {
-
-        Vector3 averageSpeedChange = Vector3.zero;
-        vector = Vector3.zero;
-        Quaternion deltaRotation;
-        float deltaTime;
-        Vector3 speedA;
-        Vector3 speedB;
-
-        //Clamp sample amount. In order to calculate acceleration we need at least 2 changes
-        //in speed, so we need at least 3 rotation samples.
-        if( samples < 3 )
-        {
-
-            samples = 3;
-        }
-
-        //Initialize
-        if( rotationRegister == null )
-        {
-
-            rotationRegister = new Quaternion[samples];
-            rotTimeRegister = new float[samples];
-        }
-
-        //Fill the rotation and time sample array and shift the location in the array to the left
-        //each time a new sample is taken. This way index 0 will always hold the oldest sample and the
-        //highest index will always hold the newest sample. 
-        for( int i = 0; i < rotationRegister.Length - 1; i++ )
-        {
-
-            rotationRegister[i] = rotationRegister[i + 1];
-            rotTimeRegister[i] = rotTimeRegister[i + 1];
-        }
-        rotationRegister[rotationRegister.Length - 1] = rotation;
-        rotTimeRegister[rotTimeRegister.Length - 1] = Time.time;
-
-        rotationSamplesTaken++;
-
-        //The output acceleration can only be calculated if enough samples are taken.
-        if( rotationSamplesTaken >= samples )
-        {
-
-            //Calculate average speed change.
-            for( int i = 0; i < rotationRegister.Length - 2; i++ )
-            {
-
-                deltaRotation = SubtractRotation( rotationRegister[i + 1], rotationRegister[i] );
-                deltaTime = rotTimeRegister[i + 1] - rotTimeRegister[i];
-
-                //If deltaTime is 0, the output is invalid.
-                if( deltaTime == 0 )
-                {
-
-                    return false;
-                }
-
-                speedA = RotDiffToSpeedVec( deltaRotation, deltaTime );
-                deltaRotation = SubtractRotation( rotationRegister[i + 2], rotationRegister[i + 1] );
-                deltaTime = rotTimeRegister[i + 2] - rotTimeRegister[i + 1];
-
-                if( deltaTime == 0 )
-                {
-
-                    return false;
-                }
-
-                speedB = RotDiffToSpeedVec( deltaRotation, deltaTime );
-
-                //This is the accumulated speed change at this stage, not the average yet.
-                averageSpeedChange += speedB - speedA;
-            }
-
-            //Now this is the average speed change.
-            averageSpeedChange /= rotationRegister.Length - 2;
-
-            //Get the total time difference.
-            float deltaTimeTotal = rotTimeRegister[rotTimeRegister.Length - 1] - rotTimeRegister[0];
-
-            //Now calculate the acceleration, which is an average over the amount of samples taken.
-            vector = averageSpeedChange / deltaTimeTotal;
-
-            return true;
-        }
-
-        else
-        {
-
-            return false;
-        }
-    }
-
-    //Get y from a linear function, with x as an input. The linear function goes through points
-    //0,0 on the left ,and Qxy on the right.
-    public static float LinearFunction2DBasic( float x, float Qx, float Qy )
-    {
-
-        float y = x * ( Qy / Qx );
-
-        return y;
-    }
-
-    //Get y from a linear function, with x as an input. The linear function goes through points
-    //Pxy on the left ,and Qxy on the right.
-    public static float LinearFunction2DFull( float x, float Px, float Py, float Qx, float Qy )
-    {
-
-        float y = 0f;
-
-        float A = Qy - Py;
-        float B = Qx - Px;
-        float C = A / B;
-
-        y = Py + ( C * ( x - Px ) );
-
-        return y;
-    }
 
     //Convert a rotation difference to a speed vector.
     //For internal use only.

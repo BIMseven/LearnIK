@@ -61,7 +61,6 @@ namespace MyUtility
             Acceleration = Vector3.zero;
             SmoothedVelocity = Vector3.zero;
             PreviousPosition = restingPosition;
-            firstRead = true;
         }
 
         /// <summary>

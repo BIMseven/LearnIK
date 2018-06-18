@@ -19,6 +19,7 @@ namespace MyUtility
         private Camera cameraToCover;
 
         private float initialNearClip, initialFarClip;
+        private CameraClearFlags initialClearFlag;
 
         private bool blindersVisible;
 
@@ -27,6 +28,7 @@ namespace MyUtility
 	    void Start() 
 	    {
             cameraToCover = GetComponent<Camera>();
+            initialClearFlag = cameraToCover.clearFlags;
             initialNearClip = cameraToCover.nearClipPlane;
             initialFarClip = cameraToCover.farClipPlane;
         }		
@@ -43,11 +45,13 @@ namespace MyUtility
             {
                 cameraToCover.nearClipPlane = EPSILON;
                 cameraToCover.farClipPlane = 2 * EPSILON;
+                cameraToCover.clearFlags = CameraClearFlags.SolidColor;
             }
             else
             {
                 cameraToCover.nearClipPlane = initialNearClip;
                 cameraToCover.farClipPlane = initialFarClip;
+                cameraToCover.clearFlags = initialClearFlag;
             }
         }
         

@@ -83,7 +83,7 @@ namespace MyUtility
                 return Vector3.Cross( Up, Forward );                
             }
         }
-
+        
         // These fields specify the components of localEulerAngles to which the roll, 
         // pitch, and yaw apply. Each will be a Vector3 index
         protected int rollComp = 2;
@@ -99,6 +99,32 @@ namespace MyUtility
         }
         
 //--------------------------------------------------------------------------METHODS:
+
+        public void LookAt( Transform target, Vector3 worldUp )
+        {
+            Vector3 toTarget = target.position - transform.position;
+            var targetRot = Quaternion.LookRotation( toTarget, worldUp );
+            SetAttitude( targetRot );
+        }
+
+        public void LookAt( Transform target )
+        {
+            Vector3 toTarget = target.position - transform.position;
+            var targetRot = Quaternion.LookRotation( toTarget, Vector3.up );
+            SetAttitude( targetRot );
+        }
+
+        public void LookAt( Vector3 forward, Vector3 worldUp )
+        {
+            var targetRot = Quaternion.LookRotation( forward, worldUp );
+            SetAttitude( targetRot );
+        }
+
+        public void LookAt( Vector3 forward )
+        {
+            var targetRot = Quaternion.LookRotation( forward, Vector3.up );
+            SetAttitude( targetRot );
+        }
 
         public void SetAttitude( float roll, float pitch, float yaw )
         {

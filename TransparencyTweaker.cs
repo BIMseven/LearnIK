@@ -17,22 +17,28 @@ public class TransparencyTweaker : MonoBehaviour
     /// </summary>
     public Material TransparentDiffuseMaterial;
 
-    [Range( 0, 1 )]
-    public float Transparency;
+    private float transparency;
+    public float Transparency
+    {
+        get
+        {
+            return transparency;
+        }
+        set
+        {
+            Color newColor = TransparentDiffuseMaterial.color;
+            newColor.a = 1 - Transparency;
+            TransparentDiffuseMaterial.color = newColor;
+            transparency = value;
+        }
+    }
 		
 //---------------------------------------------------------------------MONO METHODS:
 
 	void Start() 
 	{
         GetComponent<Renderer>().material = TransparentDiffuseMaterial;
-    }
-		
-	void Update()
-	{
-        Color newColor = TransparentDiffuseMaterial.color;
-        newColor.a = 1 - Transparency;
-        TransparentDiffuseMaterial.color = newColor;
-    }
+    }		
 
 //--------------------------------------------------------------------------METHODS:
 

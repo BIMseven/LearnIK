@@ -13,15 +13,19 @@ namespace MyUtility
 	    public bool VERBOSE = false;
 
         private const float EPSILON = 0.0001f;
-
+        private const int CULL_ONLY_UI = 32;
+        
 //---------------------------------------------------------------------------FIELDS:
 	
+        public bool DoNotHideUI = true;
+
         private Camera cameraToCover;
 
-        private float initialNearClip, initialFarClip;
         private CameraClearFlags initialClearFlag;
+        private int initialCullingMask;
 
-        private bool blindersVisible;
+        public bool BlindersActive { get; private set; }
+                
 
 //---------------------------------------------------------------------MONO METHODS:
 
@@ -29,8 +33,7 @@ namespace MyUtility
 	    {
             cameraToCover = GetComponent<Camera>();
             initialClearFlag = cameraToCover.clearFlags;
-            initialNearClip = cameraToCover.nearClipPlane;
-            initialFarClip = cameraToCover.farClipPlane;
+            initialCullingMask = cameraToCover.cullingMask;
         }		
 
 //--------------------------------------------------------------------------METHODS:
@@ -39,25 +42,24 @@ namespace MyUtility
         {
             vLog( "Blinders on: " + visible );
 
-            blindersVisible = visible;
+            BlindersActive = visible;
 
             if( visible )
             {
-                cameraToCover.nearClipPlane = EPSILON;
-                cameraToCover.farClipPlane = 2 * EPSILON;
+                cameraToCover.cullingMask = 0;
+                if( DoNotHideUI )  cameraToCover.cullingMask = CULL_ONLY_UI;
                 cameraToCover.clearFlags = CameraClearFlags.SolidColor;
             }
             else
             {
-                cameraToCover.nearClipPlane = initialNearClip;
-                cameraToCover.farClipPlane = initialFarClip;
                 cameraToCover.clearFlags = initialClearFlag;
+                cameraToCover.cullingMask = initialCullingMask;
             }
         }
         
         public void Toggle()
         {
-            SetVisible( ! blindersVisible );
+            SetVisible( ! BlindersActive );
         }
 
 //--------------------------------------------------------------------------HELPERS:

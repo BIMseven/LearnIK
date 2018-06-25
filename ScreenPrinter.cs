@@ -28,6 +28,10 @@ namespace MyUtility
 
         public Text[] Texts;
 
+        private Image[] UIPanels;
+
+        public bool UsePanels;
+
         public Color DefaultColor = Color.black;
 
         Dictionary<int, float> timesToDestroyTexts;
@@ -41,9 +45,12 @@ namespace MyUtility
 
         void Start()
         {
-            foreach( Text text in Texts )
+            UIPanels = new Image[Texts.Length];
+            for( int i =0; i < Texts.Length; i++ )
             {
-                text.enabled = false;
+                Texts[i].enabled = false;
+                UIPanels[i] = Texts[i].transform.parent.GetComponent<Image>();
+                if( UIPanels[i] != null ) UIPanels[i].enabled = false;
             }
         }
        
@@ -56,9 +63,9 @@ namespace MyUtility
 
         public void HideAllText()
         {
-            foreach( Text text in Texts )
+            for( int i = 0; i < Texts.Length; i++ )
             {
-                text.enabled = false;
+                enableText( i, false );
             }
         }
 
@@ -68,10 +75,7 @@ namespace MyUtility
         /// <param name="textNumber"></param>
         public void HideText( int textNumber )
         {
-            if( textNumber >= 0  &&  textNumber < Texts.Length )
-            {
-                Texts[textNumber].enabled = false;
-            }
+            enableText( textNumber, false );
         }
 
         /// <summary>
@@ -91,12 +95,11 @@ namespace MyUtility
         /// <param name="message"></param>
         public void Print( int textNumber, string message, Color color )
         {
-            if( textNumber >= Texts.Length )
+            if( ! enableText( textNumber, true ) )
             {
                 LOG_TAG.TPrint( "Pick textnumber between 0 and " + Texts.Length );
                 return;
             }
-            Texts[textNumber].enabled = true;
             Texts[textNumber].color = color;
             Texts[textNumber].text = message;
         }
@@ -182,6 +185,22 @@ namespace MyUtility
         }
 
 //--------------------------------------------------------------------------HELPERS:
+
+        // returns true if successful
+        private bool enableText( int textNum, bool enabled )
+        {
+            if( textNum < 0  || textNum >= Texts.Length )
+            {
+                return false;
+            }
+
+            if( UsePanels  &&  UIPanels[textNum] != null )
+            {
+                UIPanels[textNum].enabled = enabled;
+            }
+            Texts[textNum].enabled = enabled;
+            return true;
+        }
 
         private void removeExpiredMessages()
         {

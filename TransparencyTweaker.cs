@@ -33,7 +33,6 @@ public class TransparencyTweaker : MonoBehaviour
 	{
         transparantMaterial = GetComponent<Renderer>().material;        
     }
-
 //--------------------------------------------------------------------------METHODS:
 
 //--------------------------------------------------------------------------HELPERS:

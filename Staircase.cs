@@ -51,6 +51,12 @@ namespace MyUtility
 
 //--------------------------------------------------------------------------METHODS:
 
+        public void voidLastResponse()
+        {
+            if( Utility.RandBool() )    ValueToTest += StepSize;
+            else                        ValueToTest -= StepSize;
+        }
+
         public void RegisterResponse( bool response )
         {
             values.Add( ValueToTest );

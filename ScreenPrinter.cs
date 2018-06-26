@@ -41,19 +41,15 @@ namespace MyUtility
         void Awake()
         {
             timesToDestroyTexts = new Dictionary<int, float>();
-        }
-
-        void Start()
-        {
             UIPanels = new Image[Texts.Length];
-            for( int i =0; i < Texts.Length; i++ )
+            for( int i = 0; i < Texts.Length; i++ )
             {
                 Texts[i].enabled = false;
                 UIPanels[i] = Texts[i].transform.parent.GetComponent<Image>();
                 if( UIPanels[i] != null ) UIPanels[i].enabled = false;
             }
         }
-       
+               
         void Update()
         {
             removeExpiredMessages();

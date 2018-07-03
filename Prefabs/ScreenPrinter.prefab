@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 114946109841915864}
   - component: {fileID: 114513779109526716}
   m_Layer: 5
-  m_Name: CameraScreenPrinter
+  m_Name: ScreenPrinter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

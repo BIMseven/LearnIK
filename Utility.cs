@@ -18,6 +18,27 @@ namespace MyUtility
 
 //--------------------------------------------------------------------------METHODS:
 
+        /// <summary>
+        /// Ensures all displays 0-numDisplaysToActivate are activated
+        /// </summary>
+        /// <param name="numDisplaysToActivate"></param>
+        public static void ActivateDisplays( int numDisplaysToActivate )
+        {            
+            //#if ! UNITY_EDITOR
+            //if( Display.displays.Length > 1 )
+            //{
+            //    for( int i = 1; i <= numDisplaysToActivate; i++ )
+            //    {
+            //        if( ! Display.displays[i].active )
+            //        {
+            //            Display.displays[i].Activate();
+            //            ScreenPrinter.Instance.Print( i + 2, "Activate display " + i );
+            //        }
+            //    }
+            //}
+            //#endif
+        }
+
         public static bool CanMove( this SphereCollider collider, Vector3 movement )
         {
             // We will cast a sphere with a radius half as big as the given collider.
@@ -493,7 +514,7 @@ namespace MyUtility
         /// <param name="message"></param>
         public static void TPrint( this string tag, string message )
         {
-            Print( tag, message );
+            Print( tag, message );            
         }
 
         /// <summary>
@@ -531,7 +552,7 @@ namespace MyUtility
         {
             Debug.LogError( tag + " --- " + message );
         }
-
+        
         public static bool RandBool()
         {
             return UnityEngine.Random.Range( 0f, 1f ) >= 0.5;

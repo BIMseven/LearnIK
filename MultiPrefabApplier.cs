@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+#if UNITY_EDITOR
 public class MultiPrefabApplier : EditorWindow
 {
+//------------------------------------------------------------------------CONSTANTS:
 
-    //------------------------------------------------------------------------CONSTANTS:
-
-    private const string LOG_TAG = "ChangeMe";
+    private const string LOG_TAG = "MultiPrefabApplier";
     public bool VERBOSE = false;
 
-    //---------------------------------------------------------------------------FIELDS:
+//---------------------------------------------------------------------------FIELDS:
 
     public delegate void ApplyOrRevert( GameObject currentGO,
                                         Object prefabParentObj,
                                         ReplacePrefabOptions replaceOpt );
 
-    //--------------------------------------------------------------------------METHODS:
+//--------------------------------------------------------------------------METHODS:
 
     [MenuItem( "Tools/Apply all selected prefabs %#a" )]
     static void ApplyPrefabs()
@@ -31,7 +31,7 @@ public class MultiPrefabApplier : EditorWindow
         searchPrefabConnections( revertToSelectedPrefabs );
     }
 
-    //--------------------------------------------------------------------------HELPERS:
+//--------------------------------------------------------------------------HELPERS:
 
     // Apply      
     private static void applyToSelectedPrefabs( GameObject _goCurrentGo,
@@ -120,6 +120,6 @@ public class MultiPrefabApplier : EditorWindow
     {
         return (GameObject)PrefabUtility.GetPrefabParent( go );
     }
-
 }
+#endif
 

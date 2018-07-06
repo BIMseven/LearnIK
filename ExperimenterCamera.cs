@@ -10,7 +10,7 @@ namespace MyUtility
     /// a VR experiment.  Its parent should be the GameCamera
     /// </summary>
     [RequireComponent(typeof( Camera ))]
-    public class ExperimenterCamera : MonoBehaviour
+    public class ExperimenterCamera : Singleton<ExperimenterCamera>
     {
 //------------------------------------------------------------------------CONSTANTS:
 
@@ -54,10 +54,18 @@ namespace MyUtility
 
         void Awake()
         {
+            foreach( Text text in ConsoleTexts )
+            {
+                text.enabled = false;
+            }
             experimenterCamera = GetComponent<Camera>();
             originalParent = transform.parent;
             initialLocalRot = transform.localRotation;
             initialLocalPos = transform.localPosition;
+            //ScreenPrinter.Instance.Print( 2, "HIHIHIHI " + Display.displays.Length );
+            if( Display.displays.Length > 1 )
+            Display.displays[1].Activate();
+            experimenterCamera.targetDisplay = 1;
         }
 
         void Update()

@@ -88,7 +88,7 @@ public class MultiPrefabApplier : EditorWindow
                 {
                     //Are we still in the same prefab?
                     GameObject parentCur = goCur.transform.parent.gameObject;
-                    if( PrefabUtility.GetPrefabParent( parentCur ) != null  &&
+                    if( PrefabUtility.GetCorrespondingObjectFromSource( parentCur ) != null  &&
                         ( goPrefabRoot == getPrefabParent( parentCur ).transform.root.gameObject ) )
                     {
                         goCur = goCur.transform.parent.gameObject;
@@ -107,7 +107,7 @@ public class MultiPrefabApplier : EditorWindow
                 if( prefabModFunction != null   &&   canApply )
                 {
                     iCount++;
-                    prefabModFunction( goCur, PrefabUtility.GetPrefabParent( goCur ),
+                    prefabModFunction( goCur, PrefabUtility.GetCorrespondingObjectFromSource( goCur ),
                                        ReplacePrefabOptions.ConnectToPrefab );
                 }
 
@@ -118,7 +118,7 @@ public class MultiPrefabApplier : EditorWindow
 
     private static GameObject getPrefabParent( GameObject go )
     {
-        return (GameObject)PrefabUtility.GetPrefabParent( go );
+        return (GameObject)PrefabUtility.GetCorrespondingObjectFromSource( go );
     }
 }
 #endif

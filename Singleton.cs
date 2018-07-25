@@ -15,14 +15,9 @@ namespace MyUtility
                 
                 if( instance == null )
                 {
-                    instance = (T)FindObjectOfType( typeof( T ) );
-                    
-                    if( instance == null )
-                    {
-                        GameObject container = new GameObject();
-                        container.name = typeof( T ) + "Container";
-                        instance = (T)container.AddComponent( typeof( T ) );
-                    }
+                    GameObject container = new GameObject();
+                    container.name = typeof( T ) + "Container";
+                    instance = (T)container.AddComponent( typeof( T ) );
                 }
                 return instance;
             }
@@ -42,6 +37,18 @@ namespace MyUtility
         private static bool applicationIsQuitting = false;
 
 //---------------------------------------------------------------------MONO METHODS:
+
+	    protected virtual void Awake ()
+	    {
+		    if( instance == null )
+            {
+                instance = this as T;                
+		    }
+		    else
+		    {
+			    Destroy ( gameObject );
+		    }
+	    }
 
         /// <summary>
         /// When Unity quits, it destroys objects in a random order.

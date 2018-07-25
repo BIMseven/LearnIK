@@ -27,8 +27,9 @@ public class Sun : Singleton<Sun>
 
 //---------------------------------------------------------------------MONO METHODS:
 
-	void Awake() 
-	{
+    new void Awake()
+    {
+        base.Awake();
 		sun = GetComponent<Light>();
 
 		dayHasBegun = false;

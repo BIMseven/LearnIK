@@ -44,7 +44,6 @@ namespace MyUtility
         private float maximumX = 360F;
         private float minimumY = -60F;
         private float maximumY = 60F;
-        private float moveSpeed = 1;
         float rotationX = 0F;
         float rotationY = 0F;
         private Quaternion startRot;
@@ -52,8 +51,9 @@ namespace MyUtility
 
 //---------------------------------------------------------------------MONO METHODS:
 
-        void Awake()
+        new void Awake()
         {
+            base.Awake();
             foreach( Text text in ConsoleTexts )
             {
                 text.enabled = false;

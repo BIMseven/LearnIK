@@ -15,8 +15,13 @@ namespace MyUtility
                 
                 if( instance == null )
                 {
-                    GameObject container = new GameObject();
-                    container.name = typeof( T ) + "Container";
+                    //var container = GameObject.CreatePrimitive( PrimitiveType.Cube );
+                    //Destroy( container.GetComponent<Renderer>() );
+                    //Destroy( container.GetComponent<Mesh>() );
+                    //Destroy( container.GetComponent<BoxCollider>() );
+                    var container = new GameObject();
+
+                    container.name  = typeof( T ) + "Container";
                     instance = (T)container.AddComponent( typeof( T ) );
                 }
                 return instance;
@@ -29,7 +34,7 @@ namespace MyUtility
             {
                 if( applicationIsQuitting )   return false;
 
-                return  instance != null  ||  FindObjectOfType<T>() != null;
+                return  instance != null;
             }
         }
         

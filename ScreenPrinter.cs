@@ -38,8 +38,9 @@ namespace MyUtility
 
 //---------------------------------------------------------------------MONO METHODS:
 
-        void Awake()
+        new void Awake()
         {
+            base.Awake();
             timesToDestroyTexts = new Dictionary<int, float>();
             UIPanels = new Image[Texts.Length];
             for( int i = 0; i < Texts.Length; i++ )

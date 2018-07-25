@@ -28,8 +28,9 @@ namespace MyUtility
 
 //---------------------------------------------------------------------MONO METHODS:
 
-        void Awake()
+        new void Awake()
         {
+            base.Awake();
             queuedMessages = new List<Message>();
             secondsRemaining = 0;
             currentlyDisplayedMessage = null;

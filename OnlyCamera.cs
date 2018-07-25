@@ -17,8 +17,9 @@ namespace MyUtility
 
 //---------------------------------------------------------------------MONO METHODS:
 
-        void Awake()
+        new void Awake()
         {
+            base.Awake();
             myCamera = GetComponent<Camera>();
         }
 

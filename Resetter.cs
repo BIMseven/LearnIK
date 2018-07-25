@@ -89,6 +89,8 @@ public class Resetter : MonoBehaviour
         {
             rigidbody.velocity = Vector3.zero;
             rigidbody.angularVelocity = Vector3.zero;
+            rigidbody.isKinematic = wasKinematic;
+            rigidbody.useGravity = usedGravity;
         }
         
         transform.parent = initialParent;

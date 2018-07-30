@@ -12,10 +12,10 @@ public class SpaceAdjuster : AxisSwapper
 //---------------------------------------------------------------------------FIELDS:
 	
     public TargetSpaces Space = TargetSpaces.World;
-
+    
 //--------------------------------------------------------------------------METHODS:
 
-    protected void setPosition( Vector3 position )
+    public void SetSpaceAdjustedPosition( Vector3 position )
     {
         switch( Space )
         {
@@ -32,7 +32,7 @@ public class SpaceAdjuster : AxisSwapper
         }
     }
 
-    protected void setRotation( Quaternion rotation )
+    public void SetSpaceAdjustedRotation( Quaternion rotation )
     {
         switch( Space )
         {
@@ -48,5 +48,4 @@ public class SpaceAdjuster : AxisSwapper
                 break;
         }
     }
-
 }

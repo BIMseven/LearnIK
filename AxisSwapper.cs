@@ -152,6 +152,11 @@ namespace MyUtility
             transform.localRotation = Quaternion.LookRotation( forward, up ); 
         }
 
+        public void SetLocalPosition( Vector3 position )
+        {
+            transform.localPosition = toAdjustedLocal * position;
+        }
+
 //--------------------------------------------------------------------------HELPERS:
 
         protected void initAxisSwapper()

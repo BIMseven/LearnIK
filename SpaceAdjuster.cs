@@ -49,5 +49,27 @@ namespace MyUtility
                     break;
             }
         }
+
+        public Quaternion ToLocalSpace( Quaternion rotation )
+        {
+            Quaternion localSpace = Quaternion.identity;
+
+            switch( Space )
+            {
+                case TargetSpaces.World:
+                    localSpace = transform.rotation.Inverse() * rotation;
+                    return LocalLookRotation( localSpace );
+
+                case TargetSpaces.Root:
+                    var worldSpace = transform.root.rotation.Inverse() * rotation;
+                    localSpace = transform.rotation.Inverse() * rotation;                    
+                    return LocalLookRotation( localSpace );
+
+                case TargetSpaces.Local:
+                    localSpace = rotation;
+                    return LocalLookRotation( localSpace );
+            }
+            return Quaternion.identity;
+        }
     }
 }

@@ -84,6 +84,22 @@ namespace MyUtility
             }
         }
         
+        public Quaternion LocalRotation
+        {
+            get
+            {
+                return transform.parent.rotation.Inverse() * Rotation;
+            }
+        }
+
+        public Quaternion Rotation
+        {
+            get
+            {
+                return Quaternion.LookRotation( Forward, Up );
+            }
+        }
+
         // These fields specify the components of localEulerAngles to which the roll, 
         // pitch, and yaw apply. Each will be a Vector3 index
         protected int rollComp = 2;
@@ -100,30 +116,90 @@ namespace MyUtility
         
 //--------------------------------------------------------------------------METHODS:
 
-        public void LookAt( Transform target, Vector3 worldUp )
+        public void LookAt( Transform target, Vector3 up )
         {
             Vector3 toTarget = target.position - transform.position;
-            var targetRot = Quaternion.LookRotation( toTarget, worldUp );
-            SetAttitude( targetRot );
+            transform.rotation = LookRotation( toTarget, up );
         }
 
         public void LookAt( Transform target )
         {
             Vector3 toTarget = target.position - transform.position;
-            var targetRot = Quaternion.LookRotation( toTarget, Vector3.up );
-            SetAttitude( targetRot );
+            transform.rotation = LookRotation( toTarget, Vector3.up );
         }
 
-        public void LookAt( Vector3 forward, Vector3 worldUp )
+        public void LookAt( Vector3 forward, Vector3 up )
         {
-            var targetRot = Quaternion.LookRotation( forward, worldUp );
-            SetAttitude( targetRot );
+            transform.rotation = LookRotation( forward,up );
         }
 
         public void LookAt( Vector3 forward )
         {
-            var targetRot = Quaternion.LookRotation( forward, Vector3.up );
-            SetAttitude( targetRot );
+            transform.rotation = LookRotation( forward, Vector3.up );
+        }
+
+        /// <summary>
+        /// Gives the "real" local rotation of given local rotation
+        /// </summary>
+        /// <param name="forward"></param>
+        /// <param name="up"></param>
+        /// <returns></returns>
+        public Quaternion LocalLookRotation( Quaternion unadjustedLocalRotation )
+        {
+
+            Vector3 forward = toAdjustedLocal * unadjustedLocalRotation * Vector3.forward;
+            Vector3 up      = toAdjustedLocal * unadjustedLocalRotation * Vector3.up;
+            return Quaternion.LookRotation( forward, up );
+        }
+
+        /// <summary>
+        /// Gives the "real" local rotation of given local forward and up Vectors
+        /// 
+        /// </summary>
+        /// <param name="forward"></param>
+        /// <param name="up"></param>
+        /// <returns></returns>
+        public Quaternion LocalLookRotation( Vector3 forward, Vector3 up )
+        {
+            forward = toAdjustedLocal * forward;
+            up      = toAdjustedLocal * up;
+            return Quaternion.LookRotation( forward, up );
+        }
+
+        /// <summary>
+        /// Gives the "real" local rotation of given local forward and up Vectors
+        /// 
+        /// </summary>
+        /// <param name="forward"></param>
+        /// <returns></returns>
+        public Quaternion LocalLookRotation( Vector3 forward )
+        {
+            forward     = toAdjustedLocal * forward;
+            Vector3 up  = toAdjustedLocal * Vector3.up;
+            return Quaternion.LookRotation( forward, up );
+        }
+
+        public Quaternion LookRotation( Vector3 forward  )
+        {
+            var targetRot = Quaternion.LookRotation( forward );
+            forward = targetRot * toAdjustedLocal * Vector3.forward;
+            Vector3 up = targetRot * toAdjustedLocal * Vector3.up;
+            return Quaternion.LookRotation( forward, up );
+        }
+
+        public Quaternion LookRotation( Vector3 forward, Vector3 up )
+        {
+            var targetRot = Quaternion.LookRotation( forward, up );
+            forward = targetRot * toAdjustedLocal * Vector3.forward;
+            up      = targetRot * toAdjustedLocal * Vector3.up;
+            return Quaternion.LookRotation( forward, up );
+        }
+
+        public Quaternion LookRotation( Quaternion targetRotation )
+        {
+            Vector3 forward = targetRotation * toAdjustedLocal * Vector3.forward;
+            Vector3 up      = targetRotation * toAdjustedLocal * Vector3.up;
+            return Quaternion.LookRotation( forward, up ); 
         }
 
         public void SetAttitude( float roll, float pitch, float yaw )

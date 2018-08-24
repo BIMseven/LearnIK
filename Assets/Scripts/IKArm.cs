@@ -4,57 +4,100 @@ using MyUtility;
 
 public class IKArm : MonoBehaviour
 {
-    //------------------------------------------------------------------------CONSTANTS:
+//------------------------------------------------------------------------CONSTANTS:
 
     private const string LOG_TAG = "IKArm";
     public bool VERBOSE = false;
 
-    //---------------------------------------------------------------------------FIELDS:
+//---------------------------------------------------------------------------FIELDS:
+
     #region Inspector Fields
-    public AxisSwapper LeftWrist;
     public AxisSwapper LeftElbow;
     public AxisSwapper LeftShoulder;
-    #endregion
-    //Setup assumes the model's arms are set to default "normal" positions
-    //Eventually to deal with non-normal cases, we will need a prefab to revert to.
+    public AxisSwapper RightElbow;
+    public AxisSwapper RightShoulder;
 
-    
+    public AxisSwapper LeftTargetForearm;
+    public AxisSwapper RightTargetForearm;
+    public Transform LeftTargetHand;
+    public Transform RightTargetHand;
+    #endregion
+
     private float shoulderToElbowDistance;
     private float elbowToWristDistance;
-    //---------------------------------------------------------------------MONO METHODS:
+
+//---------------------------------------------------------------------MONO METHODS:
 
     void Start()
     {
         //TODO: add safeguards to ensure that the LeapHands don't go further than our avatar's reach;
-        if( LeftWrist != null && LeftElbow != null && LeftShoulder != null )
+        if( LeftTargetForearm != null && LeftElbow != null && LeftShoulder != null )
         {
-            LeftShoulder.LocalLookRotation( LeftWrist.transform.forward, LeftWrist.transform.up );
-            LeftElbow.LocalLookRotation( LeftWrist.Forward, Vector3.Cross( LeftShoulder.Forward, LeftWrist.Forward ) );
+            LeftShoulder.LocalLookRotation( LeftTargetForearm.Forward,
+                                            LeftTargetForearm.Up );
 
-            shoulderToElbowDistance = ( LeftElbow.transform.position - LeftShoulder.transform.position ).magnitude;
-            elbowToWristDistance = Vector3.Distance( LeftElbow.transform.position, LeftWrist.transform.position );
+            Vector3 armUp = Vector3.Cross( LeftShoulder.Forward, LeftTargetHand.forward );
 
-            vLog( "INIT Wrist Local Rot: " + LeftWrist.LocalForward + "INIT Shoulder Local Rot: " + LeftShoulder.LocalForward + "INIT elbow Local Rot: " + LeftElbow.LocalForward );
+            LeftElbow.LocalLookRotation( LeftTargetForearm.Forward, armUp );
+
+            elbowToWristDistance = Vector3.Distance( LeftElbow.transform.position,
+                                                     LeftTargetForearm.transform.position );
+        }
+
+        if( RightTargetForearm != null && RightElbow != null && RightShoulder != null )
+        {
+            RightShoulder.LocalLookRotation( RightTargetForearm.transform.forward
+                                           , RightTargetForearm.transform.up );
+
+            Vector3 armUp = Vector3.Cross( RightTargetForearm.transform.forward , RightShoulder.Forward);
+
+            RightElbow.LocalLookRotation( RightTargetForearm.transform.forward, armUp );
+            
+            if(elbowToWristDistance == 0)
+            {
+                elbowToWristDistance = Vector3.Distance( RightElbow.transform.position,
+                                                         RightTargetHand.position );
+            }
         }
     }
 
     void Update()
     {
-        if( LeftWrist != null && LeftElbow != null && LeftShoulder != null )
-        {
-            LeftElbow.transform.position = LeftWrist.transform.position - (( LeftWrist.Forward ) * elbowToWristDistance);
+        moveArm( LeftShoulder, LeftElbow, LeftTargetForearm,LeftTargetHand , false );
+        moveArm( RightShoulder, RightElbow, RightTargetForearm,RightTargetHand, true );
 
-            LeftShoulder.LookAt( LeftElbow.transform );
-
-            LeftElbow.LookAt( LeftWrist.transform , Vector3.Cross( LeftShoulder.Forward, LeftWrist.Forward ) );
-
-
-        }
     }
 
     //--------------------------------------------------------------------------METHODS:
 
     //--------------------------------------------------------------------------HELPERS:
+
+    private void moveArm( AxisSwapper upperArm,
+                          AxisSwapper forearm,
+                          AxisSwapper targetForearm,
+                          Transform targetHand, 
+                          bool isRightArm )
+    {
+
+
+        var targetElbowPos = targetHand.position - targetForearm.Forward * elbowToWristDistance;
+        Vector3 shoulderToElbow = targetElbowPos - upperArm.transform.position;
+        Vector3 elbowToTarget = targetHand.position - targetElbowPos;
+
+        // Reversed order if ! left
+        Vector3 up;
+        if( isRightArm )
+        {
+            up = Vector3.Cross( elbowToTarget , shoulderToElbow  );
+        }
+        else
+        {
+            up = Vector3.Cross( shoulderToElbow , elbowToTarget );
+        }
+
+        upperArm.Look( targetElbowPos - upperArm.transform.position, up );
+        forearm.Look( elbowToTarget, up );
+    }
 
     private void vLog( string message )
     {
